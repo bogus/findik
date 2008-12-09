@@ -42,10 +42,10 @@ int main(int argc, char* argv[])
 
     // Initialise server.
     std::size_t num_threads = boost::lexical_cast<std::size_t>(argv[3]);
-    http::server3::server s(argv[1], argv[2], argv[4], num_threads);
+    findik::io::server s(argv[1], argv[2], argv[4], num_threads);
 
     // Set console control handler to allow server to be stopped.
-    console_ctrl_function = boost::bind(&http::server3::server::stop, &s);
+    console_ctrl_function = boost::bind(&findik::io::server::stop, &s);
     SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
 
     // Run the server until stopped.
@@ -88,8 +88,8 @@ int main(int argc, char* argv[])
 
     // Run server in background thread.
     std::size_t num_threads = boost::lexical_cast<std::size_t>(argv[3]);
-    http::server3::server s(argv[1], argv[2], argv[4], num_threads);
-    boost::thread t(boost::bind(&http::server3::server::run, &s));
+    findik::io::server s(argv[1], argv[2], argv[4], num_threads);
+    boost::thread t(boost::bind(&findik::io::server::run, &s));
 
     // Restore previous signals.
     pthread_sigmask(SIG_SETMASK, &old_mask, 0);

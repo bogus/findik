@@ -1,5 +1,5 @@
-#ifndef HTTP_SERVER3_CONNECTION_HPP
-#define HTTP_SERVER3_CONNECTION_HPP
+#ifndef FINDIK_IO_CONNECTION_HPP
+#define FINDIK_IO_CONNECTION_HPP
 
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
@@ -11,8 +11,8 @@
 #include "request_handler_.hpp"
 #include "request_parser.hpp"
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 /// Represents a single connection from a client.
 class connection
@@ -65,4 +65,4 @@ typedef boost::shared_ptr<connection> connection_ptr;
 } // namespace server3
 } // namespace http
 
-#endif // HTTP_SERVER3_CONNECTION_HPP
+#endif // FINDIK_IO_CONNECTION_HPP

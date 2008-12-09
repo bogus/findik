@@ -1,5 +1,5 @@
-#ifndef HTTP_SERVER3_SERVER_HPP
-#define HTTP_SERVER3_SERVER_HPP
+#ifndef FINDIK_IO_SERVER_HPP
+#define FINDIK_IO_SERVER_HPP
 
 #include <boost/asio.hpp>
 #include <string>
@@ -9,8 +9,8 @@
 #include "connection.hpp"
 #include "request_handler_.hpp"
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 /// The top-level class of the HTTP server.
 class server
@@ -51,4 +51,4 @@ private:
 } // namespace server3
 } // namespace http
 
-#endif // HTTP_SERVER3_SERVER_HPP
+#endif // FINDIK_IO_SERVER_HPP

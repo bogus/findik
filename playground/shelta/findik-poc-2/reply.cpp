@@ -2,8 +2,8 @@
 #include <string>
 #include <boost/lexical_cast.hpp>
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 namespace status_strings {
 

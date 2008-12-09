@@ -1,7 +1,7 @@
 #include "mime_types.hpp"
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 namespace mime_types {
 
 struct mapping

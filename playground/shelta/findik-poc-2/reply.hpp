@@ -1,13 +1,13 @@
-#ifndef HTTP_SERVER3_REPLY_HPP
-#define HTTP_SERVER3_REPLY_HPP
+#ifndef FINDIK_IO_REPLY_HPP
+#define FINDIK_IO_REPLY_HPP
 
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>
 #include "header.hpp"
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 /// A reply to be sent to a client.
 struct reply
@@ -51,4 +51,4 @@ struct reply
 } // namespace server3
 } // namespace http
 
-#endif // HTTP_SERVER3_REPLY_HPP
+#endif // FINDIK_IO_REPLY_HPP

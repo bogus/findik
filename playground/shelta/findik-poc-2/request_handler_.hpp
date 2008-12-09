@@ -1,14 +1,14 @@
 // filename of this file changed to request_handler_ from request_handler
 // because Microsoft Visual Studio 2008 says that request_handler is a reserved word.
 
-#ifndef HTTP_SERVER3_REQUEST_HANDLER_HPP
-#define HTTP_SERVER3_REQUEST_HANDLER_HPP
+#ifndef FINDIK_IO_REQUEST_HANDLER_HPP
+#define FINDIK_IO_REQUEST_HANDLER_HPP
 
 #include <string>
 #include <boost/noncopyable.hpp>
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 struct reply;
 struct request;
@@ -36,4 +36,4 @@ private:
 } // namespace server3
 } // namespace http
 
-#endif // HTTP_SERVER3_REQUEST_HANDLER_HPP
+#endif // FINDIK_IO_REQUEST_HANDLER_HPP

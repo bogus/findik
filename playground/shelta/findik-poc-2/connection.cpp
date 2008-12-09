@@ -2,8 +2,8 @@
 #include <vector>
 #include <boost/bind.hpp>
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 connection::connection(boost::asio::io_service& io_service,
     request_handler& handler)

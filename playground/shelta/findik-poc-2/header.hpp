@@ -1,10 +1,10 @@
-#ifndef HTTP_SERVER3_HEADER_HPP
-#define HTTP_SERVER3_HEADER_HPP
+#ifndef FINDIK_IO_HEADER_HPP
+#define FINDIK_IO_HEADER_HPP
 
 #include <string>
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 struct header
 {
@@ -15,4 +15,4 @@ struct header
 } // namespace server3
 } // namespace http
 
-#endif // HTTP_SERVER3_HEADER_HPP
+#endif // FINDIK_IO_HEADER_HPP

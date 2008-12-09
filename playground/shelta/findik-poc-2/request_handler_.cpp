@@ -7,8 +7,8 @@
 #include "reply.hpp"
 #include "request.hpp"
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 request_handler::request_handler(const std::string& doc_root)
   : doc_root_(doc_root)

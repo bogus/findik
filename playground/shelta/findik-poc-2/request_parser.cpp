@@ -1,8 +1,8 @@
 #include "request_parser.hpp"
 #include "request.hpp"
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 request_parser::request_parser()
   : state_(method_start)

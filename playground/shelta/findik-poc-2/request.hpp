@@ -1,12 +1,12 @@
-#ifndef HTTP_SERVER3_REQUEST_HPP
-#define HTTP_SERVER3_REQUEST_HPP
+#ifndef FINDIK_IO_REQUEST_HPP
+#define FINDIK_IO_REQUEST_HPP
 
 #include <string>
 #include <vector>
 #include "header.hpp"
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 /// A request received from a client.
 struct request
@@ -21,4 +21,4 @@ struct request
 } // namespace server3
 } // namespace http
 
-#endif // HTTP_SERVER3_REQUEST_HPP
+#endif // FINDIK_IO_REQUEST_HPP

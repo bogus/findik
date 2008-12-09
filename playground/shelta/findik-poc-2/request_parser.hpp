@@ -1,11 +1,11 @@
-#ifndef HTTP_SERVER3_REQUEST_PARSER_HPP
-#define HTTP_SERVER3_REQUEST_PARSER_HPP
+#ifndef FINDIK_IO_REQUEST_PARSER_HPP
+#define FINDIK_IO_REQUEST_PARSER_HPP
 
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple.hpp>
 
-namespace http {
-namespace server3 {
+namespace findik {
+namespace io {
 
 struct request;
 
@@ -83,4 +83,4 @@ private:
 } // namespace server3
 } // namespace http
 
-#endif // HTTP_SERVER3_REQUEST_PARSER_HPP
+#endif // FINDIK_IO_REQUEST_PARSER_HPP
