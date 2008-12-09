@@ -38,8 +38,8 @@ void connection::handle_read(const boost::system::error_code& e,
 
     if (result)
     {
-      request_handler_.handle_request(request_, reply_);
-      boost::asio::async_write(socket_, reply_.to_buffers(),
+      request_handler_.handle_request(request_, response_);
+      boost::asio::async_write(socket_, response_,
           strand_.wrap(
             boost::bind(&connection::handle_write, shared_from_this(),
               boost::asio::placeholders::error)));

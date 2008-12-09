@@ -58,6 +58,7 @@ private:
 
   /// The reply to be sent back to the client.
   reply reply_;
+  boost::asio::streambuf response_;
 };
 
 typedef boost::shared_ptr<connection> connection_ptr;

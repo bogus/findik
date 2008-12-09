@@ -4,10 +4,10 @@
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple.hpp>
 
+#include "request.hpp"
+
 namespace findik {
 namespace io {
-
-struct request;
 
 /// Parser for incoming requests.
 class request_parser

@@ -10,63 +10,62 @@
 namespace findik {
 namespace io {
 
-request_handler::request_handler(const std::string& doc_root)
-  : doc_root_(doc_root)
+	request_handler::request_handler(boost::asio::io_service & io_service)
+  : resolver_(io_service), io_service_(io_service)
 {
 }
 
-void request_handler::handle_request(const request& req, reply& rep)
+void request_handler::handle_request(request& req, boost::asio::streambuf & response)
 {
-  // Decode url to path.
-  std::string request_path;
-  if (!url_decode(req.uri, request_path))
-  {
-    rep = reply::stock_reply(reply::bad_request);
-    return;
-  }
+  // http://www.boost.org/doc/libs/1_37_0/doc/html/boost_asio/example/http/client/sync_client.cpp
 
-  // Request path must be absolute and not contain "..".
-  if (request_path.empty() || request_path[0] != '/'
-      || request_path.find("..") != std::string::npos)
-  {
-    rep = reply::stock_reply(reply::bad_request);
-    return;
-  }
+  boost::asio::streambuf request_;
+  std::ostream request_stream(&request_);
+  request_stream << req.method << " " << req.uri << " HTTP/" <<
+	  req.http_version_major << "." << req.http_version_minor << "\r\n";
+  for (std::size_t i = 0; i < req.headers.size(); ++i)
+	  if (req.headers[i].name == "Connection" ||
+		  req.headers[i].name == "Proxy-Connection")
+		  continue;
+	  else
+		  request_stream << req.headers[i].name << ": "
+			<< req.headers[i].value << "\r\n";
+  request_stream << "Connection: close\r\n";
+  request_stream << "\r\n";
 
-  // If path ends in slash (i.e. is a directory) then add "index.html".
-  if (request_path[request_path.size() - 1] == '/')
-  {
-    request_path += "index.html";
-  }
+  std::string server(req.host());
 
-  // Determine the file extension.
-  std::size_t last_slash_pos = request_path.find_last_of("/");
-  std::size_t last_dot_pos = request_path.find_last_of(".");
-  std::string extension;
-  if (last_dot_pos != std::string::npos && last_dot_pos > last_slash_pos)
-  {
-    extension = request_path.substr(last_dot_pos + 1);
-  }
+  boost::asio::ip::tcp::resolver::query query(server, "http");
+  boost::asio::ip::tcp::resolver::iterator endpoint_iterator =
+	  resolver_.resolve(query);
+  boost::asio::ip::tcp::resolver::iterator end;
 
-  // Open the file to send back.
-  std::string full_path = doc_root_ + request_path;
-  std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
-  if (!is)
-  {
-    rep = reply::stock_reply(reply::not_found);
-    return;
-  }
+  boost::asio::ip::tcp::socket socket(io_service_);
 
-  // Fill out the reply to be sent to the client.
-  rep.status = reply::ok;
-  char buf[512];
-  while (is.read(buf, sizeof(buf)).gcount() > 0)
-    rep.content.append(buf, is.gcount());
-  rep.headers.resize(2);
-  rep.headers[0].name = "Content-Length";
-  rep.headers[0].value = boost::lexical_cast<std::string>(rep.content.size());
-  rep.headers[1].name = "Content-Type";
-  rep.headers[1].value = mime_types::extension_to_type(extension);
+  boost::system::error_code error = boost::asio::error::host_not_found;
+    while (error && endpoint_iterator != end)
+    {
+      socket.close();
+      socket.connect(*endpoint_iterator++, error);
+    }
+
+	if (error)
+      throw boost::system::system_error(error);
+
+	boost::asio::write(socket, request_);
+
+    // Read until EOF, writing data to output as we go.
+    while (boost::asio::read(socket, response,
+		boost::asio::transfer_at_least(1), error)) 
+	{
+	}
+
+	if (error != boost::asio::error::eof)
+      throw boost::system::system_error(error);
+
+	boost::system::error_code ignored_ec;
+    socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+
 }
 
 bool request_handler::url_decode(const std::string& in, std::string& out)

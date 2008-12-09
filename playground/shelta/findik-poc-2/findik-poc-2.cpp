@@ -1,3 +1,7 @@
+// Mini Proxy: HTTP SERVER 3 example integrated with SYNC_CLIENT
+// http://www.boost.org/doc/libs/1_37_0/doc/html/boost_asio/examples.html
+// Dummy client operations, POST is not supported.
+
 #include <iostream>
 #include <string>
 #include <boost/asio.hpp>
@@ -30,19 +34,19 @@ int main(int argc, char* argv[])
   try
   {
     // Check command line arguments.
-    if (argc != 5)
+    if (argc != 4)
     {
-      std::cerr << "Usage: http_server <address> <port> <threads> <doc_root>\n";
+      std::cerr << "Usage: findik-poc-2 <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    http_server 0.0.0.0 80 1 .\n";
+      std::cerr << "    findik-poc-2 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    http_server 0::0 80 1 .\n";
+      std::cerr << "    findik-poc-2 0::0 80 1\n";
       return 1;
     }
 
     // Initialise server.
     std::size_t num_threads = boost::lexical_cast<std::size_t>(argv[3]);
-    findik::io::server s(argv[1], argv[2], argv[4], num_threads);
+    findik::io::server s(argv[1], argv[2], num_threads);
 
     // Set console control handler to allow server to be stopped.
     console_ctrl_function = boost::bind(&findik::io::server::stop, &s);
@@ -72,11 +76,11 @@ int main(int argc, char* argv[])
     // Check command line arguments.
     if (argc != 5)
     {
-      std::cerr << "Usage: http_server <address> <port> <threads> <doc_root>\n";
+      std::cerr << "Usage: findik-poc-2 <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    receiver 0.0.0.0 80 1 .\n";
+      std::cerr << "    findik-poc-2 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    receiver 0::0 80 1 .\n";
+      std::cerr << "    findik-poc-2 0::0 80 1\n";
       return 1;
     }
 
@@ -88,7 +92,7 @@ int main(int argc, char* argv[])
 
     // Run server in background thread.
     std::size_t num_threads = boost::lexical_cast<std::size_t>(argv[3]);
-    findik::io::server s(argv[1], argv[2], argv[4], num_threads);
+    findik::io::server s(argv[1], argv[2], num_threads);
     boost::thread t(boost::bind(&findik::io::server::run, &s));
 
     // Restore previous signals.

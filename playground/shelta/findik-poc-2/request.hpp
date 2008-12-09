@@ -9,13 +9,19 @@ namespace findik {
 namespace io {
 
 /// A request received from a client.
-struct request
+class request
 {
+public:
+  request();
   std::string method;
   std::string uri;
   int http_version_major;
   int http_version_minor;
   std::vector<header> headers;
+
+  std::string & host();
+private:
+  std::string host_;
 };
 
 } // namespace server3
