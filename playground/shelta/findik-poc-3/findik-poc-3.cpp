@@ -36,11 +36,11 @@ int main(int argc, char* argv[])
     // Check command line arguments.
     if (argc != 4)
     {
-      std::cerr << "Usage: findik-poc-2 <address> <port> <threads>\n";
+      std::cerr << "Usage: findik-poc-3 <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    findik-poc-2 0.0.0.0 80 1\n";
+      std::cerr << "    findik-poc-3 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    findik-poc-2 0::0 80 1\n";
+      std::cerr << "    findik-poc-3 0::0 80 1\n";
       return 1;
     }
 
@@ -76,11 +76,11 @@ int main(int argc, char* argv[])
     // Check command line arguments.
     if (argc != 5)
     {
-      std::cerr << "Usage: findik-poc-2 <address> <port> <threads>\n";
+      std::cerr << "Usage: findik-poc-3 <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    findik-poc-2 0.0.0.0 80 1\n";
+      std::cerr << "    findik-poc-3 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    findik-poc-2 0::0 80 1\n";
+      std::cerr << "    findik-poc-3 0::0 80 1\n";
       return 1;
     }
 
