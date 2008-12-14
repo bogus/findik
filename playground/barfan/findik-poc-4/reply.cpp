@@ -39,6 +39,8 @@ const std::string bad_gateway =
   "HTTP/1.0 502 Bad Gateway\r\n";
 const std::string service_unavailable =
   "HTTP/1.0 503 Service Unavailable\r\n";
+const std::string filtered =
+  "HTTP/1.0 200 OK\r\n";
 
 boost::asio::const_buffer to_buffer(reply::status_type status)
 {
@@ -76,6 +78,8 @@ boost::asio::const_buffer to_buffer(reply::status_type status)
     return boost::asio::buffer(bad_gateway);
   case reply::service_unavailable:
     return boost::asio::buffer(service_unavailable);
+  case reply::filtered:
+    return boost::asio::buffer(filtered);
   default:
     return boost::asio::buffer(internal_server_error);
   }
@@ -186,6 +190,12 @@ const char service_unavailable[] =
   "<body><h1>503 Service Unavailable</h1></body>"
   "</html>";
 
+const char filtered[] =
+  "<html>"
+  "<head><title>FILTERED BY FINDIK</title></head>"
+  "<body><h1>THIS SITE IS FILTERED BY FINDIK</h1></body>"
+  "</html>";
+
 std::string to_string(reply::status_type status)
 {
   switch (status)
@@ -222,6 +232,8 @@ std::string to_string(reply::status_type status)
     return bad_gateway;
   case reply::service_unavailable:
     return service_unavailable;
+  case reply::filtered:
+    return filtered;
   default:
     return internal_server_error;
   }

@@ -43,22 +43,28 @@ namespace findik {
 
 		void response::to_streambuf(boost::asio::streambuf &sbuf_)
 		{
-		std::ostream response_stream(&sbuf_);
-		
-		response_stream << "HTTP/" << http_version_major << "." 
-			<< http_version_minor << " " << status_code << " "
-			<< status_line << "\r\n";
+			std::ostream response_stream(&sbuf_);
+			
+			response_stream << "HTTP/" << http_version_major << "." 
+				<< http_version_minor << " " << status_code << " "
+				<< status_line << "\r\n";
 
-		for (std::size_t i = 0; i < headers.size(); ++i)
-			response_stream << headers[i].name << ": "
-						<< headers[i].value << "\r\n";
+			for (std::size_t i = 0; i < headers.size(); ++i)
+				response_stream << headers[i].name << ": "
+							<< headers[i].value << "\r\n";
 
-		response_stream << "Connection: close\r\n";
-		response_stream << "\r\n";
+			response_stream << "Connection: close\r\n";
+			response_stream << "\r\n";
 
-		if (has_content())
-			response_stream << content_raw();
-
+			if (has_content()) {
+				/*
+				for (size_t i = 0; i < headers.size(); ++i)
+					if (headers[i].name == "Content-Type" && 
+						headers[i].value == "text/html; charset=UTF-8")
+						printf("%s",content_raw().c_str());
+				*/
+				response_stream << content_raw();
+			}
 		}
 
 		void response::push_to_content(char input)

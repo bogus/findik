@@ -30,7 +30,8 @@ struct reply
     internal_server_error = 500,
     not_implemented = 501,
     bad_gateway = 502,
-    service_unavailable = 503
+    service_unavailable = 503,
+	filtered = 100
   } status;
 
   /// The headers to be included in the reply.

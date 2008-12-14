@@ -36,13 +36,10 @@ namespace findik {
 				std::auto_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT domain from blacklist_domain where domain='"+hostname+"'"));
 				
 				if(res->rowsCount() > 0)
-				{
-					res->next();
-					std::cout << "\t... MySQL replies: " << res->getString("domain") << std::endl;
 					return false;
-				}
+
 			} catch (sql::SQLException &e) {
-				std::cout << "SELECT domain from blacklist_domain where domain="+hostname << e.what() << std::endl;
+				std::cout << "ERROR" << e.what() << std::endl;
 				return false;
 			}
 			return true;
@@ -58,12 +55,10 @@ namespace findik {
 				std::auto_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT url from blacklist_url where url='"+url+"'"));
 				
 				if(res->rowsCount() > 0)
-				{
-					res->next();
-					std::cout << "\t... MySQL replies: " << res->getString("url") << std::endl;
 					return false;
-				}
+
 			} catch (sql::SQLException &e) {
+				std::cout << "ERROR" << e.what() << std::endl;
 				return false;
 			}
 			return true;

@@ -11,7 +11,10 @@ connection::connection(boost::asio::io_service& io_service)
 	r_socket_(io_service),
 	resolver_(io_service),
 	response_(request_)
+
 {
+	manager_ = new mysqldbmanager();
+	manager_->connectDb("localhost","findik","root","123123");
 }
 
 boost::asio::ip::tcp::socket& connection::l_socket()
@@ -44,6 +47,19 @@ void connection::handle_read_request(const boost::system::error_code& e,
 
     if (result)
     {
+		
+		request_filter *filter = new request_filter(manager_, &request_); 
+		if(!filter->request_chain_filter())
+		{
+			reply_ = reply::stock_reply(reply::filtered);
+			  boost::asio::async_write(l_socket_, reply_.to_buffers(),
+				  strand_.wrap(
+					boost::bind(&connection::handle_write_response, shared_from_this(),
+					  boost::asio::placeholders::error)));
+			free(filter);
+			return;
+		}
+		free(filter);
 
 		boost::asio::ip::tcp::resolver::query query_(
 			request_.host(), "http"

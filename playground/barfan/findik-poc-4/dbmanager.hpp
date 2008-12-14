@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 namespace findik {
+
 	class dbmanager {
 
 	private:
