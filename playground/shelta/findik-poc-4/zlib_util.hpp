@@ -60,15 +60,6 @@ namespace findik {
 
 			return Z_OK;
 
-
-
-
-
-
-
-
-
-
 		}
 
 	}
