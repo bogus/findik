@@ -68,10 +68,6 @@ namespace findik {
 
 		const std::string & response::content_raw()
 		{
-			for (size_t i = 0; i < headers.size(); ++i)
-				if (headers[i].name == "Content-Type" &&
-					headers[i].value == "text/html")
-					std::cout << content_raw_ << std::endl;
 			return content_raw_;
 		}
 
