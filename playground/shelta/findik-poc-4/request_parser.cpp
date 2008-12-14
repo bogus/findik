@@ -1,17 +1,25 @@
+#include <string>
+#include <cctype>
+
 #include "request_parser.hpp"
 #include "request.hpp"
+
+#include "parser_util.hpp"
+
+#include <iostream>
 
 namespace findik {
 namespace io {
 
 request_parser::request_parser()
-  : state_(method_start)
+  : state_(method_start), method_("")
 {
 }
 
 void request_parser::reset()
 {
   state_ = method_start;
+  method_ = "";
 }
 
 boost::tribool request_parser::consume(request& req, char input)
@@ -26,12 +34,32 @@ boost::tribool request_parser::consume(request& req, char input)
     else
     {
       state_ = method;
-      req.method.push_back(input);
+      method_.push_back(toupper(input));
       return boost::indeterminate;
     }
   case method:
     if (input == ' ')
     {
+		if (method_ == "GET")
+			req.method = findik::io::request::method_type::get;
+		else if (method_ == "POST")
+			req.method = findik::io::request::method_type::post;
+		else if (method_ == "HEAD")
+			req.method = findik::io::request::method_type::head;
+		else if (method_ == "PUT")
+			req.method = findik::io::request::method_type::put;
+		else if (method_ == "DELETE")
+			req.method = findik::io::request::method_type::delete_;
+		else if (method_ == "TRACE")
+			req.method = findik::io::request::method_type::trace;
+		else if (method_ == "OPTIONS")
+			req.method = findik::io::request::method_type::options;
+		else if (method_ == "CONNECT")
+			req.method = findik::io::request::method_type::connect;
+		else 
+			return false;
+		method_ = "";
+
       state_ = uri;
       return boost::indeterminate;
     }
@@ -41,34 +69,32 @@ boost::tribool request_parser::consume(request& req, char input)
     }
     else
     {
-      req.method.push_back(input);
+      method_.push_back(toupper(input));
       return boost::indeterminate;
     }
   case uri_start:
-    if (is_ctl(input))
-    {
-      return false;
-    }
-    else
-    {
-      state_ = uri;
-      req.uri.push_back(input);
-      return boost::indeterminate;
-    }
+	  if (is_uri_char(input))
+	  {
+		  state_ = uri;
+		  req.uri.push_back(input);
+		  return boost::indeterminate;
+	  }
+	  else
+		  return false;
   case uri:
     if (input == ' ')
     {
       state_ = http_version_h;
       return boost::indeterminate;
     }
-    else if (is_ctl(input))
+	else if (is_uri_char(input))
     {
-      return false;
+		req.uri.push_back(input);
+        return boost::indeterminate;
     }
     else
     {
-      req.uri.push_back(input);
-      return boost::indeterminate;
+      return false;
     }
   case http_version_h:
     if (input == 'H')
@@ -277,39 +303,28 @@ boost::tribool request_parser::consume(request& req, char input)
       return false;
     }
   case expecting_newline_3:
-    return (input == '\n');
+	if (input != '\n')
+		return false;
+
+	if (req.has_content()) {
+		if (req.content_length() == 0)
+			return true;
+
+		state_ = content;
+		
+		return boost::indeterminate;
+	}
+	else
+		return true;
+  case content:
+	  req.push_to_content(input);
+	  if (req.content_raw().size() < req.content_length())
+		return boost::indeterminate;
+	else
+		return true;
   default:
     return false;
   }
-}
-
-bool request_parser::is_char(int c)
-{
-  return c >= 0 && c <= 127;
-}
-
-bool request_parser::is_ctl(int c)
-{
-  return c >= 0 && c <= 31 || c == 127;
-}
-
-bool request_parser::is_tspecial(int c)
-{
-  switch (c)
-  {
-  case '(': case ')': case '<': case '>': case '@':
-  case ',': case ';': case ':': case '\\': case '"':
-  case '/': case '[': case ']': case '?': case '=':
-  case '{': case '}': case ' ': case '\t':
-    return true;
-  default:
-    return false;
-  }
-}
-
-bool request_parser::is_digit(int c)
-{
-  return c >= '0' && c <= '9';
 }
 
 } // namespace server3

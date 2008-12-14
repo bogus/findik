@@ -34,19 +34,29 @@ int main(int argc, char* argv[])
   try
   {
     // Check command line arguments.
-    if (argc != 4)
+	  
+    if (argc != 4 && argc != 1)
     {
-      std::cerr << "Usage: findik-poc-3 <address> <port> <threads>\n";
+      std::cerr << "Usage: findik-poc-4 <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    findik-poc-3 0.0.0.0 80 1\n";
+      std::cerr << "    findik-poc-4 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    findik-poc-3 0::0 80 1\n";
+      std::cerr << "    findik-poc-4 0::0 80 1\n";
       return 1;
     }
 
+	std::string address("0.0.0.0");
+	std::string port("8080");
+	std::size_t num_threads(10);
+
+	if (argc == 4) {
+		address = argv[1];
+		port = argv[2];
+		num_threads = boost::lexical_cast<std::size_t>(argv[3]);
+	}
+
     // Initialise server.
-    std::size_t num_threads = boost::lexical_cast<std::size_t>(argv[3]);
-    findik::io::server s(argv[1], argv[2], num_threads);
+    findik::io::server s(address, port, num_threads);
 
     // Set console control handler to allow server to be stopped.
     console_ctrl_function = boost::bind(&findik::io::server::stop, &s);
@@ -54,6 +64,7 @@ int main(int argc, char* argv[])
 
     // Run the server until stopped.
     s.run();
+	
   }
   catch (std::exception& e)
   {
@@ -74,13 +85,13 @@ int main(int argc, char* argv[])
   try
   {
     // Check command line arguments.
-    if (argc != 5)
+    if (argc != 4 && argc != 1)
     {
-      std::cerr << "Usage: findik-poc-3 <address> <port> <threads>\n";
+      std::cerr << "Usage: findik-poc-4 <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    findik-poc-3 0.0.0.0 80 1\n";
+      std::cerr << "    findik-poc-4 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    findik-poc-3 0::0 80 1\n";
+      std::cerr << "    findik-poc-4 0::0 80 1\n";
       return 1;
     }
 
@@ -91,8 +102,18 @@ int main(int argc, char* argv[])
     pthread_sigmask(SIG_BLOCK, &new_mask, &old_mask);
 
     // Run server in background thread.
-    std::size_t num_threads = boost::lexical_cast<std::size_t>(argv[3]);
-    findik::io::server s(argv[1], argv[2], num_threads);
+    std::string address("0.0.0.0");
+	std::string port("8080");
+	std::size_t num_threads(10);
+
+	if (argc == 4) {
+		address = argv[1];
+		port = argv[2];
+		num_threads = boost::lexical_cast<std::size_t>(argv[3]);
+	}
+
+    // Initialise server.
+    findik::io::server s(address, port, num_threads);
     boost::thread t(boost::bind(&findik::io::server::run, &s));
 
     // Restore previous signals.

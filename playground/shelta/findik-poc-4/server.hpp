@@ -7,7 +7,6 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include "connection.hpp"
-#include "request_handler_.hpp"
 
 namespace findik {
 namespace io {
@@ -43,9 +42,6 @@ private:
 
   /// The next connection to be accepted.
   connection_ptr new_connection_;
-
-  /// The handler for all incoming requests.
-  request_handler request_handler_;
 };
 
 } // namespace server3

@@ -8,8 +8,9 @@
 #include <boost/enable_shared_from_this.hpp>
 #include "reply.hpp"
 #include "request.hpp"
-#include "request_handler_.hpp"
+#include "response.hpp"
 #include "request_parser.hpp"
+#include "response_parser.hpp"
 
 namespace findik {
 namespace io {
@@ -21,44 +22,66 @@ class connection
 {
 public:
   /// Construct a connection with the given io_service.
-  explicit connection(boost::asio::io_service& io_service,
-      request_handler& handler);
+  explicit connection(boost::asio::io_service& io_service);
 
-  /// Get the socket associated with the connection.
-  boost::asio::ip::tcp::socket& socket();
+  /// Get the socket associated with the local connection.
+  boost::asio::ip::tcp::socket& l_socket();
+
+  /// Get the socket associated with the remote connection.
+  boost::asio::ip::tcp::socket& r_socket();
 
   /// Start the first asynchronous operation for the connection.
   void start();
 
 private:
   /// Handle completion of a read operation.
-  void handle_read(const boost::system::error_code& e,
+  void handle_read_request(const boost::system::error_code& e,
       std::size_t bytes_transferred);
 
   /// Handle completion of a write operation.
-  void handle_write(const boost::system::error_code& e);
+  void handle_write_response(const boost::system::error_code& e);
+
+  void handle_resolve_remote(const boost::system::error_code& err,
+	  boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+
+  void handle_connect_remote(const boost::system::error_code& err,
+	  boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+
+  void handle_write_request(const boost::system::error_code& err);
+
+  void handle_read_response(const boost::system::error_code& e,
+      std::size_t bytes_transferred);
 
   /// Strand to ensure the connection's handlers are not called concurrently.
   boost::asio::io_service::strand strand_;
 
-  /// Socket for the connection.
-  boost::asio::ip::tcp::socket socket_;
+  boost::asio::ip::tcp::resolver resolver_;
 
-  /// The handler used to process the incoming request.
-  request_handler& request_handler_;
+  /// Socket for the local connection.
+  boost::asio::ip::tcp::socket l_socket_;
+
+  /// Socket for the remote connection.
+  boost::asio::ip::tcp::socket r_socket_;
 
   /// Buffer for incoming data.
   boost::array<char, 8192> buffer_;
 
   /// The incoming request.
   request request_;
+  boost::asio::streambuf request_sbuf_;
+
+  /// The incoming response.
+  response response_;
+  boost::asio::streambuf response_sbuf_;
 
   /// The parser for the incoming request.
   request_parser request_parser_;
 
+  /// The parser for the incoming response.
+  response_parser response_parser_;
+
   /// The reply to be sent back to the client.
   reply reply_;
-  boost::asio::streambuf response_;
 };
 
 typedef boost::shared_ptr<connection> connection_ptr;

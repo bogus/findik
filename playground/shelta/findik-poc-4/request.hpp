@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <boost/asio.hpp>
+
 #include "header.hpp"
 
 namespace findik {
@@ -13,15 +15,50 @@ class request
 {
 public:
   request();
-  std::string method;
+  
+  enum method_type {
+	  get,
+	  post,
+	  head,
+	  put,
+	  delete_,
+	  trace,
+	  options,
+	  connect
+  } method;
+
   std::string uri;
-  int http_version_major;
-  int http_version_minor;
+  unsigned int http_version_major;
+  unsigned int http_version_minor;
   std::vector<header> headers;
 
+  
+
   std::string & host();
+  unsigned int port ();
+
+  unsigned int content_length();
+
+  void to_streambuf(boost::asio::streambuf & sbuf_);
+
+  bool has_content();
+
+  const std::vector<char> & content_raw();
+
+  void push_to_content(char input);
+
+
 private:
-  std::string host_;
+
+	std::vector<char> content_raw_;
+
+	boost::asio::streambuf content_;
+
+	std::string host_;
+
+	unsigned int port_;
+
+	unsigned int content_length_;
 };
 
 } // namespace server3
