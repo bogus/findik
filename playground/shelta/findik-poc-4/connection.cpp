@@ -44,7 +44,6 @@ void connection::handle_read_request(const boost::system::error_code& e,
 
     if (result)
     {
-
 		boost::asio::ip::tcp::resolver::query query_(
 			request_.host(), "http"
 			);
@@ -71,11 +70,6 @@ void connection::handle_read_request(const boost::system::error_code& e,
               boost::asio::placeholders::bytes_transferred)));
     }
   }
-
-  // If an error occurs then no new asynchronous operations are started. This
-  // means that all shared_ptr references to the connection object will
-  // disappear and the object will be destroyed automatically after this
-  // handler returns. The connection class's destructor closes the socket.
 }
 
   void connection::handle_resolve_remote(const boost::system::error_code& err,
@@ -133,11 +127,6 @@ void connection::handle_read_request(const boost::system::error_code& e,
         boost::bind(&connection::handle_read_response, shared_from_this(),
           boost::asio::placeholders::error,
           boost::asio::placeholders::bytes_transferred)));
-		/*
-      boost::asio::async_read_until(r_socket_, response_, "\r\n",
-          boost::bind(&client::handle_read_status_line, this,
-            boost::asio::placeholders::error));
-			*/
     }
     else
     {

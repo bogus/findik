@@ -1,5 +1,7 @@
 #include <boost/lexical_cast.hpp>
 
+#include "zlib_util.hpp"
+
 #include "response.hpp"
 
 namespace findik {

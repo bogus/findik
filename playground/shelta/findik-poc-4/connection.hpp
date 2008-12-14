@@ -6,6 +6,9 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+
+#include "findik_config.hpp"
+
 #include "reply.hpp"
 #include "request.hpp"
 #include "response.hpp"
@@ -64,7 +67,7 @@ private:
   boost::asio::ip::tcp::socket r_socket_;
 
   /// Buffer for incoming data.
-  boost::array<char, 8192> buffer_;
+  boost::array<char, __FC_SOCKET_BUFFER_SIZE> buffer_;
 
   /// The incoming request.
   request request_;
