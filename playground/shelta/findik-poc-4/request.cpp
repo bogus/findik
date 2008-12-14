@@ -67,8 +67,7 @@ namespace io {
 		request_stream << "\r\n";
 
 		if (has_content())
-			for (std::size_t i = 0; i < content_raw().size(); ++i )
-				request_stream.put(content_raw()[i]);
+			request_stream << content_raw();
 	}
 
 	bool request::has_content()
@@ -97,7 +96,7 @@ namespace io {
 	}
 
 
-	const std::vector<char> & request::content_raw()
+	const std::string & request::content_raw()
 	{
 		return content_raw_;
 	}

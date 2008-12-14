@@ -43,14 +43,14 @@ public:
 
   bool has_content();
 
-  const std::vector<char> & content_raw();
+  const std::string & content_raw();
 
   void push_to_content(char input);
 
 
 private:
 
-	std::vector<char> content_raw_;
+	std::string content_raw_;
 
 	boost::asio::streambuf content_;
 

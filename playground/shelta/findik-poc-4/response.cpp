@@ -57,8 +57,8 @@ namespace findik {
 		response_stream << "\r\n";
 
 		if (has_content())
-			for (std::size_t i = 0; i < content_raw().size(); ++i )
-				response_stream.put(content_raw()[i]);
+			response_stream << content_raw();
+
 		}
 
 		void response::push_to_content(char input)
@@ -66,7 +66,7 @@ namespace findik {
 			content_raw_.push_back(input);
 		}
 
-		const std::vector<char> & response::content_raw()
+		const std::string & response::content_raw()
 		{
 			return content_raw_;
 		}

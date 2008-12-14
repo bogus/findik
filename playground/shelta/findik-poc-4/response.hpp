@@ -96,7 +96,7 @@ public:
 
   bool has_content();
 
-  const std::vector<char> & content_raw();
+  const std::string & content_raw();
 
   request & get_request();
 
@@ -104,7 +104,7 @@ public:
 
 private:
   
-	std::vector<char> content_raw_;
+	std::string content_raw_;
 
 	unsigned int content_length_;
 
