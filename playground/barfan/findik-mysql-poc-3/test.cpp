@@ -1,10 +1,11 @@
-#include "MysqlDbManager.h"
+#include "mysqldbmanager.hpp"
 
 using namespace std;
 
 int main() {
 
-	DbManager *manager = new MysqlDbManager();
+	
+	findik::dbmanager *manager = new findik::mysqldbmanager();
 	manager->contentQuery("ali");
 
 	char c;

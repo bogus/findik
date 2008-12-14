@@ -6,18 +6,21 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
-
-class mysqldbmanager : public dbmanager {
+namespace findik {
 	
-public:
-	mysqldbmanager();
-	void connectDb(std::string host, std::string db, 
-		std::string username, std::string password);
-	bool hostnameQuery(std::string hostname);
-	bool contentQuery(std::string content);
-	bool hostnameRegexQuery(std::string hostname);
-	bool contentRegexQuery(std::string content);
+		class mysqldbmanager : public dbmanager {
+			
+		public:
+			mysqldbmanager();
+			void connectDb(std::string host, std::string db, 
+				std::string username, std::string password);
+			bool hostnameQuery(std::string hostname);
+			bool contentQuery(std::string content);
+			bool hostnameRegexQuery(std::string hostname);
+			bool contentRegexQuery(std::string content);
 
-private:
+		private:
 
-};
+		};
+	
+}
