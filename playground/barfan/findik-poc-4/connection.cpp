@@ -47,8 +47,7 @@ void connection::handle_read_request(const boost::system::error_code& e,
 
     if (result)
     {
-		
-		request_filter *filter = new request_filter(manager_, &request_); 
+		filter::request_filter *filter = new filter::request_filter(manager_, &request_); 
 		if(!filter->request_chain_filter())
 		{
 			reply_ = reply::stock_reply(reply::filtered);
