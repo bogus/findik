@@ -1,26 +1,26 @@
-#include "MysqlDbManager.h"
+#include "mysqldbmanager.hpp"
 
-MysqlDbManager::MysqlDbManager() {
-
-}
-
-void MysqlDbManager::connectDb(std::string host, std::string db, std::string username, std::string password) {
+mysqldbmanager::mysqldbmanager() {
 
 }
 
-bool MysqlDbManager::contentQuery(std::string content) {
+void mysqldbmanager::connectDb(std::string host, std::string db, std::string username, std::string password) {
+
+}
+
+bool mysqldbmanager::contentQuery(std::string content) {
 	std::cout << content << std::endl;
 	return true;
 }
 
-bool MysqlDbManager::contentRegexQuery(std::string content) {
+bool mysqldbmanager::contentRegexQuery(std::string content) {
 	return true;
 }
 
-bool MysqlDbManager::hostnameQuery(std::string hostname) {
+bool mysqldbmanager::hostnameQuery(std::string hostname) {
 	return true;
 }
 
-bool MysqlDbManager::hostnameRegexQuery(std::string hostname) {
+bool mysqldbmanager::hostnameRegexQuery(std::string hostname) {
 	return true;
 }
