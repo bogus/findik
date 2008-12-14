@@ -102,15 +102,25 @@ public:
 
   void push_to_content(char input);
 
+  const std::string & content_type();
+
+  // only applicable for text mimetypes
+  const std::string & content_charset();
+
 private:
   
 	std::string content_raw_;
 
 	unsigned int content_length_;
 
-  findik::io::request & request_;
+	std::string content_type_;
 
-  boost::tribool is_chunked_;
+	std::string content_charset_;
+
+	findik::io::request & request_;
+
+	boost::tribool is_chunked_;
+
 };
 
 } // namespace server3

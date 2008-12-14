@@ -60,7 +60,6 @@ namespace findik {
 
 		if (has_content())
 			response_stream << content_raw();
-
 		}
 
 		void response::push_to_content(char input)
@@ -71,6 +70,36 @@ namespace findik {
 		const std::string & response::content_raw()
 		{
 			return content_raw_;
+		}
+
+		const std::string & response::content_type()
+		{
+			if (content_type_ == "")
+				for (std::size_t i = 0; i < headers.size(); ++i)
+					if (headers[i].name == "Content-Type") {
+						std::size_t pos_ = headers[i].value.find_first_of(';');
+						if (pos_ == std::string::npos) {
+							content_type_ = headers[i].value;
+							break;
+						}
+						
+						content_type_ = headers[i].value.substr(0,pos_);
+						pos_ = headers[i].value.find("charset=");
+						
+						if (pos_ == std::string::npos)
+							break;
+
+						content_charset_ = headers[i].value.substr(pos_ + 8);
+					}
+
+			return content_type_;
+		}
+
+		const std::string & response::content_charset()
+		{
+			if (content_charset_ == "")
+				content_type();
+			return content_charset_;
 		}
 
 
