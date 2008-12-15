@@ -9,7 +9,8 @@ namespace findik {
 
 		response::response(request & request__) : 
 			content_length_(0),
-			request_(request__)
+			request_(request__),
+			content_encoding_(indeterminate)
 		{
 		}
 
@@ -62,9 +63,11 @@ namespace findik {
 			response_stream << content_raw();
 		}
 
-		void response::push_to_content(char input)
+		void response::push_to_content(char input, bool is_chunked_data)
 		{
 			content_raw_.push_back(input);
+			if (is_chunked() && is_chunked_data)
+				content_chunked_.push_back(input);
 		}
 
 		const std::string & response::content_raw()
@@ -74,7 +77,7 @@ namespace findik {
 
 		const std::string & response::content_type()
 		{
-			if (content_type_ == "")
+			if (content_type_.empty())
 				for (std::size_t i = 0; i < headers.size(); ++i)
 					if (headers[i].name == "Content-Type") {
 						std::size_t pos_ = headers[i].value.find_first_of(';');
@@ -97,12 +100,58 @@ namespace findik {
 
 		const std::string & response::content_charset()
 		{
-			if (content_charset_ == "")
+			if (content_charset_.empty())
 				content_type();
 			return content_charset_;
 		}
 
+		response::content_encoding_type response::content_encoding()
+		{
+			if (content_encoding_ == indeterminate) {
+				std::size_t i;
+				for (i = 0; i < headers.size(); ++i)
+					if (headers[i].name == "Content-Encoding") {
+						if (headers[i].value == "")
+							content_encoding_ = none;
+						else if (headers[i].value == "gzip")
+							content_encoding_ = gzip;
+						else if (headers[i].value == "deflate")
+							content_encoding_ = deflate;
+						else
+							content_encoding_ = other;
+						break;
+					}
+				if (i == headers.size())
+					content_encoding_ = none;
+			}
 
+			return content_encoding_;
+		}
+
+		const std::string & response::content_data()
+		{
+			if (is_chunked())
+				return content_chunked_;
+			else
+				return content_raw_;
+		}
+
+		const std::string & response::content()
+		{
+			switch (content_encoding())
+			{
+			case none:
+				return content_data();
+			case gzip:
+			case deflate:
+				if (content_uncompressed_.empty())
+					if (zlib_inflate(content_data(), content_uncompressed_) != Z_OK)
+						content_uncompressed_.clear();
+				return content_uncompressed_;
+			default:
+				return content_data();
+			}
+		}
 	} // end of namespace io
 } // end of namespace findik
 

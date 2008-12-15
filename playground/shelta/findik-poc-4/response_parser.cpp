@@ -19,9 +19,9 @@ response_parser::response_parser()
 void response_parser::reset()
 {
   state_ = http_version_start;
-  status_code_ = "";
+  status_code_.clear();
   chunked_line_length_ = 0;
-  chunked_line_length_str_ = "";
+  chunked_line_length_str_.clear();
 }
 
 boost::tribool response_parser::consume(response& resp, char input)
@@ -143,7 +143,7 @@ boost::tribool response_parser::consume(response& resp, char input)
 	  if (input == ' ')
 	  {
 		  resp.status_code = (response::status_type) boost::lexical_cast< unsigned int >(status_code_);
-		  status_code_ = "";
+		  status_code_.clear();
 		  state_ = status_line_start;
 		  return boost::indeterminate;
 	  }
@@ -306,7 +306,7 @@ boost::tribool response_parser::consume(response& resp, char input)
 	  {
 		  state_ = chunked_size;
 		  chunked_line_length_str_.push_back(input);
-		  resp.push_to_content(input);
+		  resp.push_to_content(input,false);
 		  return boost::indeterminate;
 	  }
 	  else
@@ -315,20 +315,20 @@ boost::tribool response_parser::consume(response& resp, char input)
 	  if (is_hex(input))
 	  {
 		  chunked_line_length_str_.push_back(input);
-		  resp.push_to_content(input);
+		  resp.push_to_content(input,false);
 		  return boost::indeterminate;
 	  }
 	  else if (input == 32) // some implementations use paddings (0x20) between CRLF and size
 	  {
-		  resp.push_to_content(input);
+		  resp.push_to_content(input,false);
 		  return boost::indeterminate;
 	  }
 	  else if (input == '\r')
 	  {
-		  resp.push_to_content(input);
+		  resp.push_to_content(input,false);
 		  chunked_line_length_ = 
 			  hex2int(chunked_line_length_str_);
-		  chunked_line_length_str_ = "";
+		  chunked_line_length_str_.clear();
 		  state_ = chunked_newline_1;
 		  return boost::indeterminate;
 	  } else
@@ -336,7 +336,7 @@ boost::tribool response_parser::consume(response& resp, char input)
   case chunked_newline_1:
 	  if (input == '\n')
 	  {
-		  resp.push_to_content(input);
+		  resp.push_to_content(input,false);
 		  if (chunked_line_length_ == 0)
 			  return true;
 		  state_ = chunked_line;
@@ -355,7 +355,7 @@ boost::tribool response_parser::consume(response& resp, char input)
   case chunked_newline_2:
 	  if (input == '\r')
 	  {
-		  resp.push_to_content(input);
+		  resp.push_to_content(input,false);
 		  state_ = chunked_newline_3;
 		  return boost::indeterminate;
 	  }
@@ -364,7 +364,7 @@ boost::tribool response_parser::consume(response& resp, char input)
   case chunked_newline_3:
 	  if (input == '\n')
 	  {
-		  resp.push_to_content(input);
+		  resp.push_to_content(input,false);
 		  state_ = chunked_size_start;
 		  return boost::indeterminate;
 	  }

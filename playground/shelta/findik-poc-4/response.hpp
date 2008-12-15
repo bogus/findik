@@ -83,6 +83,14 @@ public:
 	not_extended = 510
   } status_code;
 
+  enum content_encoding_type {
+	gzip,
+	deflate,
+	none,
+	other,
+	indeterminate
+  };
+
   std::string status_line;
   unsigned int http_version_major;
   unsigned int http_version_minor;
@@ -98,16 +106,24 @@ public:
 
   const std::string & content_raw();
 
+  const std::string & content();
+
   request & get_request();
 
-  void push_to_content(char input);
+  void push_to_content(char input, bool is_chunked_data = true);
 
   const std::string & content_type();
 
   // only applicable for text mimetypes
   const std::string & content_charset();
 
+  content_encoding_type content_encoding();
+
 private:
+
+	std::string content_uncompressed_;
+
+	std::string content_chunked_;
   
 	std::string content_raw_;
 
@@ -120,6 +136,10 @@ private:
 	findik::io::request & request_;
 
 	boost::tribool is_chunked_;
+
+	content_encoding_type content_encoding_;
+
+	const std::string & content_data();
 
 };
 

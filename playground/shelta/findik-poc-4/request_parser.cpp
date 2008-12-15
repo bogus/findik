@@ -19,7 +19,7 @@ request_parser::request_parser()
 void request_parser::reset()
 {
   state_ = method_start;
-  method_ = "";
+  method_.clear();
 }
 
 boost::tribool request_parser::consume(request& req, char input)
@@ -58,7 +58,7 @@ boost::tribool request_parser::consume(request& req, char input)
 			req.method = findik::io::request::method_type::connect;
 		else 
 			return false;
-		method_ = "";
+		method_.clear();
 
       state_ = uri;
       return boost::indeterminate;

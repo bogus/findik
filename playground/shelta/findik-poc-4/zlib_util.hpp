@@ -7,16 +7,18 @@
 
 #include <string>
 
+#include <iostream>
+
 namespace findik {
 	namespace io {
 
 		int zlib_inflate(const std::string & src_, std::string & dest_) {
 
-			int ret, flush;
-		    unsigned int have;
+			int ret = 0;
+		    unsigned int have = 0;
 			z_stream strm;
 
-			std::stringstream dstream_(dest_);
+			dest_.clear();
 
 			unsigned char buffer_[__FC_ZLIB_BUFFER_SIZE];
 
@@ -24,42 +26,54 @@ namespace findik {
 			strm.zalloc = Z_NULL;
 			strm.zfree = Z_NULL;
 			strm.opaque = Z_NULL;
-			ret = inflateInit(&strm);
+
+			strm.avail_in = 0;
+		    strm.next_in = Z_NULL;
+
+			ret = inflateInit2(&strm, 47);
+
 			if (ret != Z_OK)
 				return ret;
 
 		    /* uncompress until end of file */
 		    do {
 				strm.avail_in = src_.size();
-				strm.next_in = (unsigned char *) src_.c_str();
+				strm.next_in = (unsigned char *) src_.data();
+
+				if (strm.avail_in == 0)
+		            break;
 
 				do {
 					strm.avail_out = __FC_ZLIB_BUFFER_SIZE;
 					strm.next_out = buffer_;
 
-					ret = inflate(&strm, flush); /* no bad return value */
-					if (ret == Z_STREAM_ERROR)  /* state not clobbered */
-						return ret;
+					ret = inflate(&strm, Z_NO_FLUSH); /* no bad return value */
 					
+					switch (ret) 
+					{
+						case Z_STREAM_ERROR:
+							return ret;
+						case Z_NEED_DICT:
+							ret = Z_DATA_ERROR;     /* and fall through */
+						case Z_DATA_ERROR: 
+						case Z_MEM_ERROR:
+							(void)inflateEnd(&strm);
+							return ret;
+					}
+
 					have = __FC_ZLIB_BUFFER_SIZE - strm.avail_out;
 					
-					dstream_.write((const char *)buffer_,have);
+					dest_.append((const char *)buffer_, have);
+
 				} while (strm.avail_out == 0);
 
-				if (strm.avail_in != 0) /* all input will be used */
-					return Z_ERRNO;
-
 				/* done when last data in file processed */
-			} while (flush != Z_FINISH);
-
-			if (ret != Z_STREAM_END)  /* stream will be complete */
-				return Z_ERRNO;
+			} while (ret != Z_STREAM_END);
 
 			/* clean up and return */
 		    (void)inflateEnd(&strm);
 
-			return Z_OK;
-
+			return ret == Z_STREAM_END ? Z_OK : Z_DATA_ERROR;
 		}
 
 	}
