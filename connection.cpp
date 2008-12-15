@@ -12,6 +12,8 @@ connection::connection(boost::asio::io_service& io_service)
 	resolver_(io_service),
 	response_(request_)
 {
+	manager_ = dbmanager::pointer(new mysqldbmanager());
+	manager_->connectDb("localhost","findik","root","");
 }
 
 boost::asio::ip::tcp::socket& connection::l_socket()
@@ -44,14 +46,29 @@ void connection::handle_read_request(const boost::system::error_code& e,
 
     if (result)
     {
-		boost::asio::ip::tcp::resolver::query query_(
-			request_.host(), "http"
-			);
+
+		filter::request_filter filter(manager_, request_);
 		
-		resolver_.async_resolve(query_,
-			boost::bind(&connection::handle_resolve_remote, shared_from_this(),
-			  boost::asio::placeholders::error,
-			  boost::asio::placeholders::iterator));
+		if(!filter.request_chain_filter())
+		{
+			reply_ = reply::stock_reply(reply::filtered);
+			
+			boost::asio::async_write(l_socket_, reply_.to_buffers(),
+				strand_.wrap(
+					boost::bind(&connection::handle_write_response, shared_from_this(),
+					boost::asio::placeholders::error)));
+		}
+		else
+		{
+			boost::asio::ip::tcp::resolver::query query_(
+				request_.host(), "http"
+				);
+			
+			resolver_.async_resolve(query_,
+				boost::bind(&connection::handle_resolve_remote, shared_from_this(),
+				  boost::asio::placeholders::error,
+				  boost::asio::placeholders::iterator));
+		}
     }
     else if (!result)
     {

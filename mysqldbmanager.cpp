@@ -1,9 +1,15 @@
 #include "mysqldbmanager.hpp"
 
+#include <iostream>
+
 namespace findik {
 		
 		mysqldbmanager::mysqldbmanager() {
+		}
 
+		mysqldbmanager::~mysqldbmanager() {
+			if (con.get() != NULL && !con->isClosed())
+				con->close();
 		}
 
 		void mysqldbmanager::connectDb(std::string host, std::string db, std::string username, std::string password) {
@@ -18,7 +24,7 @@ namespace findik {
 				this->con = con1;
 				this->con->setSchema(db);
 			} catch (sql::SQLException &e) {
-				
+				std::cerr << "SQL Error: " << e.getSQLState() << std::endl;
 			}
 		}
 

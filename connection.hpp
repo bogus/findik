@@ -15,6 +15,8 @@
 #include "request_parser.hpp"
 #include "response_parser.hpp"
 
+#include "request_filter.hpp"
+
 namespace findik {
 namespace io {
 
@@ -85,6 +87,9 @@ private:
 
   /// The reply to be sent back to the client.
   reply reply_;
+
+  /// Database manager object
+  dbmanager::pointer manager_;
 };
 
 typedef boost::shared_ptr<connection> connection_ptr;

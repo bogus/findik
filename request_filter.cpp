@@ -6,10 +6,9 @@ namespace findik {
 		{
 		}
 
-		request_filter::request_filter(dbmanager *manager_, io::request *request_)
+		request_filter::request_filter(dbmanager::pointer & manager, io::request & request):
+			manager_(manager), request_(request)
 		{
-			this->manager_ = manager_;
-			this->request_ = request_;
 		}
 
 		bool request_filter::request_chain_filter() 
@@ -29,7 +28,7 @@ namespace findik {
 
 		bool request_filter::request_domain_filter()
 		{
-			return manager_->domainQuery(request_->host());
+			return manager_->domainQuery(request_.host());
 		}
 
 		bool request_filter::request_url_filter()

@@ -1,11 +1,20 @@
+#ifndef FINDIK_DBMANAGER_HPP
+#define FINDIK_DBMANAGER_HPP
+
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 
+
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
+
 namespace findik {
 
-	class dbmanager {
+	class dbmanager :
+		public boost::enable_shared_from_this<dbmanager>
+	{
 
 	private:
 		
@@ -25,5 +34,9 @@ namespace findik {
 		std::string username;
 		std::string password;
 
+		typedef boost::shared_ptr<dbmanager> pointer;
+
 	};
 }
+
+#endif
