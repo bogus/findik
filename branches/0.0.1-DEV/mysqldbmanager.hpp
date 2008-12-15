@@ -1,3 +1,6 @@
+#ifndef FINDIK_MYSQLDBMANAGER_HPP
+#define FINDIK_MYSQLDBMANAGER_HPP
+
 #include "dbmanager.hpp"
 
 #include <mysql_connection.h>
@@ -5,13 +8,19 @@
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
+#include <boost/enable_shared_from_this.hpp>
 
 namespace findik {
 	
-		class mysqldbmanager : public dbmanager {
+		class mysqldbmanager : 
+			public dbmanager,
+			public boost::enable_shared_from_this<mysqldbmanager>
+		{
 			
 		public:
 			mysqldbmanager();
+			~mysqldbmanager();
+
 			void connectDb(std::string host, std::string db, 
 				std::string username, std::string password);
 			bool domainQuery(std::string hostname);
@@ -26,3 +35,5 @@ namespace findik {
 			sql::Driver * driver;
 		};	
 }
+
+#endif

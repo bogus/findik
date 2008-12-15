@@ -1,7 +1,3 @@
-// Mini Proxy: HTTP SERVER 3 example integrated with SYNC_CLIENT
-// http://www.boost.org/doc/libs/1_37_0/doc/html/boost_asio/examples.html
-// Dummy client operations, POST is not supported.
-
 #include <iostream>
 #include <string>
 #include <boost/asio.hpp>
@@ -37,11 +33,11 @@ int main(int argc, char* argv[])
 	  
     if (argc != 4 && argc != 1)
     {
-      std::cerr << "Usage: findik-poc-4 <address> <port> <threads>\n";
+      std::cerr << "Usage: findik <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    findik-poc-4 0.0.0.0 80 1\n";
+      std::cerr << "    findik 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    findik-poc-4 0::0 80 1\n";
+      std::cerr << "    findik 0::0 80 1\n";
       return 1;
     }
 
@@ -87,11 +83,11 @@ int main(int argc, char* argv[])
     // Check command line arguments.
     if (argc != 4 && argc != 1)
     {
-      std::cerr << "Usage: findik-poc-4 <address> <port> <threads>\n";
+      std::cerr << "Usage: findik <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    findik-poc-4 0.0.0.0 80 1\n";
+      std::cerr << "    findik 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    findik-poc-4 0::0 80 1\n";
+      std::cerr << "    findik 0::0 80 1\n";
       return 1;
     }
 

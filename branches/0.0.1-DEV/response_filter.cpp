@@ -3,7 +3,8 @@
 namespace findik {
 	namespace filter {
 
-		response_filter::response_filter(dbmanager *manager_,io::response *response_)
+		response_filter::response_filter(dbmanager::pointer & manager, io::response & response):
+			manager_(manager), response_(response)
 		{
 		}
 
