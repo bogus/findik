@@ -13,7 +13,7 @@ connection::connection(boost::asio::io_service& io_service)
 	response_(request_)
 {
 	manager_ = dbmanager::pointer(new mysqldbmanager());
-	manager_->connectDb("localhost","findik","root","");
+	manager_->connectDb("localhost","findik","root","123123");
 }
 
 boost::asio::ip::tcp::socket& connection::l_socket()
@@ -164,6 +164,14 @@ void connection::handle_read_response(const boost::system::error_code& e,
 		// Initiate graceful connection closure for remote connection.
 		boost::system::error_code ignored_ec;
 		r_socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+
+		if(response_.content_type() == "text/html") {
+			findik::parser::html_parser *parser = new findik::parser::tidy_html_parser();
+			parser->create_doc(response_.content().c_str());
+			parser->parse_html();
+			std::cout << parser->get_content() << std::endl;
+			free(parser);
+		}
 
 		response_.to_streambuf(response_sbuf_);
         // The connection was successful. Send the request.

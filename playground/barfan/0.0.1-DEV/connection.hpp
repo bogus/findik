@@ -17,6 +17,8 @@
 
 #include "request_filter.hpp"
 
+#include "tidy_html_parser.hpp"
+
 namespace findik {
 namespace io {
 
