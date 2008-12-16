@@ -9,6 +9,7 @@ namespace findik {
 
 		tidy_html_parser::~tidy_html_parser(void)
 		{
+			parsed_content.clear();
 			tidyRelease( this->tdoc );
 		}
 

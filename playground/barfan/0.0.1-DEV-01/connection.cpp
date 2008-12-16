@@ -169,8 +169,7 @@ void connection::handle_read_response(const boost::system::error_code& e,
 			findik::parser::html_parser *parser = new findik::parser::tidy_html_parser();
 			parser->create_doc(response_.content().c_str());
 			parser->parse_html();
-			std::cout << parser->get_content() << std::endl;
-			free(parser);
+			delete(parser);
 		}
 
 		response_.to_streambuf(response_sbuf_);

@@ -10,6 +10,10 @@ namespace findik {
 		mysqldbmanager::~mysqldbmanager() {
 			if (con.get() != NULL && !con->isClosed())
 				con->close();
+			this->host.clear();
+			this->username.clear();
+			this->password.clear();
+			this->db.clear();
 		}
 
 		void mysqldbmanager::connectDb(std::string host, std::string db, std::string username, std::string password) {
