@@ -3,7 +3,7 @@
 namespace findik {
 	namespace filter {
 
-		response_filter::response_filter(dbmanager::pointer & manager, io::response & response):
+		response_filter::response_filter(persistency::dbmanager::pointer & manager, io::response & response):
 			manager_(manager), response_(response)
 		{
 		}
@@ -23,6 +23,13 @@ namespace findik {
 
 		bool response_filter::response_content_filter()
 		{
+			if(response_.content_type() == "text/html") {
+				findik::parser::html_parser *parser = new findik::parser::tidy_html_parser();
+				parser->create_doc(response_.content().c_str());
+				parser->parse_html();
+				delete(parser);
+			}
+
 			return true;
 		}
 

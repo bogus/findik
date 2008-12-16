@@ -14,7 +14,7 @@ namespace findik {
 		{
 		public:
 			~request_filter(void);
-			request_filter(dbmanager::pointer & manager, io::request & request);
+			request_filter(persistency::dbmanager::pointer & manager, io::request & request);
 
 			typedef boost::shared_ptr<request_filter> pointer;
 
@@ -22,7 +22,7 @@ namespace findik {
 
 		private:
 			io::request & request_ ;
-			dbmanager::pointer manager_ ;
+			persistency::dbmanager::pointer manager_ ;
 
 			bool request_domain_filter();
 			bool request_url_filter();

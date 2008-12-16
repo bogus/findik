@@ -16,8 +16,9 @@
 #include "response_parser.hpp"
 
 #include "request_filter.hpp"
+#include "response_filter.hpp"
 
-#include "tidy_html_parser.hpp"
+
 
 namespace findik {
 namespace io {
@@ -91,7 +92,7 @@ private:
   reply reply_;
 
   /// Database manager object
-  dbmanager::pointer manager_;
+  persistency::dbmanager::pointer manager_;
 };
 
 typedef boost::shared_ptr<connection> connection_ptr;

@@ -11,7 +11,7 @@
 #include <boost/enable_shared_from_this.hpp>
 
 namespace findik {
-	
+	namespace persistency {
 		class mysqldbmanager : 
 			public dbmanager,
 			public boost::enable_shared_from_this<mysqldbmanager>
@@ -34,6 +34,7 @@ namespace findik {
 			std::auto_ptr< sql::Connection > con;
 			sql::Driver * driver;
 		};	
+	}
 }
 
 #endif

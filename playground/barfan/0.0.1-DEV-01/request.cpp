@@ -20,6 +20,11 @@ namespace io {
 		return host_;
 	}
 
+	std::string & request::get_uri()
+	{
+		return uri;
+	}
+
 	unsigned int request::content_length()
 	{
 		if (content_length_ == 0)

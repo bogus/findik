@@ -6,7 +6,7 @@ namespace findik {
 		{
 		}
 
-		request_filter::request_filter(dbmanager::pointer & manager, io::request & request):
+		request_filter::request_filter(persistency::dbmanager::pointer & manager, io::request & request):
 			manager_(manager), request_(request)
 		{
 		}
@@ -23,7 +23,7 @@ namespace findik {
 
 		bool request_filter::request_content_filter()
 		{
-			return true;
+			return manager_->urlQuery(request_.get_uri());
 		}
 
 		bool request_filter::request_domain_filter()

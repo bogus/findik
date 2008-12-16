@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace findik {
-		
+	namespace persistency {
 		mysqldbmanager::mysqldbmanager() {
 		}
 
@@ -77,5 +77,5 @@ namespace findik {
 		bool mysqldbmanager::urlRegexQuery(std::string url) {
 			return true;
 		}
-
+	}
 }

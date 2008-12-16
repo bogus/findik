@@ -12,7 +12,7 @@ connection::connection(boost::asio::io_service& io_service)
 	resolver_(io_service),
 	response_(request_)
 {
-	manager_ = dbmanager::pointer(new mysqldbmanager());
+	manager_ = persistency::dbmanager::pointer(new persistency::mysqldbmanager());
 	manager_->connectDb("localhost","findik","root","123123");
 }
 
@@ -69,6 +69,7 @@ void connection::handle_read_request(const boost::system::error_code& e,
 				  boost::asio::placeholders::error,
 				  boost::asio::placeholders::iterator));
 		}
+
     }
     else if (!result)
     {
@@ -164,22 +165,25 @@ void connection::handle_read_response(const boost::system::error_code& e,
 		// Initiate graceful connection closure for remote connection.
 		boost::system::error_code ignored_ec;
 		r_socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
-
-		if(response_.content_type() == "text/html") {
-			findik::parser::html_parser *parser = new findik::parser::tidy_html_parser();
-			parser->create_doc(response_.content().c_str());
-			parser->parse_html();
-			delete(parser);
+		
+		filter::response_filter filter(manager_,response_);
+		if(!filter.response_chain_filter())
+		{
+			reply_ = reply::stock_reply(reply::bad_request);
+			boost::asio::async_write(l_socket_, reply_.to_buffers(),
+			  strand_.wrap(
+				boost::bind(&connection::handle_write_response, shared_from_this(),
+				  boost::asio::placeholders::error)));		
 		}
-
-		response_.to_streambuf(response_sbuf_);
-        // The connection was successful. Send the request.
-	
-		boost::asio::async_write(l_socket_, response_sbuf_,
-          strand_.wrap(
-            boost::bind(&connection::handle_write_response, shared_from_this(),
-              boost::asio::placeholders::error)));
-			  
+		else
+		{
+			response_.to_streambuf(response_sbuf_);
+			// The connection was successful. Send the request.
+			boost::asio::async_write(l_socket_, response_sbuf_,
+			  strand_.wrap(
+				boost::bind(&connection::handle_write_response, shared_from_this(),
+				  boost::asio::placeholders::error)));
+		}	 
     }
     else if (!result)
     {

@@ -11,32 +11,33 @@
 #include <boost/enable_shared_from_this.hpp>
 
 namespace findik {
+	namespace persistency {
+		class dbmanager :
+			public boost::enable_shared_from_this<dbmanager>
+		{
 
-	class dbmanager :
-		public boost::enable_shared_from_this<dbmanager>
-	{
+		private:
+			
 
-	private:
-		
+		public:
+			virtual void connectDb(std::string host, std::string db, 
+				std::string username, std::string password) = 0;
+			virtual bool domainQuery(std::string hostname) = 0;
+			virtual bool urlQuery(std::string url) = 0;
+			virtual bool contentQuery(std::string content) = 0;
+			virtual bool domainRegexQuery(std::string hostname) = 0;
+			virtual bool urlRegexQuery(std::string url) = 0;
+			virtual bool contentRegexQuery(std::string content) = 0;
 
-	public:
-		virtual void connectDb(std::string host, std::string db, 
-			std::string username, std::string password) = 0;
-		virtual bool domainQuery(std::string hostname) = 0;
-		virtual bool urlQuery(std::string url) = 0;
-		virtual bool contentQuery(std::string content) = 0;
-		virtual bool domainRegexQuery(std::string hostname) = 0;
-		virtual bool urlRegexQuery(std::string url) = 0;
-		virtual bool contentRegexQuery(std::string content) = 0;
+			std::string host;
+			std::string db;
+			std::string username;
+			std::string password;
 
-		std::string host;
-		std::string db;
-		std::string username;
-		std::string password;
+			typedef boost::shared_ptr<dbmanager> pointer;
 
-		typedef boost::shared_ptr<dbmanager> pointer;
-
-	};
+		};
+	}
 }
 
 #endif
