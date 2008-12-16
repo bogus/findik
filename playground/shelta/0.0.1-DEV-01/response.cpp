@@ -1,4 +1,5 @@
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 #include "zlib_util.hpp"
 
@@ -17,18 +18,17 @@ namespace findik {
 		unsigned int response::content_length()
 		{
 			if (content_length_ == 0)
-				for (size_t i = 0; i < headers.size(); ++i)
-					if (headers[i].name == "Content-Length")
-						content_length_ = boost::lexical_cast< unsigned int >(headers[i].value);
+				BOOST_FOREACH( header h, headers )
+					if (h.name == "Content-Length")
+						content_length_ = boost::lexical_cast< unsigned int >(h.value);
 
 			return content_length_;
 		}
 
 		bool response::is_chunked()
 		{	
-			for (size_t i = 0; i < headers.size(); ++i)
-				if (headers[i].name == "Transfer-Encoding" &&
-					headers[i].value == "chunked")
+			BOOST_FOREACH( header h, headers )
+				if (h.name == "Transfer-Encoding" && h.value == "chunked")
 					return true;
 			return false;
 		}
@@ -52,15 +52,17 @@ namespace findik {
 			<< http_version_minor << " " << status_code << " "
 			<< status_line << "\r\n";
 
-		for (std::size_t i = 0; i < headers.size(); ++i)
-			response_stream << headers[i].name << ": "
-						<< headers[i].value << "\r\n";
+		BOOST_FOREACH( header h, headers )
+			response_stream << h.name << ": " << h.value << "\r\n";
 
 		response_stream << "Connection: close\r\n";
 		response_stream << "\r\n";
 
 		if (has_content())
 			response_stream << content_raw();
+
+		//if (content_type().find("text/") != std::string::npos)
+		//	std::cout << content();
 		}
 
 		void response::push_to_content(char input, bool is_chunked_data)
@@ -78,21 +80,21 @@ namespace findik {
 		const std::string & response::content_type()
 		{
 			if (content_type_.empty())
-				for (std::size_t i = 0; i < headers.size(); ++i)
-					if (headers[i].name == "Content-Type") {
-						std::size_t pos_ = headers[i].value.find_first_of(';');
+				BOOST_FOREACH( header h, headers )
+					if (h.name == "Content-Type") {
+						std::size_t pos_ = h.value.find_first_of(';');
 						if (pos_ == std::string::npos) {
-							content_type_ = headers[i].value;
+							content_type_ = h.value;
 							break;
 						}
 						
-						content_type_ = headers[i].value.substr(0,pos_);
-						pos_ = headers[i].value.find("charset=");
+						content_type_ = h.value.substr(0,pos_);
+						pos_ = h.value.find("charset=");
 						
 						if (pos_ == std::string::npos)
 							break;
 
-						content_charset_ = headers[i].value.substr(pos_ + 8);
+						content_charset_ = h.value.substr(pos_ + 8);
 					}
 
 			return content_type_;
@@ -108,20 +110,21 @@ namespace findik {
 		response::content_encoding_type response::content_encoding()
 		{
 			if (content_encoding_ == indeterminate) {
-				std::size_t i;
-				for (i = 0; i < headers.size(); ++i)
-					if (headers[i].name == "Content-Encoding") {
-						if (headers[i].value == "")
+				bool not_found_ = true;
+				BOOST_FOREACH( header h, headers )
+					if (h.name == "Content-Encoding") {
+						if (h.value == "")
 							content_encoding_ = none;
-						else if (headers[i].value == "gzip")
+						else if (h.value == "gzip")
 							content_encoding_ = gzip;
-						else if (headers[i].value == "deflate")
+						else if (h.value == "deflate")
 							content_encoding_ = deflate;
 						else
 							content_encoding_ = other;
+						not_found_ = false;
 						break;
 					}
-				if (i == headers.size())
+					if (not_found_)
 					content_encoding_ = none;
 			}
 
