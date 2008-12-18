@@ -13,7 +13,7 @@ connection::connection(boost::asio::io_service& io_service)
 	response_(request_)
 {
 	manager_ = persistency::dbmanager::pointer(new persistency::mysqldbmanager());
-	manager_->connectDb("localhost","findik","root","123123");
+	manager_->connectDb();
 }
 
 boost::asio::ip::tcp::socket& connection::l_socket()

@@ -20,8 +20,7 @@ namespace findik {
 			
 
 		public:
-			virtual void connectDb(std::string host, std::string db, 
-				std::string username, std::string password) = 0;
+			virtual void connectDb() = 0;
 			virtual bool domainQuery(std::string hostname) = 0;
 			virtual bool urlQuery(std::string url) = 0;
 			virtual bool contentQuery(std::string content) = 0;

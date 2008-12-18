@@ -2,7 +2,7 @@
 #define FINDIK_MYSQLDBMANAGER_HPP
 
 #include "dbmanager.hpp"
-
+#include "configuration.hpp"
 #include <mysql_connection.h>
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -21,8 +21,7 @@ namespace findik {
 			mysqldbmanager();
 			~mysqldbmanager();
 
-			void connectDb(std::string host, std::string db, 
-				std::string username, std::string password);
+			void connectDb();
 			bool domainQuery(std::string hostname);
 			bool urlQuery(std::string url);
 			bool contentQuery(std::string content);

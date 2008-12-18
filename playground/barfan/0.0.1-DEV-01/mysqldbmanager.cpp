@@ -16,11 +16,12 @@ namespace findik {
 			this->db.clear();
 		}
 
-		void mysqldbmanager::connectDb(std::string host, std::string db, std::string username, std::string password) {
-			this->host = host;
-			this->username = username;
-			this->password = password;
-			this->db = db;
+		void mysqldbmanager::connectDb() {
+			
+			config::configuration_.getConfigValue_String("findik.db.host",this->host);	
+			config::configuration_.getConfigValue_String("findik.db.username",this->username);
+			config::configuration_.getConfigValue_String("findik.db.password",this->password);
+			config::configuration_.getConfigValue_String("findik.db.db",this->db);
 
 			try {
 				this->driver = get_driver_instance();			

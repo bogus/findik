@@ -5,6 +5,7 @@
 #include <boost/function.hpp>
 #include <boost/lexical_cast.hpp>
 #include "server.hpp"
+#include "configuration.hpp"
 
 #if defined(_WIN32)
 
