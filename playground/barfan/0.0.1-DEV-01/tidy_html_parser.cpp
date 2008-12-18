@@ -5,15 +5,21 @@ namespace findik {
 
 		tidy_html_parser::tidy_html_parser(void)
 		{
+			parsed_content = new std::string();
 		}
 
 		tidy_html_parser::~tidy_html_parser(void)
 		{
-			parsed_content.clear();
+			
+		}
+
+		void tidy_html_parser::clear()
+		{
+			delete this->parsed_content;
 			tidyRelease( this->tdoc );
 		}
 
-		std::string & tidy_html_parser::get_content()
+		std::string * tidy_html_parser::get_content()
 		{
 			return this->parsed_content;
 		}
@@ -70,7 +76,7 @@ namespace findik {
 					*/
 					case TidyNode_Text: 
 					tidyNodeGetText(this->tdoc,child,&buffer);      
-					parsed_content += (char *)buffer.bp;                    
+					parsed_content->append((char *)buffer.bp);                    
 					break;
 					/*
 					case TidyNode_CDATA:      name = "CDATA";                   break;

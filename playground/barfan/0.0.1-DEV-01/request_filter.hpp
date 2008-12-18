@@ -6,9 +6,11 @@
 
 #include "mysqldbmanager.hpp"
 #include "request.hpp"
+#include "filter_report.hpp"
 
 namespace findik {
 	namespace filter {
+
 		class request_filter:
 			public boost::enable_shared_from_this<request_filter>
 		{
@@ -20,9 +22,12 @@ namespace findik {
 
 			bool request_chain_filter();
 
+			std::string get_reply();
+
 		private:
 			io::request & request_ ;
 			persistency::dbmanager::pointer manager_ ;
+			filter_report::pointer filter_report_;
 
 			bool request_domain_filter();
 			bool request_url_filter();
