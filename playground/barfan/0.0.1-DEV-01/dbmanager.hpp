@@ -28,12 +28,13 @@ namespace findik {
 			virtual bool urlRegexQuery(std::string url) = 0;
 			virtual bool contentRegexQuery(std::string content) = 0;
 
+			typedef boost::shared_ptr<dbmanager> pointer;
+
+		protected:
 			std::string host;
 			std::string db;
 			std::string username;
 			std::string password;
-
-			typedef boost::shared_ptr<dbmanager> pointer;
 
 		};
 	}
