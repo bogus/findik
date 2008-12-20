@@ -1,15 +1,37 @@
 #include "mysqldbmanager.hpp"
 
+#include <boost/scoped_ptr.hpp>
 #include <iostream>
 
 namespace findik {
 		
-		mysqldbmanager::mysqldbmanager() {
+		mysqldbmanager::mysqldbmanager()
+		{
+			driver = get_driver_instance();
+			pool_size_ = 10; // must take value from conf
+			connectDb("localhost","findik","root",""); //must take from conf
 		}
 
 		mysqldbmanager::~mysqldbmanager() {
-			if (con.get() != NULL && !con->isClosed())
-				con->close();
+			for (size_t i = 0; i < pool_size_; ++i)
+				if (!((dbconnection<sql::Connection>::pointer)pool_[i])->connection()->isClosed())
+					((dbconnection<sql::Connection>::pointer)pool_[i])->connection()->close();
+		}
+
+		mysqldbmanager::mysql_dbconnection_ptr mysqldbmanager::create_connection_object()
+		{
+			try {
+				sql::Connection * myconn_ = driver->connect(host, username, password);
+				myconn_->setSchema(db);
+				mysql_dbconnection_ptr dbconnection__(
+					new mysql_dbconnection(myconn_));
+
+				return dbconnection__;
+			} 
+			catch (sql::SQLException &e)
+			{
+				std::cerr << "SQL Error: " << e.getSQLState() << std::endl;
+			}
 		}
 
 		void mysqldbmanager::connectDb(std::string host, std::string db, std::string username, std::string password) {
@@ -18,14 +40,7 @@ namespace findik {
 			this->password = password;
 			this->db = db;
 
-			try {
-				this->driver = get_driver_instance();			
-				std::auto_ptr< sql::Connection > con1(driver->connect(host, username, password));
-				this->con = con1;
-				this->con->setSchema(db);
-			} catch (sql::SQLException &e) {
-				std::cerr << "SQL Error: " << e.getSQLState() << std::endl;
-			}
+			prepare_pool();
 		}
 
 		bool mysqldbmanager::contentQuery(std::string content) {
@@ -37,11 +52,16 @@ namespace findik {
 		}
 
 		bool mysqldbmanager::domainQuery(std::string hostname) {
+			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+			mysqldbmanager::connection_ptr conn = dbconnection_->connection();
+
 			try {
-				std::auto_ptr< sql::Statement > stmt(this->con->createStatement());
-				std::auto_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT domain from blacklist_domain where domain='"+hostname+"'"));
+				boost::scoped_ptr< sql::Statement > stmt(conn->createStatement());
+				boost::scoped_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT domain from blacklist_domain where domain='"+hostname+"'"));
+
+				dbconnection_->unlock(); 
 				
-				if(res->rowsCount() > 0)
+				if(res->rowsCount() > 0) 
 					return false;
 
 			} catch (sql::SQLException &e) {
@@ -56,9 +76,13 @@ namespace findik {
 		}
 
 		bool mysqldbmanager::urlQuery(std::string url) {
+			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+			mysqldbmanager::connection_ptr conn = dbconnection_->connection();
 			try {
-				std::auto_ptr< sql::Statement > stmt(this->con->createStatement());
-				std::auto_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT url from blacklist_url where url='"+url+"'"));
+				boost::scoped_ptr< sql::Statement > stmt(conn->createStatement());
+				boost::scoped_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT url from blacklist_url where url='"+url+"'"));
+
+				dbconnection_->unlock();
 				
 				if(res->rowsCount() > 0)
 					return false;
