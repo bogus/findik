@@ -42,6 +42,11 @@ namespace findik {
 
 		typedef sql::Connection * connection_ptr;
 
+		enum prepared_statement_types {
+			domain_query = 100,
+			url_query = 101
+		};
+
 	};	
 }
 

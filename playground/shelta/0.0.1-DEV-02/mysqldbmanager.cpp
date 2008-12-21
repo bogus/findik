@@ -3,6 +3,8 @@
 #include <boost/scoped_ptr.hpp>
 #include <iostream>
 
+#include <cppconn/prepared_statement.h>
+
 namespace findik {
 		
 		mysqldbmanager::mysqldbmanager()
@@ -23,8 +25,17 @@ namespace findik {
 			try {
 				sql::Connection * myconn_ = driver->connect(host, username, password);
 				myconn_->setSchema(db);
+
 				mysql_dbconnection_ptr dbconnection__(
 					new mysql_dbconnection(myconn_));
+
+				dbconnection__->set_object(domain_query, 
+					myconn_->prepareStatement("SELECT domain from blacklist_domain where domain=?"));
+
+				dbconnection__->set_object(url_query, 
+					myconn_->prepareStatement("SELECT url from blacklist_url where url=?"));
+
+				std::cout << "humba" << std::endl;
 
 				return dbconnection__;
 			} 
@@ -53,15 +64,15 @@ namespace findik {
 
 		bool mysqldbmanager::domainQuery(std::string hostname) {
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
-			mysqldbmanager::connection_ptr conn = dbconnection_->connection();
+			sql::PreparedStatement * ps_ = (sql::PreparedStatement *) dbconnection_->get_object(domain_query);
 
 			try {
-				boost::scoped_ptr< sql::Statement > stmt(conn->createStatement());
-				boost::scoped_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT domain from blacklist_domain where domain='"+hostname+"'"));
+				ps_->setString(1,hostname);
+				boost::scoped_ptr< sql::ResultSet > res(ps_->executeQuery());
 
 				dbconnection_->unlock(); 
 				
-				if(res->rowsCount() > 0) 
+				if(res->rowsCount() > 0)
 					return false;
 
 			} catch (sql::SQLException &e) {
@@ -77,10 +88,11 @@ namespace findik {
 
 		bool mysqldbmanager::urlQuery(std::string url) {
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
-			mysqldbmanager::connection_ptr conn = dbconnection_->connection();
+			sql::PreparedStatement * ps_ = (sql::PreparedStatement *) dbconnection_->get_object(url_query);
+
 			try {
-				boost::scoped_ptr< sql::Statement > stmt(conn->createStatement());
-				boost::scoped_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT url from blacklist_url where url='"+url+"'"));
+				ps_->setString(1,url);
+				boost::scoped_ptr< sql::ResultSet > res(ps_->executeQuery());
 
 				dbconnection_->unlock();
 				
@@ -97,5 +109,4 @@ namespace findik {
 		bool mysqldbmanager::urlRegexQuery(std::string url) {
 			return true;
 		}
-
 }
