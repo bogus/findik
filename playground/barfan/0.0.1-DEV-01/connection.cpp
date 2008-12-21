@@ -46,12 +46,11 @@ void connection::handle_read_request(const boost::system::error_code& e,
 
     if (result)
     {
-
 		filter::request_filter filter(manager_, request_);
 		
 		if(!filter.request_chain_filter())
 		{
-			reply_ = reply::stock_reply(reply::filtered,filter.get_reply());
+			reply_ = reply::stock_reply(reply::filtered,filter.get_reply_string());
 			
 			boost::asio::async_write(l_socket_, reply_.to_buffers(),
 				strand_.wrap(
