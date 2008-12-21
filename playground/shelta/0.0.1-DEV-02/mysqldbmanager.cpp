@@ -35,8 +35,6 @@ namespace findik {
 				dbconnection__->set_object(url_query, 
 					myconn_->prepareStatement("SELECT url from blacklist_url where url=?"));
 
-				std::cout << "humba" << std::endl;
-
 				return dbconnection__;
 			} 
 			catch (sql::SQLException &e)
