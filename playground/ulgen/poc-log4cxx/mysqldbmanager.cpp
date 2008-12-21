@@ -24,7 +24,9 @@ namespace findik {
 				this->con = con1;
 				this->con->setSchema(db);
 			} catch (sql::SQLException &e) {
-				std::cerr << "SQL Error: " << e.getSQLState() << std::endl;
+				LOG4CXX_ERROR(debug_logger, "SQL Error: " << e.getSQLState());
+				LOG4CXX_ERROR(findik::log_initializer::user_logger,
+					"Unable to connect MySQL on host: " << host << " with user: " << username);
 			}
 		}
 
@@ -45,7 +47,7 @@ namespace findik {
 					return false;
 
 			} catch (sql::SQLException &e) {
-				std::cout << "ERROR" << e.what() << std::endl;
+				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
 				return false;
 			}
 			return true;
@@ -64,7 +66,7 @@ namespace findik {
 					return false;
 
 			} catch (sql::SQLException &e) {
-				std::cout << "ERROR" << e.what() << std::endl;
+				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
 				return false;
 			}
 			return true;
@@ -74,4 +76,5 @@ namespace findik {
 			return true;
 		}
 
+		log4cxx::LoggerPtr mysqldbmanager::debug_logger(log4cxx::Logger::getLogger("findik.mysqldbmanager"));
 }

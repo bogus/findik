@@ -28,7 +28,12 @@ namespace findik {
 
 		bool request_filter::request_domain_filter()
 		{
-			return manager_->domainQuery(request_.host());
+			bool result = manager_->domainQuery(request_.host());
+			if (!result)
+			{
+				LOG4CXX_WARN(log_initializer::filter_logger, request_.host() << " DOMAIN BLOCKED");
+			}
+			return result;
 		}
 
 		bool request_filter::request_url_filter()

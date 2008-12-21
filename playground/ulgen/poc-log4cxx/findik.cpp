@@ -5,10 +5,12 @@
 #include <boost/function.hpp>
 #include <boost/lexical_cast.hpp>
 #include "server.hpp"
-
+#include "log_initializer.hpp"
 #if defined(_WIN32)
 
 boost::function0<void> console_ctrl_function;
+
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("findik"));
 
 BOOL WINAPI console_ctrl_handler(DWORD ctrl_type)
 {
@@ -51,19 +53,31 @@ int main(int argc, char* argv[])
 		num_threads = boost::lexical_cast<std::size_t>(argv[3]);
 	}
 
-    // Initialise server.
-    findik::io::server s(address, port, num_threads);
+	// Initialize log manager
+	//todo: fetch file paths, log level and accesslog on|off from conf file
+	findik::log_initializer log_init;
+	log_init.load_conf("findik_log.conf");
 
-    // Set console control handler to allow server to be stopped.
+    // Initialise server.
+    findik::io::server s(address, port, num_threads); 
+
+	LOG4CXX_INFO(findik::log_initializer::user_logger,"findik started to listen " + address + ":" + port);
+	LOG4CXX_DEBUG(findik::log_initializer::debug_logger,"listening with " << num_threads << " threads"); 
+
+	// Set console control handler to allow server to be stopped.
     console_ctrl_function = boost::bind(&findik::io::server::stop, &s);
     SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
 
     // Run the server until stopped.
-    s.run();
-	
+    s.run();	
+
+	//stop logging
+	//todo put this to correct place
+	findik::log_initializer::shutdown();
+
   }
   catch (std::exception& e)
-  {
+  {   
     std::cerr << "exception: " << e.what() << "\n";
   }
 

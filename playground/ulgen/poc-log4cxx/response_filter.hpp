@@ -6,6 +6,7 @@
 
 #include "mysqldbmanager.hpp"
 #include "response.hpp"
+#include "log_initializer.hpp"
 
 namespace findik {
 	namespace filter{

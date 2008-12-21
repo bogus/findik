@@ -2,7 +2,7 @@
 #define FINDIK_MYSQLDBMANAGER_HPP
 
 #include "dbmanager.hpp"
-
+#include "log_initializer.hpp"
 #include <mysql_connection.h>
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -33,6 +33,7 @@ namespace findik {
 		private:
 			std::auto_ptr< sql::Connection > con;
 			sql::Driver * driver;
+			static log4cxx::LoggerPtr debug_logger;
 		};	
 }
 
