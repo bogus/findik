@@ -254,5 +254,18 @@ reply reply::stock_reply(reply::status_type status)
   return rep;
 }
 
+reply reply::stock_reply(reply::status_type status,std::string reply_html)
+{
+  reply rep;
+  rep.status = status;
+  rep.content = reply_html;
+  rep.headers.resize(2);
+  rep.headers[0].name = "Content-Length";
+  rep.headers[0].value = boost::lexical_cast<std::string>(rep.content.size());
+  rep.headers[1].name = "Content-Type";
+  rep.headers[1].value = "text/html";
+  return rep;
+}
+
 } // namespace server3
 } // namespace http

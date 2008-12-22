@@ -6,27 +6,29 @@
 
 #include "request.hpp"
 #include "mysqldbmanager.hpp"
+#include "request_filter_factory_impl.hpp"
 
 namespace findik {
 	namespace filter {
+
 		class request_filter:
 			public boost::enable_shared_from_this<request_filter>
 		{
 		public:
+			request_filter(persistency::dbmanager::pointer & manager, io::request & request);
 			~request_filter(void);
-			request_filter(dbmanager::pointer & manager, io::request & request);
 
 			typedef boost::shared_ptr<request_filter> pointer;
 
 			bool request_chain_filter();
+			std::string get_reply_string();
 
-		private:
+		protected:
 			io::request & request_ ;
-			dbmanager::pointer manager_ ;
+			persistency::dbmanager::pointer manager_ ;
+			std::string reply_string;
 
-			bool request_domain_filter();
-			bool request_url_filter();
-			bool request_content_filter();
+			
 
 		};
 	}

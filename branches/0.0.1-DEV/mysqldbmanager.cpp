@@ -6,18 +6,22 @@
 #include <cppconn/prepared_statement.h>
 
 namespace findik {
-		
+	namespace persistency {
 		mysqldbmanager::mysqldbmanager()
 		{
 			driver = get_driver_instance();
 			pool_size_ = 10; // must take value from conf
-			connectDb("localhost","findik","root",""); //must take from conf
+			connectDb();
 		}
 
 		mysqldbmanager::~mysqldbmanager() {
 			for (size_t i = 0; i < pool_size_; ++i)
 				if (!((dbconnection<sql::Connection>::pointer)pool_[i])->connection()->isClosed())
 					((dbconnection<sql::Connection>::pointer)pool_[i])->connection()->close();
+			this->host.clear();
+			this->username.clear();
+			this->password.clear();
+			this->db.clear();
 		}
 
 		mysqldbmanager::mysql_dbconnection_ptr mysqldbmanager::create_connection_object()
@@ -43,11 +47,12 @@ namespace findik {
 			}
 		}
 
-		void mysqldbmanager::connectDb(std::string host, std::string db, std::string username, std::string password) {
-			this->host = host;
-			this->username = username;
-			this->password = password;
-			this->db = db;
+		void mysqldbmanager::connectDb() {
+			
+			config::configuration_.getConfigValue_String("findik.db.host",this->host);	
+			config::configuration_.getConfigValue_String("findik.db.username",this->username);
+			config::configuration_.getConfigValue_String("findik.db.password",this->password);
+			config::configuration_.getConfigValue_String("findik.db.db",this->db);
 
 			prepare_pool();
 		}
@@ -107,4 +112,5 @@ namespace findik {
 		bool mysqldbmanager::urlRegexQuery(std::string url) {
 			return true;
 		}
+	}
 }
