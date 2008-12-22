@@ -94,6 +94,9 @@ private:
 
   /// Database manager object
   findik::persistency::dbmanager::pointer & manager_;
+
+  /// Debug logger
+  static log4cxx::LoggerPtr debug_logger;
 };
 
 typedef boost::shared_ptr<connection> connection_ptr;

@@ -3,6 +3,7 @@
 
 #include "pooled_dbmanager.hpp"
 #include "configuration.hpp"
+#include "log_initializer.hpp"
 #include <mysql_connection.h>
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -46,6 +47,7 @@ namespace findik {
 				url_query = 101
 			};
 
+			static log4cxx::LoggerPtr debug_logger;
 		};	
 	}
 }

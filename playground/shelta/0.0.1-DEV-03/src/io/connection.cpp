@@ -1,4 +1,5 @@
 #include "connection.hpp"
+#include "log_initializer.hpp"
 #include <vector>
 #include <boost/bind.hpp>
 
@@ -220,6 +221,7 @@ void connection::handle_write_response(const boost::system::error_code& e)
   // destroyed automatically after this handler returns. The connection class's
   // destructor closes the socket.
 }
+	log4cxx::LoggerPtr connection::debug_logger(log4cxx::Logger::getLogger("findik.io.connection"));
 
 } // namespace server3
 } // namespace http
