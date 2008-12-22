@@ -2,7 +2,8 @@ SUBDIRS=config filter io parser persistency
 
 bin_PROGRAMS = findik
 findik_SOURCES = \
-	findik.cpp
+	findik.cpp \
+	log_initializer.cpp
 findik_LDADD = \
 	config/libfindik_config.a \
 	filter/libfindik_filter.a \
