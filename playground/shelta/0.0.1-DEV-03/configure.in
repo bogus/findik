@@ -23,11 +23,29 @@ if test "$BOOST_THREAD_EXISTS" == "no"; then
 	exit 1
 fi
 
-AC_DEFINE(AMCIK_PIRESI, 1, [Define if kerem is amcik])
+AC_HAVE_LIBRARY([zlib],[break])
+AC_HAVE_LIBRARY([tidy],[break])
 
 # Checks for header files.
+AC_CHECK_HEADER([pthread.h],[break])
 AC_CHECK_HEADER([boost/asio.hpp],[break])
+AC_CHECK_HEADER([boost/array.hpp],[break])
 AC_CHECK_HEADER([boost/shared_ptr.hpp],[break])
+AC_CHECK_HEADER([boost/bind.hpp],[break])
+AC_CHECK_HEADER([boost/function.hpp],[break])
+AC_CHECK_HEADER([boost/lexical_cast.hpp],[break])
+AC_CHECK_HEADER([boost/logic/tribool.hpp],[break])
+AC_CHECK_HEADER([boost/foreach.hpp],[break])
+AC_CHECK_HEADER([boost/noncopyable.hpp],[break])
+AC_CHECK_HEADER([boost/tuple/tuple.hpp],[break])
+AC_CHECK_HEADER([boost/thread.hpp],[break])
+
+AC_CHECK_HEADER([buffio.h],[break])
+AC_CHECK_HEADER([cppconn/driver.h],[break])
+AC_CHECK_HEADER([libconfig.h++],[break])
+AC_CHECK_HEADER([mysql_connection.h],[break])
+AC_CHECK_HEADER([tidy.h],[break])
+AC_CHECK_HEADER([zlib.h],[break])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
