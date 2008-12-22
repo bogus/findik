@@ -1,0 +1,2 @@
+noinst_LIBRARIES=libconf.a
+libconf_a_SOURCES=configuration.cpp
