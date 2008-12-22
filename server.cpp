@@ -11,7 +11,7 @@ server::server(const std::string& address, const std::string& port,
     std::size_t thread_pool_size)
   : thread_pool_size_(thread_pool_size),
     acceptor_(io_service_),
-	manager_ptr_(new findik::mysqldbmanager()),
+	manager_ptr_(new findik::persistency::mysqldbmanager()),
     new_connection_(new connection(io_service_,manager_ptr_))
 {
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).

@@ -15,7 +15,6 @@ namespace findik {
 		{
 			request_filter_factory_iter it = request_filter_factory_map().begin();
 			bool isOk = true;
-			std::cout << "MAP SIZE IN REQUEST FILTER : "<< request_filter_factory_map().size() << std::endl;
 
 			while((it != request_filter_factory_map().end()) && (isOk == true))
 			{

@@ -16,7 +16,6 @@ namespace findik {
 		{
 			bool isOk = manager_->urlQuery(request_.get_uri());
 			if(!isOk) {
-				std::cout << request_.get_uri() << std::endl;
 				filter_report_->generate_report(filter_report::reason_type::request_url,request_.get_uri());
 			}
 			return isOk;

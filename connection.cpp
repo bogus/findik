@@ -6,7 +6,7 @@ namespace findik {
 namespace io {
 
 connection::connection(boost::asio::io_service& io_service,
-					   findik::dbmanager::pointer & manager)
+					   findik::persistency::dbmanager::pointer & manager)
   : strand_(io_service),
     l_socket_(io_service),
 	r_socket_(io_service),

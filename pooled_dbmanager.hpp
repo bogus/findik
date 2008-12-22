@@ -19,7 +19,7 @@ namespace findik {
 
 	template <class T>
 	class pooled_dbmanager :
-		public dbmanager,
+		public findik::persistency::dbmanager,
 		public boost::enable_shared_from_this<pooled_dbmanager<T>>
 	{
 

@@ -43,7 +43,7 @@ private:
   /// The next connection to be accepted.
   connection_ptr new_connection_;
 
-  findik::dbmanager::pointer manager_ptr_;
+  findik::persistency::dbmanager::pointer manager_ptr_;
 
 };
 

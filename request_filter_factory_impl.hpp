@@ -24,7 +24,6 @@ namespace findik {
 		{
 		public:
 			request_filter_factory_registrar() {
-				std::cout << "Registrar Contructor with " << T::ID << std::endl;
 				findik::filter::request_filter_factory_impl().registerClass(T::ID, T::construct);
 			}
 		};
