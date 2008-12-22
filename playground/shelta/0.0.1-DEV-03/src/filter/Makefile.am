@@ -1,0 +1,9 @@
+noinst_LIBRARIES=libfindik_filter.a
+libfindik_filter_a_SOURCES= \
+	abstract_request_filter.cpp \
+	domain_request_filter.cpp \
+	filter_report.cpp \
+	request_filter.cpp \
+	request_filter_factory_impl.cpp \
+	response_filter.cpp \
+	url_request_filter.cpp 
