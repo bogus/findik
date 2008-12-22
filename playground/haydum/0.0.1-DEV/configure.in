@@ -1,0 +1,27 @@
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.59)
+AC_INIT(findik, [0.0.1], [buggeroff@foo.org])
+AC_CONFIG_SRCDIR([src/zlib_util.hpp])
+AM_INIT_AUTOMAKE
+AM_CONFIG_HEADER([config.h])
+
+# Checks for programs.
+AC_PROG_CXX
+
+# Checks for libraries.
+
+# Checks for header files.
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+AC_CONFIG_FILES([
+	Makefile
+	src/Makefile
+])
+
+# Checks for library functions.
+AC_OUTPUT
