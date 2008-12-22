@@ -31,7 +31,7 @@ class connection
 public:
   /// Construct a connection with the given io_service.
   explicit connection(boost::asio::io_service& io_service,
-	  findik::dbmanager::pointer & manager);
+	  findik::persistency::dbmanager::pointer & manager);
 
   /// Get the socket associated with the local connection.
   boost::asio::ip::tcp::socket& l_socket();
