@@ -69,6 +69,7 @@ private:
   } state_;
 
   std::string method_;
+
 };
 
 } // namespace server3

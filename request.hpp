@@ -36,7 +36,8 @@ public:
 
   std::string & host();
   unsigned int port ();
-
+  
+  std::string & get_uri ();
   unsigned int content_length();
 
   void to_streambuf(boost::asio::streambuf & sbuf_);

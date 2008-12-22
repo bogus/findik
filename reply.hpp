@@ -47,6 +47,8 @@ struct reply
 
   /// Get a stock reply.
   static reply stock_reply(status_type status);
+
+  static reply stock_reply(status_type status, std::string reply_html);
 };
 
 } // namespace server3
