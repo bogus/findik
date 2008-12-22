@@ -1,0 +1,2 @@
+noinst_LIBRARIES=libfindik_config.a
+libfindik_config_a_SOURCES=configuration.cpp
