@@ -9,6 +9,7 @@
 #include "tidy_html_parser.hpp"
 #include "mysqldbmanager.hpp"
 #include "filter_report.hpp"
+#include "log_initializer.hpp"
 
 namespace findik {
 	namespace filter{
