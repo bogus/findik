@@ -2,16 +2,32 @@
 
 AC_PREREQ(2.59)
 AC_INIT(findik, [0.0.1], [buggeroff@foo.org])
-AC_CONFIG_SRCDIR([src/zlib_util.hpp])
+AC_CONFIG_SRCDIR([src/findik.cpp])
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.
 AC_PROG_CXX
+AC_PROG_RANLIB
+AC_LANG(C++)
 
 # Checks for libraries.
+BOOST_THREAD_EXISTS=""
+AC_HAVE_LIBRARY([boost_thread],,BOOST_THREAD_EXISTS="no")
+if test "$BOOST_THREAD_EXISTS" == "no"; then
+	echo "
+*******************************
+ boost_thread does not exist!
+*******************************
+"
+	exit 1
+fi
+
+AC_DEFINE(AMCIK_PIRESI, 1, [Define if kerem is amcik])
 
 # Checks for header files.
+AC_CHECK_HEADER([boost/asio.hpp],[break])
+AC_CHECK_HEADER([boost/shared_ptr.hpp],[break])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -21,6 +37,7 @@ AC_TYPE_SIZE_T
 AC_CONFIG_FILES([
 	Makefile
 	src/Makefile
+	src/config/Makefile
 ])
 
 # Checks for library functions.
