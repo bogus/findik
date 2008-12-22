@@ -5,15 +5,15 @@
 namespace findik {
 namespace io {
 
-connection::connection(boost::asio::io_service& io_service)
+connection::connection(boost::asio::io_service& io_service,
+					   findik::dbmanager::pointer & manager)
   : strand_(io_service),
     l_socket_(io_service),
 	r_socket_(io_service),
 	resolver_(io_service),
+	manager_(manager),
 	response_(request_)
 {
-	manager_ = dbmanager::pointer(new mysqldbmanager());
-	manager_->connectDb("localhost","findik","root","");
 }
 
 boost::asio::ip::tcp::socket& connection::l_socket()

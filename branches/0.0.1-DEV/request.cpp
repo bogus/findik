@@ -1,4 +1,5 @@
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 #include "request.hpp"
 
@@ -14,19 +15,19 @@ namespace io {
 
 	std::string & request::host()
 	{
-		for (std::size_t i = 0; i < headers.size(); ++i)
-			if (headers[i].name == "Host")
-				host_ = headers[i].value;
+		BOOST_FOREACH( header h, headers )
+			if (h.name == "Host")
+				host_ = h.value;
 		return host_;
 	}
 
 	unsigned int request::content_length()
 	{
 		if (content_length_ == 0)
-			for (size_t i = 0; i < headers.size(); ++i)
-				if (headers[i].name == "Content-Length")
+			BOOST_FOREACH( header h, headers )
+				if (h.name == "Content-Length")
 					content_length_ = 
-					boost::lexical_cast< unsigned int >(headers[i].value);
+					boost::lexical_cast< unsigned int >(h.value);
 
 		return content_length_;
 	}
@@ -54,14 +55,13 @@ namespace io {
 
 		request_stream  << " " << uri << " HTTP/" <<
 		http_version_major << "." << http_version_minor << "\r\n";
-		for (std::size_t i = 0; i < headers.size(); ++i)
-			if (headers[i].name == "Connection" ||
-					headers[i].name == "Proxy-Connection" ||
-					headers[i].name == "Keep-Alive" )
+		BOOST_FOREACH( header h, headers )
+			if (h.name == "Connection" ||
+					h.name == "Proxy-Connection" ||
+					h.name == "Keep-Alive" )
 				continue;
 			else
-				request_stream << headers[i].name << ": "
-						<< headers[i].value << "\r\n";
+				request_stream << h.name << ": " << h.value << "\r\n";
 
 		request_stream << "Connection: Close\r\n";
 		request_stream << "\r\n";

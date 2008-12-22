@@ -1,10 +1,11 @@
+#include "server.hpp"
+
 #include <iostream>
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/lexical_cast.hpp>
-#include "server.hpp"
 
 #if defined(_WIN32)
 

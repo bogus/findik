@@ -16,9 +16,6 @@ namespace findik {
 		public boost::enable_shared_from_this<dbmanager>
 	{
 
-	private:
-		
-
 	public:
 		virtual void connectDb(std::string host, std::string db, 
 			std::string username, std::string password) = 0;
@@ -29,12 +26,13 @@ namespace findik {
 		virtual bool urlRegexQuery(std::string url) = 0;
 		virtual bool contentRegexQuery(std::string content) = 0;
 
+		typedef boost::shared_ptr<dbmanager> pointer;
+
+	protected:
 		std::string host;
 		std::string db;
 		std::string username;
 		std::string password;
-
-		typedef boost::shared_ptr<dbmanager> pointer;
 
 	};
 }
