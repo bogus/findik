@@ -42,6 +42,9 @@ private:
 
   /// The next connection to be accepted.
   connection_ptr new_connection_;
+
+  findik::dbmanager::pointer manager_ptr_;
+
 };
 
 } // namespace server3

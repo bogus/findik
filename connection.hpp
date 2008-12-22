@@ -27,7 +27,8 @@ class connection
 {
 public:
   /// Construct a connection with the given io_service.
-  explicit connection(boost::asio::io_service& io_service);
+  explicit connection(boost::asio::io_service& io_service,
+	  findik::dbmanager::pointer & manager);
 
   /// Get the socket associated with the local connection.
   boost::asio::ip::tcp::socket& l_socket();
@@ -89,7 +90,7 @@ private:
   reply reply_;
 
   /// Database manager object
-  dbmanager::pointer manager_;
+  findik::dbmanager::pointer & manager_;
 };
 
 typedef boost::shared_ptr<connection> connection_ptr;
