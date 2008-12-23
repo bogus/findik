@@ -9,7 +9,7 @@ namespace findik {
 			return rfm;
 		}
 
-		#define INCLUDE_UNIT(a) extern void init_##a();init_##a();
+		#define INCLUDE_UNIT(a) extern void init_##a();
 
 		request_filter_factory_impl::request_filter_factory_impl(void)
 		{
