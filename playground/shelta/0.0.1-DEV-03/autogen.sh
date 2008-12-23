@@ -1120,9 +1120,6 @@ else
     reconfigure_manually=yes
 fi
 
-# needed manual reconfiguration
-reconfigure_manually=yes
-
 
 ############################
 # LIBTOOL_FAILURE FUNCTION #
