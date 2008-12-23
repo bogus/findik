@@ -44,7 +44,7 @@ namespace findik {
 			catch (sql::SQLException &e)
 			{
 				LOG4CXX_ERROR(debug_logger, "SQL Error: " << e.getSQLState());
-				LOG4CXX_ERROR(findik::log_initializer::user_logger,
+				LOG4CXX_ERROR(logging::log_initializer::user_logger,
 					"Unable to connect MySQL on host: " << host << " with user: " << username);
 			}
 		}

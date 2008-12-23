@@ -16,7 +16,7 @@ namespace findik {
 		{
 			bool isOk = manager_->domainQuery(request_.host());
 			if(!isOk) {
-				LOG4CXX_WARN(log_initializer::filter_logger, request_.host() << " DOMAIN BLOCKED");
+				LOG4CXX_WARN(logging::log_initializer::filter_logger, request_.host() << " DOMAIN BLOCKED");
 				filter_report_->generate_report(filter_report::request_domain,request_.host());
 			}
 			return isOk;

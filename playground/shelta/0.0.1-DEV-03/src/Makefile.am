@@ -1,10 +1,8 @@
-SUBDIRS = config filter io parser persistency
+SUBDIRS = config filter io logging parser persistency
 
 bin_PROGRAMS = findik
 
-findik_SOURCES = \
-	findik.cpp \
-	log_initializer.cpp
+findik_SOURCES = findik.cpp
 
 findik_LDADD = \
 	config/*.o \
@@ -13,6 +11,8 @@ findik_LDADD = \
 	filter/libfindik_filter.a \
 	io/*.o \
 	io/libfindik_io.a \
+	logging/*.o \
+	logging/libfindik_logging.a \
 	parser/*.o \
 	parser/libfindik_parser.a \
 	persistency/*.o \
@@ -32,5 +32,6 @@ INCLUDES = \
 	-I@top_srcdir@/src/config \
 	-I@top_srcdir@/src/filter \
 	-I@top_srcdir@/src/io \
+	-I@top_srcdir@/src/logging \
 	-I@top_srcdir@/src/parser \
 	-I@top_srcdir@/src/persistency

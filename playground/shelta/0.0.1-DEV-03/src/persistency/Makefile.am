@@ -6,5 +6,5 @@ libfindik_persistency_a_SOURCES= \
 	pooled_dbmanager.cpp
 
 INCLUDES = \
-        -I@top_srcdir@/src/ \
-        -I@top_srcdir@/src/config
+        -I@top_srcdir@/src/config \
+        -I@top_srcdir@/src/logging

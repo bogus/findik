@@ -11,8 +11,8 @@ libfindik_io_a_SOURCES= \
 	server.cpp
 
 INCLUDES = \
-        -I@top_srcdir@/src/ \
         -I@top_srcdir@/src/config \
         -I@top_srcdir@/src/filter \
+        -I@top_srcdir@/src/logging \
         -I@top_srcdir@/src/parser \
         -I@top_srcdir@/src/persistency

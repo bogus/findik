@@ -55,6 +55,7 @@ AC_CONFIG_FILES([
 	src/config/Makefile
 	src/filter/Makefile
 	src/io/Makefile
+	src/logging/Makefile
 	src/parser/Makefile
 	src/persistency/Makefile
 ])

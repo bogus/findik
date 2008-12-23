@@ -10,8 +10,8 @@ libfindik_filter_a_SOURCES= \
 	url_request_filter.cpp 
 
 INCLUDES = \
-	-I@top_srcdir@/src/ \
 	-I@top_srcdir@/src/config \
 	-I@top_srcdir@/src/io \
+	-I@top_srcdir@/src/logging \
 	-I@top_srcdir@/src/parser \
 	-I@top_srcdir@/src/persistency
