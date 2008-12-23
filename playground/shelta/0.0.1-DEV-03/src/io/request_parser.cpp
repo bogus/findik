@@ -41,21 +41,21 @@ boost::tribool request_parser::consume(request& req, char input)
     if (input == ' ')
     {
 		if (method_ == "GET")
-			req.method = findik::io::request::method_type::get;
+			req.method = findik::io::request::get;
 		else if (method_ == "POST")
-			req.method = findik::io::request::method_type::post;
+			req.method = findik::io::request::post;
 		else if (method_ == "HEAD")
-			req.method = findik::io::request::method_type::head;
+			req.method = findik::io::request::head;
 		else if (method_ == "PUT")
-			req.method = findik::io::request::method_type::put;
+			req.method = findik::io::request::put;
 		else if (method_ == "DELETE")
-			req.method = findik::io::request::method_type::delete_;
+			req.method = findik::io::request::delete_;
 		else if (method_ == "TRACE")
-			req.method = findik::io::request::method_type::trace;
+			req.method = findik::io::request::trace;
 		else if (method_ == "OPTIONS")
-			req.method = findik::io::request::method_type::options;
+			req.method = findik::io::request::options;
 		else if (method_ == "CONNECT")
-			req.method = findik::io::request::method_type::connect;
+			req.method = findik::io::request::connect;
 		else 
 			return false;
 		method_.clear();

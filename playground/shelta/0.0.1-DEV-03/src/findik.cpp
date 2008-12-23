@@ -89,6 +89,8 @@ int main(int argc, char* argv[])
 #endif // defined(_WIN32)
 #if !defined(_WIN32)
 
+#include <boost/thread.hpp>
+
 #include <pthread.h>
 #include <signal.h>
 

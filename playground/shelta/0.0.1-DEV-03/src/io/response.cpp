@@ -36,7 +36,7 @@ namespace findik {
 		bool response::has_content()
 		{
 			return get_request().method != 
-				findik::io::request::method_type::head;
+				findik::io::request::head;
 		}
 
 		request & response::get_request()

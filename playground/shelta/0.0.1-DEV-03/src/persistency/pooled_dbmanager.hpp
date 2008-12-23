@@ -21,12 +21,12 @@ namespace findik {
 		template <class T>
 		class pooled_dbmanager :
 			public findik::persistency::dbmanager,
-			public boost::enable_shared_from_this<pooled_dbmanager<T>>
+			public boost::enable_shared_from_this< pooled_dbmanager < T > >
 		{
 
 		public:
 
-			typedef boost::shared_ptr<pooled_dbmanager<T>> pointer;
+			typedef boost::shared_ptr< pooled_dbmanager < T > > pointer;
 			
 			void prepare_pool();
 
@@ -36,7 +36,7 @@ namespace findik {
 
 			std::size_t pool_index_;
 
-			typedef boost::shared_ptr<dbconnection<T>> dbconnection_ptr;
+			typedef boost::shared_ptr< dbconnection < T > > dbconnection_ptr;
 
 			std::vector<dbconnection_ptr> pool_;
 

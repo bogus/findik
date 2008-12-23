@@ -40,7 +40,7 @@ namespace findik
 		template <class T>
 		bool dbconnection<T>::is_locked()
 		{
-			return _lock;
+			return lock_;
 		}
 
 		template <class T>

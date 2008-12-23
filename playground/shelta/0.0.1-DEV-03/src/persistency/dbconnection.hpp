@@ -13,7 +13,7 @@ namespace findik
 	{
 		template <class T>
 		class dbconnection :
-			public boost::enable_shared_from_this<dbconnection<T>>
+			public boost::enable_shared_from_this< dbconnection< T > >
 		{
 		public:
 			dbconnection(T * connection);
@@ -26,7 +26,7 @@ namespace findik
 
 			T * connection();
 
-			typedef boost::shared_ptr<dbconnection<T>> pointer;
+			typedef boost::shared_ptr< dbconnection < T > > pointer;
 
 			void * get_object(unsigned int key);
 

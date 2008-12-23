@@ -16,7 +16,7 @@ namespace findik {
 		{
 			bool isOk = manager_->urlQuery(request_.get_uri());
 			if(!isOk) {
-				filter_report_->generate_report(filter_report::reason_type::request_url,request_.get_uri());
+				filter_report_->generate_report(filter_report::request_url,request_.get_uri());
 			}
 			return isOk;
 		}
@@ -28,3 +28,4 @@ namespace findik {
 		
 	}
 }
+

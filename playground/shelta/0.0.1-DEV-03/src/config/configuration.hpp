@@ -6,7 +6,6 @@
 #include <libconfig.h++>
 #include <iostream>
 
-
 namespace findik {
 	namespace config {
 
@@ -17,8 +16,8 @@ namespace findik {
 			configuration(void);
 			~configuration(void);
 
-			bool configuration::getConfigValue_String(std::string setting_path,std::string & value);
-			bool configuration::getConfigValue_Int(std::string setting_path,int & value);
+			bool getConfigValue_String(std::string setting_path,std::string & value);
+			bool getConfigValue_Int(std::string setting_path,int & value);
 
 			typedef boost::shared_ptr<configuration> pointer;
 
@@ -31,3 +30,4 @@ namespace findik {
 }
 
 #endif
+

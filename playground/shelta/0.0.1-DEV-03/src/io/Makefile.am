@@ -1,4 +1,5 @@
 noinst_LIBRARIES=libfindik_io.a
+
 libfindik_io_a_SOURCES= \
 	connection.cpp \
 	mime_types.cpp \
@@ -8,3 +9,10 @@ libfindik_io_a_SOURCES= \
 	response.cpp \
 	response_parser.cpp \
 	server.cpp
+
+INCLUDES = \
+        -I@top_srcdir@/src/ \
+        -I@top_srcdir@/src/config \
+        -I@top_srcdir@/src/filter \
+        -I@top_srcdir@/src/parser \
+        -I@top_srcdir@/src/persistency

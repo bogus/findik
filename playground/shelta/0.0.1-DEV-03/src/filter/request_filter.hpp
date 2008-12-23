@@ -28,10 +28,9 @@ namespace findik {
 			persistency::dbmanager::pointer manager_ ;
 			std::string reply_string;
 
-			
-
 		};
 	}
 }
 
 #endif
+
