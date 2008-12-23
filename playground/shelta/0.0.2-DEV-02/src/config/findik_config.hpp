@@ -1,0 +1,8 @@
+#ifndef FINDIK_CONFIG_HPP
+#define FINDIK_CONFIG_HPP
+
+#define __FC_SOCKET_BUFFER_SIZE 8192
+#define __FC_ZLIB_BUFFER_SIZE 8192
+
+#endif
+
