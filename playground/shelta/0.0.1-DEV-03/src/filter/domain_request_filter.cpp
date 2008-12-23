@@ -25,6 +25,11 @@ namespace findik {
 		{
 			return new domain_request_filter(manager,request);
 		}
+
+		void init_domain_request_filter ()
+		{
+			static findik::filter::request_filter_factory_registrar<findik::filter::domain_request_filter> rffr;
+		}
 		
 	}
 }

@@ -7,10 +7,15 @@ findik_SOURCES = \
 	log_initializer.cpp
 
 findik_LDADD = \
+	config/*.o \
 	config/libfindik_config.a \
+	filter/*.o \
 	filter/libfindik_filter.a \
+	io/*.o \
 	io/libfindik_io.a \
+	parser/*.o \
 	parser/libfindik_parser.a \
+	persistency/*.o \
 	persistency/libfindik_persistency.a 
 
 LIBS = \

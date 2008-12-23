@@ -23,10 +23,6 @@ namespace findik {
 }
 
 extern void init_url_request_filter ();
-void init_url_request_filter ()
-{
-	static findik::filter::request_filter_factory_registrar<findik::filter::url_request_filter> rffr;
-}
 
 #endif
 
