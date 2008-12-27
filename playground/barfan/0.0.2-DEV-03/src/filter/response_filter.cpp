@@ -27,9 +27,6 @@ namespace findik {
                                 it++;
                         }
 
-			if(isOk)
-				std::cout << "---------------------------" << std::endl;
-
                         return isOk;
 
 		}
