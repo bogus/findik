@@ -1,3 +1,19 @@
+/*
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include <string>
 #include <boost/lexical_cast.hpp>
 
@@ -174,7 +190,7 @@ boost::tribool response_parser::consume(response& resp, char input)
 		  return boost::indeterminate;
 	  }
 	  else
-		  return false;	  
+		  return false;
   case expecting_newline_1:
     if (input == '\n')
     {
@@ -284,13 +300,13 @@ boost::tribool response_parser::consume(response& resp, char input)
 	if (resp.is_chunked()) {
 		state_ = chunked_size_start;
 		return boost::indeterminate;
-	} 
-	else if (resp.has_content()) 
+	}
+	else if (resp.has_content())
 	{
 		if (resp.content_length() == 0)
 			return true;
 		state_ = content;
-		
+
 		return boost::indeterminate;
 	}
 	else
@@ -326,7 +342,7 @@ boost::tribool response_parser::consume(response& resp, char input)
 	  else if (input == '\r')
 	  {
 		  resp.push_to_content(input,false);
-		  chunked_line_length_ = 
+		  chunked_line_length_ =
 			  hex2int(chunked_line_length_str_);
 		  chunked_line_length_str_.clear();
 		  state_ = chunked_newline_1;
@@ -341,13 +357,13 @@ boost::tribool response_parser::consume(response& resp, char input)
 			  return true;
 		  state_ = chunked_line;
 		  return boost::indeterminate;
-	  } 
+	  }
 	  else
 		  return false;
   case chunked_line:
 	  resp.push_to_content(input);
 	  chunked_line_length_--;
-	  if (chunked_line_length_ == 0) 
+	  if (chunked_line_length_ == 0)
 	  {
 		  state_ = chunked_newline_2;
 	  }

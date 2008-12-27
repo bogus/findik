@@ -1,3 +1,19 @@
+/*
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #ifndef FINDIK_IO_PARSER_UTIL_HPP
 #define FINDIK_IO_PARSER_UTIL_HPP
 
@@ -39,14 +55,14 @@ static bool is_digit(int c)
 
 static bool is_hex(int c)
 {
-  if (is_digit(c) || 
+  if (is_digit(c) ||
 	  ( c >= 'a' && c <= 'f' ) ||
 	  ( c >= 'A' && c <= 'F' )
 	  )
 	  return true;
   else
     return false;
-  
+
 }
 
 static int hex2int(std::string hex){
@@ -64,7 +80,7 @@ static bool is_uri_char_unreserved(int c)
 		return true;
 	switch (c)
     {
-    case '-': case '_': case '.': case '~': 
+    case '-': case '_': case '.': case '~':
       return true;
     }
 	return false;
@@ -82,7 +98,7 @@ static bool is_uri_char_reserved(int c) {
 	return false;
 }
 
-static bool is_uri_char(int c) 
+static bool is_uri_char(int c)
 {
 	return is_uri_char_unreserved(c) || is_uri_char_reserved(c);
 }
