@@ -1,22 +1,21 @@
 SUBDIRS = config filter io logging parser persistency
 
-bin_PROGRAMS = findik
+lib_LTLIBRARIES		=	libfindik.la
 
-findik_SOURCES = findik.cpp
+libfindik_la_SOURCES	=
+libfindik_la_LDFLAGS	=	-no-undefined -version-info 0:0:0
+libfindik_la_LIBADD	= \
+	config/libfindik_config.la \
+	filter/libfindik_filter.la \
+	io/libfindik_io.la \
+	logging/libfindik_logging.la \
+	parser/libfindik_parser.la \
+	persistency/libfindik_persistency.la
 
-findik_LDADD = \
-	config/*.o \
-	config/libfindik_config.a \
-	filter/*.o \
-	filter/libfindik_filter.a \
-	io/*.o \
-	io/libfindik_io.a \
-	logging/*.o \
-	logging/libfindik_logging.a \
-	parser/*.o \
-	parser/libfindik_parser.a \
-	persistency/*.o \
-	persistency/libfindik_persistency.a 
+bin_PROGRAMS		=	findik
+
+findik_SOURCES		=	findik.cpp
+findik_LDADD		=	libfindik.la
 
 LIBS = \
 	-lboost_thread \

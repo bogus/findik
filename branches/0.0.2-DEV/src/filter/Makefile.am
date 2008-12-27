@@ -1,6 +1,6 @@
-noinst_LIBRARIES=libfindik_filter.a
+noinst_LTLIBRARIES		=	libfindik_filter.la
 
-libfindik_filter_a_SOURCES= \
+libfindik_filter_la_SOURCES	= \
 	abstract_request_filter.cpp \
 	domain_request_filter.cpp \
 	filter_report.cpp \
@@ -9,7 +9,9 @@ libfindik_filter_a_SOURCES= \
 	response_filter.cpp \
 	url_request_filter.cpp 
 
-INCLUDES = \
+libfindik_filter_la_LIBADD	=	@LTLIBOBJS@
+
+INCLUDES			= \
 	-I@top_srcdir@/src/config \
 	-I@top_srcdir@/src/io \
 	-I@top_srcdir@/src/logging \
