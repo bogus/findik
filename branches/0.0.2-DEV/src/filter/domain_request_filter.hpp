@@ -1,7 +1,7 @@
 #ifndef FINDIK_FILTER_DOMAIN_REQUEST_FILTER_HPP
 #define FINDIK_FILTER_DOMAIN_REQUEST_FILTER_HPP
 
-#include "request_filter_factory_impl.hpp"
+#include "abstract_request_filter.hpp"
 
 namespace findik {
 	namespace filter {
@@ -21,8 +21,6 @@ namespace findik {
 		};
 	}
 }
-
-extern void init_domain_request_filter ();
 
 #endif
 

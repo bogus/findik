@@ -26,11 +26,6 @@ namespace findik {
 			return new url_request_filter(manager,request);
 		}
 
-		void init_url_request_filter ()
-		{
-			static findik::filter::request_filter_factory_registrar<findik::filter::url_request_filter> rffr;
-		}
-		
 	}
 }
 

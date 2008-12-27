@@ -15,7 +15,7 @@ namespace findik {
 		{
 			request_filter_factory_iter it = request_filter_factory_map().begin();
 			bool isOk = true;
-
+			
 			while((it != request_filter_factory_map().end()) && (isOk == true))
 			{
 				abstract_request_filter * req_filter = (*it).second(manager_,request_) ;
