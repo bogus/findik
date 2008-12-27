@@ -1,3 +1,21 @@
+/*
+  Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
+  
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include "server.hpp"
 
 #include <iostream>
@@ -35,14 +53,14 @@ int main(int argc, char* argv[])
   try
   {
     // Check command line arguments.
-	  
+
     if (argc != 4 && argc != 1)
     {
       std::cerr << "Usage: findik <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    findik 0.0.0.0 80 1\n";
+      std::cerr << "	findik 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    findik 0::0 80 1\n";
+      std::cerr << "	findik 0::0 80 1\n";
       return 1;
     }
 
@@ -62,17 +80,17 @@ int main(int argc, char* argv[])
 	log_init.load_conf("findik_log.conf");
 
     // Initialise server.
-    findik::io::server s(address, port, num_threads); 
+    findik::io::server s(address, port, num_threads);
 
 	LOG4CXX_INFO(findik::log_initializer::user_logger,"findik started to listen " + address + ":" + port);
-	LOG4CXX_DEBUG(findik::log_initializer::debug_logger,"listening with " << num_threads << " threads"); 
+	LOG4CXX_DEBUG(findik::log_initializer::debug_logger,"listening with " << num_threads << " threads");
 
 	// Set console control handler to allow server to be stopped.
     console_ctrl_function = boost::bind(&findik::io::server::stop, &s);
     SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
 
     // Run the server until stopped.
-    s.run();	
+    s.run();
 
 	//stop logging
 	//todo put this to correct place
@@ -80,7 +98,7 @@ int main(int argc, char* argv[])
 
   }
   catch (std::exception& e)
-  {   
+  {
     std::cerr << "exception: " << e.what() << "\n";
   }
 
@@ -104,9 +122,9 @@ int main(int argc, char* argv[])
     {
       std::cerr << "Usage: findik <address> <port> <threads>\n";
       std::cerr << "  For IPv4, try:\n";
-      std::cerr << "    findik 0.0.0.0 80 1\n";
+      std::cerr << "	findik 0.0.0.0 80 1\n";
       std::cerr << "  For IPv6, try:\n";
-      std::cerr << "    findik 0::0 80 1\n";
+      std::cerr << "	findik 0::0 80 1\n";
       return 1;
     }
 

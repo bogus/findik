@@ -1,3 +1,19 @@
+/*
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include "tidy_html_parser.hpp"
 
 namespace findik {
@@ -10,7 +26,7 @@ namespace findik {
 
 		tidy_html_parser::~tidy_html_parser(void)
 		{
-			
+
 		}
 
 		void tidy_html_parser::clear()
@@ -38,19 +54,19 @@ namespace findik {
 			if( ok )
 				rc = tidySetErrorBuffer( tdoc, &errbuf);      // Capture diagnostics*/
 			if ( rc >= 0 )
-				rc = tidyParseString( tdoc, html_content );           // Parse the input
+				rc = tidyParseString( tdoc, html_content );	      // Parse the input
 			if ( rc >= 0 )
-				rc = tidyCleanAndRepair( tdoc );               // Tidy it up!
+				rc = tidyCleanAndRepair( tdoc );	       // Tidy it up!
 
 			tidyBufFree( &errbuf );
-			
+
 		}
 
 		void tidy_html_parser::parse_html()
 		{
 			this->dumpDoc();
 		}
-		
+
 		void tidy_html_parser::dumpDoc()
 		{
 			dumpNode( tidyGetRoot(this->tdoc) );
@@ -69,22 +85,22 @@ namespace findik {
 				switch ( tidyNodeGetType(child) )
 				{
 					/*
-					case TidyNode_Root:       name = "Root";                    break;
-					case TidyNode_DocType:    name = "DOCTYPE";                 break;
-					case TidyNode_Comment:    name = "Comment";                 break;
-					case TidyNode_ProcIns:    name = "Processing Instruction";  break;
+					case TidyNode_Root:	  name = "Root";		    break;
+					case TidyNode_DocType:	  name = "DOCTYPE";		    break;
+					case TidyNode_Comment:	  name = "Comment";		    break;
+					case TidyNode_ProcIns:	  name = "Processing Instruction";  break;
 					*/
-					case TidyNode_Text: 
-					tidyNodeGetText(this->tdoc,child,&buffer);      
-					parsed_content->append((char *)buffer.bp);                    
+					case TidyNode_Text:
+					tidyNodeGetText(this->tdoc,child,&buffer);
+					parsed_content->append((char *)buffer.bp);
 					break;
 					/*
-					case TidyNode_CDATA:      name = "CDATA";                   break;
-					case TidyNode_Section:    name = "XML Section";             break;
-					case TidyNode_Asp:        name = "ASP";                     break;
-					case TidyNode_Jste:       name = "JSTE";                    break;
-					case TidyNode_Php:        name = "PHP";                     break;
-					case TidyNode_XmlDecl:    name = "XML Declaration";         break;
+					case TidyNode_CDATA:	  name = "CDATA";		    break;
+					case TidyNode_Section:	  name = "XML Section";		    break;
+					case TidyNode_Asp:	  name = "ASP";			    break;
+					case TidyNode_Jste:	  name = "JSTE";		    break;
+					case TidyNode_Php:	  name = "PHP";			    break;
+					case TidyNode_XmlDecl:	  name = "XML Declaration";	    break;
 					case TidyNode_Start:
 					case TidyNode_End:
 					case TidyNode_StartEnd:

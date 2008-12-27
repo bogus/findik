@@ -1,3 +1,19 @@
+/*
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include "server.hpp"
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
@@ -24,7 +40,7 @@ server::server(const std::string& address, const std::string& port,
   acceptor_.listen();
   acceptor_.async_accept(new_connection_->l_socket(),
       boost::bind(&server::handle_accept, this,
-        boost::asio::placeholders::error));
+	boost::asio::placeholders::error));
 }
 
 void server::run()
@@ -34,7 +50,7 @@ void server::run()
   for (std::size_t i = 0; i < thread_pool_size_; ++i)
   {
     boost::shared_ptr<boost::thread> thread(new boost::thread(
-          boost::bind(&boost::asio::io_service::run, &io_service_)));
+	  boost::bind(&boost::asio::io_service::run, &io_service_)));
     threads.push_back(thread);
   }
 
@@ -55,8 +71,8 @@ void server::handle_accept(const boost::system::error_code& e)
     new_connection_->start();
     new_connection_.reset(new connection(io_service_, manager_ptr_));
     acceptor_.async_accept(new_connection_->l_socket(),
-        boost::bind(&server::handle_accept, this,
-          boost::asio::placeholders::error));
+	boost::bind(&server::handle_accept, this,
+	  boost::asio::placeholders::error));
   }
 }
 

@@ -1,3 +1,19 @@
+/*
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include "mysqldbmanager.hpp"
 
 #include <boost/scoped_ptr.hpp>
@@ -33,14 +49,14 @@ namespace findik {
 				mysql_dbconnection_ptr dbconnection__(
 					new mysql_dbconnection(myconn_));
 
-				dbconnection__->set_object(domain_query, 
+				dbconnection__->set_object(domain_query,
 					myconn_->prepareStatement("SELECT domain from blacklist_domain where domain=?"));
 
-				dbconnection__->set_object(url_query, 
+				dbconnection__->set_object(url_query,
 					myconn_->prepareStatement("SELECT url from blacklist_url where url=?"));
 
 				return dbconnection__;
-			} 
+			}
 			catch (sql::SQLException &e)
 			{
 				LOG4CXX_ERROR(debug_logger, "SQL Error: " << e.getSQLState());
@@ -50,8 +66,8 @@ namespace findik {
 		}
 
 		void mysqldbmanager::connectDb() {
-			
-			config::configuration_.getConfigValue_String("findik.db.host",this->host);	
+
+			config::configuration_.getConfigValue_String("findik.db.host",this->host);
 			config::configuration_.getConfigValue_String("findik.db.username",this->username);
 			config::configuration_.getConfigValue_String("findik.db.password",this->password);
 			config::configuration_.getConfigValue_String("findik.db.db",this->db);
@@ -75,8 +91,8 @@ namespace findik {
 				ps_->setString(1,hostname);
 				boost::scoped_ptr< sql::ResultSet > res(ps_->executeQuery());
 
-				dbconnection_->unlock(); 
-				
+				dbconnection_->unlock();
+
 				if(res->rowsCount() > 0)
 					return false;
 
@@ -100,7 +116,7 @@ namespace findik {
 				boost::scoped_ptr< sql::ResultSet > res(ps_->executeQuery());
 
 				dbconnection_->unlock();
-				
+
 				if(res->rowsCount() > 0)
 					return false;
 

@@ -1,3 +1,19 @@
+/*
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
@@ -8,7 +24,7 @@
 namespace findik {
 	namespace io {
 
-		response::response(request & request__) : 
+		response::response(request & request__) :
 			content_length_(0),
 			request_(request__),
 			content_encoding_(indeterminate)
@@ -26,7 +42,7 @@ namespace findik {
 		}
 
 		bool response::is_chunked()
-		{	
+		{
 			BOOST_FOREACH( header h, headers )
 				if (h.name == "Transfer-Encoding" && h.value == "chunked")
 					return true;
@@ -35,7 +51,7 @@ namespace findik {
 
 		bool response::has_content()
 		{
-			return get_request().method != 
+			return get_request().method !=
 				findik::io::request::head;
 		}
 
@@ -47,8 +63,8 @@ namespace findik {
 		void response::to_streambuf(boost::asio::streambuf &sbuf_)
 		{
 		std::ostream response_stream(&sbuf_);
-		
-		response_stream << "HTTP/" << http_version_major << "." 
+
+		response_stream << "HTTP/" << http_version_major << "."
 			<< http_version_minor << " " << status_code << " "
 			<< status_line << "\r\n";
 
@@ -87,10 +103,10 @@ namespace findik {
 							content_type_ = h.value;
 							break;
 						}
-						
+
 						content_type_ = h.value.substr(0,pos_);
 						pos_ = h.value.find("charset=");
-						
+
 						if (pos_ == std::string::npos)
 							break;
 

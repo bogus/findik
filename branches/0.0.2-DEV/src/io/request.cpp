@@ -1,3 +1,19 @@
+/*
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
@@ -6,9 +22,9 @@
 namespace findik {
 namespace io {
 
-	request::request() : 
-		host_(""), 
-			content_length_(0), 
+	request::request() :
+		host_(""),
+			content_length_(0),
 			port_(0)
 	{
 	}
@@ -31,7 +47,7 @@ namespace io {
 		if (content_length_ == 0)
 			BOOST_FOREACH( header h, headers )
 				if (h.name == "Content-Length")
-					content_length_ = 
+					content_length_ =
 					boost::lexical_cast< unsigned int >(h.value);
 
 		return content_length_;
@@ -40,7 +56,7 @@ namespace io {
 	void request::to_streambuf(boost::asio::streambuf &sbuf_)
 	{
 		std::ostream request_stream(&sbuf_);
-		
+
 		if (method == get)
 			request_stream << "GET";
 		else if (method == post)
@@ -58,7 +74,7 @@ namespace io {
 		else if (method == connect)
 			request_stream << "CONNECT";
 
-		request_stream  << " " << uri << " HTTP/" <<
+		request_stream	<< " " << uri << " HTTP/" <<
 		http_version_major << "." << http_version_minor << "\r\n";
 		BOOST_FOREACH( header h, headers )
 			if (h.name == "Connection" ||
@@ -87,8 +103,8 @@ namespace io {
 
 			if (pos_ == std::string::npos)
 				port_ = 80;
-			else 
-				port_ = 
+			else
+				port_ =
 					boost::lexical_cast< unsigned int >(host().substr(pos_));
 		}
 
