@@ -30,13 +30,14 @@ namespace findik {
 
 		bool response_filter::response_content_filter()
 		{
+/*
 			if(response_.content_type() == "text/html") {
 				html_parser_ = parser::tidy_html_parser::pointer(new findik::parser::tidy_html_parser());
 				html_parser_->create_doc(response_.content().c_str());
 				html_parser_->parse_html();
 				html_parser_->clear();
 			}
-
+*/
 			return true;
 		}
 
