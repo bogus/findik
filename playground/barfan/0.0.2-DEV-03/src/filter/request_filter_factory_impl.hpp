@@ -8,9 +8,9 @@
 namespace findik {
 	namespace filter {
 
-		typedef abstract_request_filter * (*ClassFactoryFn)( persistency::dbmanager::pointer & manager, io::request & request );
+		typedef abstract_request_filter * (*ClassFactoryReqFn)( persistency::dbmanager::pointer & manager, io::request & request );
 
-		class request_filter_factory_impl : public std::map<int,ClassFactoryFn>
+		class request_filter_factory_impl : public std::map<int,ClassFactoryReqFn>
 		{
 		public:
 			request_filter_factory_impl(void);

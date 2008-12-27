@@ -128,6 +128,7 @@ int main(int argc, char* argv[])
 	}
     // Initialize request filter
 	findik::filter::generate_request_filter_factory_map();
+	findik::filter::generate_response_filter_factory_map();
 
     // Initialise server.
     findik::io::server s(address, port, num_threads);

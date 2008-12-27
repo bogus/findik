@@ -7,7 +7,11 @@ libfindik_filter_a_SOURCES= \
 	request_filter.cpp \
 	request_filter_factory_impl.cpp \
 	response_filter.cpp \
-	url_request_filter.cpp 
+	url_request_filter.cpp \
+	content_response_filter.cpp \
+	abstract_response_filter.cpp \
+	response_filter_factory_impl.cpp
+
 
 INCLUDES = \
 	-I@top_srcdir@/src/config \

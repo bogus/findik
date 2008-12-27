@@ -5,11 +5,8 @@
 #include <boost/enable_shared_from_this.hpp>
 
 #include "response.hpp" // must be included before mysql libraries
-
-#include "tidy_html_parser.hpp"
 #include "mysqldbmanager.hpp"
-#include "filter_report.hpp"
-#include "log_initializer.hpp"
+#include "response_filter_factory_impl.hpp"
 
 namespace findik {
 	namespace filter{
@@ -24,18 +21,12 @@ namespace findik {
 			typedef boost::shared_ptr<response_filter> pointer;
 
 			bool response_chain_filter();
-
-			std::string get_reply();
+			std::string get_reply_string();
 
 		private:
 			io::response & response_;
 			persistency::dbmanager::pointer manager_;
-			filter_report::pointer filter_report_;
-			parser::tidy_html_parser::pointer html_parser_;
-
-			bool response_content_filter();
-			bool response_content_type_filter();
-
+			std::string reply_string;
 		};
 	}
 }
