@@ -1,6 +1,6 @@
 /*
   Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
-  
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
@@ -146,6 +146,7 @@ int main(int argc, char* argv[])
 	}
     // Initialize request filter
 	findik::filter::generate_request_filter_factory_map();
+	findik::filter::generate_response_filter_factory_map();
 
     // Initialise server.
     findik::io::server s(address, port, num_threads);

@@ -27,40 +27,32 @@ namespace findik {
 
 		response_filter::~response_filter(void)
 		{
-			filter_report_ = filter_report::pointer(new filter_report());
 		}
 
 		bool response_filter::response_chain_filter()
 		{
-			if(response_content_type_filter() &&
-				response_content_filter())
-				return true;
+			response_filter_factory_iter it = response_filter_factory_map().begin();
+			bool isOk = true;
 
-			return false;
-		}
-
-		std::string response_filter::get_reply()
-		{
-			return filter_report_->get_reply_result();
-		}
-
-		bool response_filter::response_content_filter()
-		{
-/*
-			if(response_.content_type() == "text/html") {
-				html_parser_ = parser::tidy_html_parser::pointer(new findik::parser::tidy_html_parser());
-				html_parser_->create_doc(response_.content().c_str());
-				html_parser_->parse_html();
-				html_parser_->clear();
+			while((it != response_filter_factory_map().end()) && (isOk == true))
+			{
+				abstract_response_filter * resp_filter = (*it).second(manager_,response_) ;
+				isOk = resp_filter->filter();
+				reply_string = resp_filter->get_reply();
+				delete resp_filter ;
+				it++;
 			}
-*/
-			return true;
+
+			return isOk;
+
 		}
 
-		bool response_filter::response_content_type_filter()
+		std::string response_filter::get_reply_string()
 		{
-			return true;
+			return reply_string;
 		}
+
 
 	}
 }
+
