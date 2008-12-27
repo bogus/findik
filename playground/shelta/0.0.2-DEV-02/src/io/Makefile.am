@@ -1,6 +1,6 @@
-noinst_LIBRARIES=libfindik_io.a
+noinst_LTLIBRARIES		=	libfindik_io.la
 
-libfindik_io_a_SOURCES= \
+libfindik_io_la_SOURCES		= \
 	connection.cpp \
 	mime_types.cpp \
 	reply.cpp \
@@ -10,7 +10,9 @@ libfindik_io_a_SOURCES= \
 	response_parser.cpp \
 	server.cpp
 
-INCLUDES = \
+libfindik_io_la_LIBADD		=	@LTLIBOBJS@
+
+INCLUDES 			= \
         -I@top_srcdir@/src/config \
         -I@top_srcdir@/src/filter \
         -I@top_srcdir@/src/logging \
