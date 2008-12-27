@@ -8,6 +8,7 @@
 #include <boost/lexical_cast.hpp>
 #include "configuration.hpp"
 #include "log_initializer.hpp"
+#include "request_filter_factory_impl.hpp"
 #if defined(_WIN32)
 
 boost::function0<void> console_ctrl_function;
@@ -125,6 +126,8 @@ int main(int argc, char* argv[])
 		port = argv[2];
 		num_threads = boost::lexical_cast<std::size_t>(argv[3]);
 	}
+    // Initialize request filter
+	findik::filter::generate_request_filter_factory_map();
 
     // Initialise server.
     findik::io::server s(address, port, num_threads);

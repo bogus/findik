@@ -22,7 +22,6 @@ namespace findik {
 	}
 }
 
-extern void init_url_request_filter ();
 
 #endif
 
