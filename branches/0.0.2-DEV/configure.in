@@ -1,9 +1,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([findik],[0.0.1],[buggeroff@foo.org])
+AC_INIT([findik],[0.0.2],[findikmail@gmail.com])
 AC_CONFIG_SRCDIR([src/findik.cpp])
-AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -12,6 +11,19 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_PROG_RANLIB
 AC_LANG(C++)
+
+
+DX_HTML_FEATURE(ON)
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_MAN_FEATURE(ON)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(ON)
+DX_PS_FEATURE(OFF)
+DX_INIT_DOXYGEN(findik, doxygen.cfg)
+
+AM_INIT_AUTOMAKE
 
 # Checks for libraries.
 # ex: AC_CHECK_LIB([name],[break])
