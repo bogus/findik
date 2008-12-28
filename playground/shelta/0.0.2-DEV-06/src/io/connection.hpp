@@ -77,6 +77,8 @@ private:
   void handle_read_response(const boost::system::error_code& e,
       std::size_t bytes_transferred);
 
+  void set_socket_options(boost::asio::ip::tcp::socket & socket);
+
   /// Strand to ensure the connection's handlers are not called concurrently.
   boost::asio::io_service::strand strand_;
 
