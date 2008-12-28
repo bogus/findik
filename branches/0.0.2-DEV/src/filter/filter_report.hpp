@@ -1,4 +1,6 @@
 /*
+  Copyright (C) 2008 Burak Oguz (barfan) <findikmail@gmail.com>
+	
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
@@ -23,14 +25,24 @@
 
 namespace findik {
 	namespace filter {
+/*!
+ This class represents a report generator for filter operations
 
+ @author Burak Oguz
+*/
 		class filter_report :
 			public boost::enable_shared_from_this<filter_report>
 		{
 		public:
+			/*!
+			Constructor for this class.
+			*/
 			filter_report(void);
 			~filter_report(void);
-
+			
+			/*!
+			Enumaration for reason types for request and response filters.
+			*/
 			enum reason_type
 			{
 				request_domain = 1,
@@ -40,10 +52,24 @@ namespace findik {
 				response_content_type = 101
 			} reason;
 
+			/*!
+                        Generates report with given parameters and saves it into reply_result
+
+			\param reason reason type from reason enumuration
+			\param data filter failure data for report generation 
+			\sa get_reply_result() reply_result
+                        */
 			void generate_report(reason_type reason, std::string data);
 
+			/*!
+			\return generated string from generate_report
+			\sa generate_report()
+			*/
 			std::string get_reply_result();
-
+			
+			/*!
+			Boost shared pointer for filter_report object
+			*/
 			typedef boost::shared_ptr<filter_report> pointer;
 
 		private:
