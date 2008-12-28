@@ -29,11 +29,11 @@ namespace findik {
 
 			virtual void create_doc(const char* html_content) = 0;
 			virtual void parse_html() = 0;
-			virtual std::string * get_content() = 0;
+			virtual std::string & get_content() = 0;
 
 		protected:
 
-			std::string * parsed_content;
+			std::string parsed_content;
 		};
 
 	}
