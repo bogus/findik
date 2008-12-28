@@ -45,6 +45,8 @@ boost::asio::ip::tcp::socket& connection::r_socket()
 
 void connection::start()
 {
+	set_socket_options(l_socket_);
+
   l_socket_.async_read_some(boost::asio::buffer(buffer_),
       strand_.wrap(
 	boost::bind(&connection::handle_read_request, shared_from_this(),
@@ -129,6 +131,8 @@ void connection::handle_read_request(const boost::system::error_code& e,
   {
     if (!err)
     {
+	set_socket_options(r_socket_);
+
 	  request_.to_streambuf(request_sbuf_);
       // The connection was successful. Send the request.
 	  boost::asio::async_write(r_socket_, request_sbuf_,
@@ -237,6 +241,20 @@ void connection::handle_write_response(const boost::system::error_code& e)
   // destroyed automatically after this handler returns. The connection class's
   // destructor closes the socket.
 }
+
+void connection::set_socket_options(boost::asio::ip::tcp::socket & socket)
+{
+	boost::asio::socket_base::non_blocking_io command(true);
+	socket.io_control(command);
+
+	boost::asio::ip::tcp::no_delay no_delay_option(true);
+	socket.set_option(no_delay_option);
+
+	boost::asio::socket_base::linger linger_option(false, 0);
+	socket.set_option(linger_option);
+
+}
+
 	log4cxx::LoggerPtr connection::debug_logger(log4cxx::Logger::getLogger("findik.io.connection"));
 
 } // namespace server3
