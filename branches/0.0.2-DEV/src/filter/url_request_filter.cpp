@@ -30,10 +30,10 @@ namespace findik {
 
 		bool url_request_filter::filter()
 		{
-			LOG4CXX_DEBUG(debug_logger, "checking for uri: " << request_.get_uri());
-			bool isOk = manager_->urlQuery(request_.get_uri());
+			LOG4CXX_DEBUG(debug_logger, "checking for uri: " << request_.get_full_uri());
+			bool isOk = manager_->urlQuery(request_.get_full_uri());
 			if(!isOk) {
-				filter_report_->generate_report(filter_report::request_url,request_.get_uri());
+				filter_report_->generate_report(filter_report::request_url,request_.get_full_uri());
 			}
 			return isOk;
 		}

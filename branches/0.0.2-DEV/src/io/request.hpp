@@ -50,10 +50,11 @@ public:
 
 
 
-  std::string & host();
+  const std::string & host();
   unsigned int port ();
 
-  std::string & get_uri ();
+  const std::string & get_full_uri ();
+  const std::string & get_request_path ();
   unsigned int content_length();
 
   void to_streambuf(boost::asio::streambuf & sbuf_);
@@ -72,6 +73,10 @@ private:
 	boost::asio::streambuf content_;
 
 	std::string host_;
+
+	std::string request_path_;
+
+	std::string full_uri_;
 
 	unsigned int port_;
 
