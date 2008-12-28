@@ -34,6 +34,8 @@ namespace findik {
 		private:
 			url_request_filter(persistency::dbmanager::pointer & manager, io::request & request);
 
+		protected:
+			static log4cxx::LoggerPtr debug_logger;
 		};
 	}
 }

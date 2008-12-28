@@ -17,6 +17,8 @@
 #ifndef FINDIK_IO_PARSER_UTIL_HPP
 #define FINDIK_IO_PARSER_UTIL_HPP
 
+#include <string>
+
 namespace findik {
 	namespace io {
 
@@ -102,6 +104,23 @@ static bool is_uri_char(int c)
 {
 	return is_uri_char_unreserved(c) || is_uri_char_reserved(c);
 }
+
+
+static void trim_spaces( std::string& str)
+{
+    // Trim Both leading and trailing spaces
+    std::size_t startpos = str.find_first_not_of(" \t"); // Find the first character position after excluding leading blank spaces
+    std::size_t endpos = str.find_last_not_of(" \t"); // Find the first character position from reverse af
+
+    // if all spaces or empty return an empty string
+    if(( std::string::npos == startpos ) || ( std::string::npos == endpos))
+    {
+        str = "";
+    }
+    else
+        str = str.substr( startpos, endpos - startpos + 1 );
+}
+
 
 	}
 }

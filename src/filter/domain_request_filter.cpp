@@ -30,6 +30,7 @@ namespace findik {
 
 		bool domain_request_filter::filter()
 		{
+			LOG4CXX_DEBUG(debug_logger, "checking for domain: " << request_.host());
 			bool isOk = manager_->domainQuery(request_.host());
 			if(!isOk) {
 				LOG4CXX_WARN(logging::log_initializer::filter_logger, request_.host() << " DOMAIN BLOCKED");
@@ -42,6 +43,7 @@ namespace findik {
 			return new domain_request_filter(manager,request);
 		}
 
+		log4cxx::LoggerPtr domain_request_filter::debug_logger(log4cxx::Logger::getLogger("findik.filter.domain_request_filter"));
 
 	}
 }

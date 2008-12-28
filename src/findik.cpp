@@ -27,11 +27,12 @@
 #include "configuration.hpp"
 #include "log_initializer.hpp"
 #include "request_filter_factory_impl.hpp"
+
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("findik"));
+
 #if defined(_WIN32)
 
 boost::function0<void> console_ctrl_function;
-
-log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("findik"));
 
 BOOL WINAPI console_ctrl_handler(DWORD ctrl_type)
 {
@@ -66,7 +67,7 @@ int main(int argc, char* argv[])
 
 	std::string address("0.0.0.0");
 	std::string port("8080");
-	std::size_t num_threads(10);
+	std::size_t num_threads(100);
 
 	if (argc == 4) {
 		address = argv[1];
@@ -137,7 +138,7 @@ int main(int argc, char* argv[])
     // Run server in background thread.
     std::string address("0.0.0.0");
 	std::string port("8080");
-	std::size_t num_threads(10);
+	std::size_t num_threads(100);
 
 	if (argc == 4) {
 		address = argv[1];
@@ -148,9 +149,17 @@ int main(int argc, char* argv[])
 	findik::filter::generate_request_filter_factory_map();
 	findik::filter::generate_response_filter_factory_map();
 
+	// Initialize log manager
+	//todo: fetch file paths, log level and accesslog on|off from conf file
+	findik::logging::log_initializer log_init;
+	log_init.load_conf("findik_log.conf");
+
     // Initialise server.
     findik::io::server s(address, port, num_threads);
     boost::thread t(boost::bind(&findik::io::server::run, &s));
+
+	LOG4CXX_INFO(findik::logging::log_initializer::user_logger,"findik started to listen " + address + ":" + port);
+	LOG4CXX_DEBUG(findik::logging::log_initializer::debug_logger,"listening with " << num_threads << " threads");
 
     // Restore previous signals.
     pthread_sigmask(SIG_SETMASK, &old_mask, 0);

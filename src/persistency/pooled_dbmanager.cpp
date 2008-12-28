@@ -42,11 +42,18 @@ namespace findik
 				connection = pool_[pool_index_];
 				pool_index_++;
 				pool_index_ = pool_index_%pool_size_;
+
+				LOG4CXX_DEBUG(debug_logger, "trying to get connection " << pool_index_);
 			}
 			while (!connection->try_lock());
 
+			LOG4CXX_DEBUG(debug_logger, "got connection " << 	pool_index_ << ". returning.");
+
 			return connection;
 		}
+
+		template <class T>
+		log4cxx::LoggerPtr pooled_dbmanager<T>::debug_logger(log4cxx::Logger::getLogger("findik.persistency.pooled_dbmanager"));
 
 	}
 }
