@@ -1,4 +1,6 @@
 /*
+  Copyright (C) 2008 Burak Oguz (barfan) <findikmail@gmail.com>
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
@@ -25,22 +27,56 @@
 namespace findik {
 	namespace config {
 
+/*!
+ This class represents the configuration manager utility for findik.
+
+ @author Burak Oguz
+*/
+
 		class configuration :
 			public boost::enable_shared_from_this<configuration>
 		{
 		public:
+			/*!
+			 Constructor for configuration class. Reads the configuration from /etc/findik.cfg for linux
+			 and reads configuration from c:/findik.cfg for Windows.
+			*/
 			configuration(void);
 			~configuration(void);
-
+			
+			/*!
+			 Returns a string represented configuration value. It takes a path from configuration file and
+			 string reference and saves configuration value into string reference if path is correct. 
+			 \param setting_path path to configuration setting in the configuration file
+			 \param value variable in which configuration value will be put
+			 \return true if path is correct and can read configuration value
+			 \sa getConfigValue_Int()
+			*/
 			bool getConfigValue_String(std::string setting_path,std::string & value);
+			
+			/*!
+                         Returns an integer represented configuration value. It takes a path from configuration file and
+                         integer reference and saves configuration value into integer reference if path is correct.
+                         \param setting_path path to configuration setting in the configuration file
+                         \param value variable in which configuration value will be put
+                         \return true if path is correct and can read configuration value
+                         \sa getConfigValue_String()
+                        */
 			bool getConfigValue_Int(std::string setting_path,int & value);
 
+			/*!
+			 Boost shared pointer to the configuration object.
+			*/
 			typedef boost::shared_ptr<configuration> pointer;
 
 		private:
 			libconfig::Config config_;
 		};
-
+		
+		/*!
+		 Static object which all other services use to reach configuration.
+		 \warning Not thread safe!!
+		*/
 		static configuration configuration_;
 	}
 }
