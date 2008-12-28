@@ -70,9 +70,11 @@ namespace findik {
 			<< status_line << "\r\n";
 
 		BOOST_FOREACH( header h, headers )
-			response_stream << h.name << ": " << h.value << "\r\n";
+			if (h.name == "Connection")
+				response_stream << "Connection: close\r\n";
+			else
+				response_stream << h.name << ": " << h.value << "\r\n";
 
-		response_stream << "Connection: close\r\n";
 		response_stream << "\r\n";
 
 		if (has_content())
