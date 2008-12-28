@@ -35,7 +35,7 @@ namespace findik {
 			void create_doc(const char* html_content);
 			void parse_html();
 			void clear();
-			std::string * get_content();
+			std::string & get_content();
 
 			typedef boost::shared_ptr<tidy_html_parser> pointer;
 

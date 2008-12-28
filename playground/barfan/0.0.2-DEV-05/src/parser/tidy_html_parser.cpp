@@ -21,7 +21,6 @@ namespace findik {
 
 		tidy_html_parser::tidy_html_parser(void)
 		{
-			parsed_content = new std::string();
 		}
 
 		tidy_html_parser::~tidy_html_parser(void)
@@ -31,11 +30,11 @@ namespace findik {
 
 		void tidy_html_parser::clear()
 		{
-			delete this->parsed_content;
+			this->parsed_content.clear();
 			tdoc.Release();
 		}
 
-		std::string * tidy_html_parser::get_content()
+		std::string &tidy_html_parser::get_content()
 		{
 			return this->parsed_content;
 		}
@@ -48,13 +47,13 @@ namespace findik {
 
 			tdoc.Create();
 			ok = tdoc.OptSetBool(TidyXhtmlOut, no);
+			ok = tdoc.OptSetBool(TidyHtmlOut, yes);
 			if( ok )
 				rc = tdoc.SetErrorSink(errbuf);
+			if ( rc >= 0 ) 
+				rc = tdoc.ParseString(html_content);
 			if ( rc >= 0 )
 				rc = tdoc.CleanAndRepair();
-			if ( rc >= 0 ) {
-				rc = tdoc.ParseString(html_content);
-			}
 
 			errbuf.Free();
 
@@ -88,7 +87,7 @@ namespace findik {
 					*/
 					case TidyNode_Text:
 						tdoc.GetNodeText(child, buffer);
-						parsed_content->append((char *)buffer.Data());
+						parsed_content.append((char *)buffer.Data());
 						break;
 					/*
 					case TidyNode_CDATA:	  name = "CDATA";		    break;
