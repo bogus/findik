@@ -35,9 +35,10 @@ namespace findik {
 		{
 			if (content_length_ == 0)
 				BOOST_FOREACH( header h, headers )
-					if (h.name == "Content-Length")
+					if (h.name == "Content-Length") {
 						content_length_ = boost::lexical_cast< unsigned int >(h.value);
-
+						return content_length_;
+					}
 			return content_length_;
 		}
 

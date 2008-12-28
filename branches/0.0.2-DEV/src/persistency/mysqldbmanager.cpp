@@ -131,6 +131,6 @@ namespace findik {
 			return true;
 		}
 
-		log4cxx::LoggerPtr mysqldbmanager::debug_logger(log4cxx::Logger::getLogger("findik.mysqldbmanager"));
+		log4cxx::LoggerPtr mysqldbmanager::debug_logger(log4cxx::Logger::getLogger("findik.persistency.mysqldbmanager"));
 	}
 }
