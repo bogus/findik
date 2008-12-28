@@ -246,6 +246,7 @@ boost::tribool response_parser::consume(response& resp, char input)
   case header_name:
     if (input == ':')
     {
+      trim_spaces(resp.headers.back().name);
       state_ = space_before_header_value;
       return boost::indeterminate;
     }
@@ -271,6 +272,7 @@ boost::tribool response_parser::consume(response& resp, char input)
   case header_value:
     if (input == '\r')
     {
+      trim_spaces(resp.headers.back().value);
       state_ = expecting_newline_2;
       return boost::indeterminate;
     }

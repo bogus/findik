@@ -30,6 +30,7 @@
 
 #include "dbmanager.hpp"
 #include "dbconnection.hpp"
+#include "log_initializer.hpp"
 
 namespace findik {
 	namespace persistency
@@ -60,6 +61,7 @@ namespace findik {
 
 			dbconnection_ptr get_dbconnection();
 
+			static log4cxx::LoggerPtr debug_logger;
 		};
 	}
 }
