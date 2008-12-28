@@ -32,7 +32,7 @@ namespace findik {
 		void tidy_html_parser::clear()
 		{
 			delete this->parsed_content;
-			tidyRelease( this->tdoc );
+			tdoc.Release();
 		}
 
 		std::string * tidy_html_parser::get_content()
@@ -44,21 +44,25 @@ namespace findik {
 		{
 			int rc = -1;
 			Bool ok;
-			TidyBuffer errbuf;
+		 	Tidy::BufferSink errbuf;	
 
-			tidyBufInit( &errbuf );
+			//tidyBufInit( &errbuf );
 
-			this->tdoc = tidyCreate();
-			ok = tidyOptSetBool( tdoc, TidyXhtmlOut, yes );
-
+			//this->tdoc = tidyCreate();
+			tdoc.Create();
+			//ok = tidyOptSetBool( tdoc, TidyXhtmlOut, yes );
+			ok = tdoc.OptSetBool(TidyXhtmlOut, yes);
 			if( ok )
-				rc = tidySetErrorBuffer( tdoc, &errbuf);      // Capture diagnostics*/
+				//rc = tidySetErrorBuffer( tdoc, &errbuf);      // Capture diagnostics*/
+				rc = tdoc.SetErrorSink(errbuf);
 			if ( rc >= 0 )
-				rc = tidyParseString( tdoc, html_content );	      // Parse the input
+				//rc = tidyParseString( tdoc, html_content );	      // Parse the input
+				rc = tdoc.ParseString(html_content);
 			if ( rc >= 0 )
-				rc = tidyCleanAndRepair( tdoc );	       // Tidy it up!
+				//rc = tidyCleanAndRepair( tdoc );	       // Tidy it up!
+				rc = tdoc.CleanAndRepair();
 
-			tidyBufFree( &errbuf );
+			errbuf.Free();
 
 		}
 
@@ -69,20 +73,20 @@ namespace findik {
 
 		void tidy_html_parser::dumpDoc()
 		{
-			dumpNode( tidyGetRoot(this->tdoc) );
+			dumpNode( tdoc.GetRoot() );
 		}
 
-		void tidy_html_parser::dumpNode(TidyNode tnod)
+		void tidy_html_parser::dumpNode(Tidy::Node *tnod)
 		{
-			TidyNode child;
-			TidyBuffer buffer;
+			Tidy::Node *child;
+			Tidy::Buffer buffer;
 
-			tidyBufInit(&buffer);
+			//tidyBufInit(&buffer);
 
-			for ( child = tidyGetChild(tnod); child; child = tidyGetNext(child) )
+			for ( child = tnod->Child(); child; child = child->Next() )
 			{
 				char * name = NULL;
-				switch ( tidyNodeGetType(child) )
+				switch ( child->Type() )
 				{
 					/*
 					case TidyNode_Root:	  name = "Root";		    break;
@@ -91,8 +95,9 @@ namespace findik {
 					case TidyNode_ProcIns:	  name = "Processing Instruction";  break;
 					*/
 					case TidyNode_Text:
-					tidyNodeGetText(this->tdoc,child,&buffer);
-					parsed_content->append((char *)buffer.bp);
+					tdoc.GetNodeText(child, buffer);
+					//tidyNodeGetText(this->tdoc,child,&buffer);
+					parsed_content->append((char *)buffer.Data());
 					break;
 					/*
 					case TidyNode_CDATA:	  name = "CDATA";		    break;
@@ -114,7 +119,7 @@ namespace findik {
 				//assert( name != NULL);
 				dumpNode( child );
 			  }
-			  tidyBufFree(&buffer);
+			  buffer.Free();
 		}
 
 	}

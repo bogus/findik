@@ -2,6 +2,7 @@
 #define FINDIK_FILTER_CONTENT_RESPONSE_FILTER_HPP
 
 #include "abstract_response_filter.hpp"
+#include "tidy_html_parser.hpp"
 
 namespace findik {
 	namespace filter {
@@ -17,6 +18,7 @@ namespace findik {
 
 		private:
 			content_response_filter(persistency::dbmanager::pointer & manager, io::response & response);
+			parser::tidy_html_parser::pointer html_parser_;
 
 		};
 	}

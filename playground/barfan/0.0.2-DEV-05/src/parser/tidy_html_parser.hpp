@@ -18,8 +18,7 @@
 #define FINDIK_PARSER_TIDY_HTML_PARSER_HPP
 
 #include "html_parser.hpp"
-#include <tidy.h>
-#include <buffio.h>
+#include "tidyx.hpp"
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
@@ -41,10 +40,11 @@ namespace findik {
 			typedef boost::shared_ptr<tidy_html_parser> pointer;
 
 		private:
-			void dumpNode( TidyNode tnod);
+			void dumpNode( Tidy::Node *tnod);
 			void dumpDoc();
 
-			TidyDoc tdoc;
+			//TidyDoc tdoc;
+			Tidy::Document tdoc;
 		};
 
 	}
