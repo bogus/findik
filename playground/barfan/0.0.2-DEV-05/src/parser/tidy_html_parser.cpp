@@ -46,21 +46,15 @@ namespace findik {
 			Bool ok;
 		 	Tidy::BufferSink errbuf;	
 
-			//tidyBufInit( &errbuf );
-
-			//this->tdoc = tidyCreate();
 			tdoc.Create();
-			//ok = tidyOptSetBool( tdoc, TidyXhtmlOut, yes );
-			ok = tdoc.OptSetBool(TidyXhtmlOut, yes);
+			ok = tdoc.OptSetBool(TidyXhtmlOut, no);
 			if( ok )
-				//rc = tidySetErrorBuffer( tdoc, &errbuf);      // Capture diagnostics*/
 				rc = tdoc.SetErrorSink(errbuf);
 			if ( rc >= 0 )
-				//rc = tidyParseString( tdoc, html_content );	      // Parse the input
-				rc = tdoc.ParseString(html_content);
-			if ( rc >= 0 )
-				//rc = tidyCleanAndRepair( tdoc );	       // Tidy it up!
 				rc = tdoc.CleanAndRepair();
+			if ( rc >= 0 ) {
+				rc = tdoc.ParseString(html_content);
+			}
 
 			errbuf.Free();
 
@@ -81,8 +75,6 @@ namespace findik {
 			Tidy::Node *child;
 			Tidy::Buffer buffer;
 
-			//tidyBufInit(&buffer);
-
 			for ( child = tnod->Child(); child; child = child->Next() )
 			{
 				char * name = NULL;
@@ -95,10 +87,9 @@ namespace findik {
 					case TidyNode_ProcIns:	  name = "Processing Instruction";  break;
 					*/
 					case TidyNode_Text:
-					tdoc.GetNodeText(child, buffer);
-					//tidyNodeGetText(this->tdoc,child,&buffer);
-					parsed_content->append((char *)buffer.Data());
-					break;
+						tdoc.GetNodeText(child, buffer);
+						parsed_content->append((char *)buffer.Data());
+						break;
 					/*
 					case TidyNode_CDATA:	  name = "CDATA";		    break;
 					case TidyNode_Section:	  name = "XML Section";		    break;
@@ -116,7 +107,7 @@ namespace findik {
 					default:
 						break;
 				}
-				//assert( name != NULL);
+				
 				dumpNode( child );
 			  }
 			  buffer.Free();
