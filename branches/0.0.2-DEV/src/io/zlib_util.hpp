@@ -1,4 +1,6 @@
 /*
+  Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
@@ -28,6 +30,14 @@
 namespace findik {
 	namespace io {
 
+		/*!
+		Uncompresses source data to destination for gzip and zlib compression by using zlib library.
+
+		\param src_ compressed data.
+		\param dest_ destination to store uncompressed data.
+
+		\return return code of zlib library. If operation is completed successfully, function will return Z_OK ( 0 ).
+		*/
 		int zlib_inflate(const std::string & src_, std::string & dest_) {
 
 			int ret = 0;
