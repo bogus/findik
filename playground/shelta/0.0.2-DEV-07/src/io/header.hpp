@@ -1,4 +1,6 @@
 /*
+  Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
@@ -22,10 +24,22 @@
 namespace findik {
 namespace io {
 
+/*!
+A struct to store an HTTP Header
+
+@author H. Kerem Cevahir (shelta)
+*/
 struct header
 {
-  std::string name;
-  std::string value;
+	/*!
+	Name of HTTP header.
+	*/
+	std::string name;
+
+	/*!
+	Value of HTTP header.
+	*/
+	std::string value;
 };
 
 } // namespace server3
