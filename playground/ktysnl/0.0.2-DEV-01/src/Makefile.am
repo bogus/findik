@@ -1,4 +1,4 @@
-SUBDIRS = config filter io logging parser persistency
+SUBDIRS = config filter io logging parser persistency urlblacklistimporter
 
 lib_LTLIBRARIES		=	libfindik.la
 
@@ -12,10 +12,15 @@ libfindik_la_LIBADD	= \
 	parser/libfindik_parser.la \
 	persistency/libfindik_persistency.la
 
-bin_PROGRAMS		=	findik
+bin_PROGRAMS		= \
+	findik \
+	importer
 
 findik_SOURCES		=	findik.cpp
 findik_LDADD		=	libfindik.la
+
+importer_SOURCES	=	urlblacklistimporter/main.cpp
+
 
 LIBS = \
 	-lboost_thread \
@@ -25,7 +30,8 @@ LIBS = \
 	-lconfig++ \
 	-lz \
 	-ltidy \
-	-lmysqlcppconn
+	-lmysqlcppconn\
+	-lboost_filesystem
 
 INCLUDES = \
 	-I@top_srcdir@/src/config \
@@ -33,4 +39,5 @@ INCLUDES = \
 	-I@top_srcdir@/src/io \
 	-I@top_srcdir@/src/logging \
 	-I@top_srcdir@/src/parser \
-	-I@top_srcdir@/src/persistency
+	-I@top_srcdir@/src/persistency\
+	-I@top_srcdir@/src/urlblacklistimporter

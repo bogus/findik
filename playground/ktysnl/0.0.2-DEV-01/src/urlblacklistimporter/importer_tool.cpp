@@ -20,7 +20,14 @@ namespace findik{
 			void import::pushToDb(boost::filesystem::path p)
 			{
 				
-				std::cout<<p.string();
+				//findik::importer::persistence::dbmanager::pointer dbmanager_ =
+                		//findik::importer::persistence::dbmanager::pointer(new findik::importer::persistence::mysqldbmanager());
+        			//dbmanager_->connectDb();
+        			//int category_id = dbmanager_->newCategory(p.leaf());
+
+        			//dbmanager_->newDomain("www.live.com",category_id);
+        			//dbmanager_->newUrl("http://www.zen-cart.com/forum/showthread.php?t=40052",category_id);
+				std::cout<<p.leaf()<<std::endl;
 				
 			}
 		}

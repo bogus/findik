@@ -71,6 +71,7 @@ AC_CONFIG_FILES([
 	src/logging/Makefile
 	src/parser/Makefile
 	src/persistency/Makefile
+	src/urlblacklistimporter/Makefile
 ])
 
 # Checks for library functions.
