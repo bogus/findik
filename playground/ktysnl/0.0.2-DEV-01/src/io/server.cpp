@@ -1,0 +1,82 @@
+/*
+  Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+#include "server.hpp"
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+#include <vector>
+
+namespace findik {
+namespace io {
+
+server::server(const std::string& address, const std::string& port,
+    std::size_t thread_pool_size)
+  : thread_pool_size_(thread_pool_size),
+    acceptor_(io_service_),
+	manager_ptr_(new findik::persistency::mysqldbmanager()),
+    new_connection_(new connection(io_service_,manager_ptr_))
+{
+  // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
+  boost::asio::ip::tcp::resolver resolver(io_service_);
+  boost::asio::ip::tcp::resolver::query query(address, port);
+  boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(query);
+  acceptor_.open(endpoint.protocol());
+  acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+  acceptor_.bind(endpoint);
+  acceptor_.listen();
+  acceptor_.async_accept(new_connection_->l_socket(),
+      boost::bind(&server::handle_accept, this,
+	boost::asio::placeholders::error));
+}
+
+void server::run()
+{
+  // Create a pool of threads to run all of the io_services.
+  std::vector<boost::shared_ptr<boost::thread> > threads;
+  for (std::size_t i = 0; i < thread_pool_size_; ++i)
+  {
+    boost::shared_ptr<boost::thread> thread(new boost::thread(
+	  boost::bind(&boost::asio::io_service::run, &io_service_)));
+    threads.push_back(thread);
+  }
+
+  // Wait for all threads in the pool to exit.
+  for (std::size_t i = 0; i < threads.size(); ++i)
+    threads[i]->join();
+}
+
+void server::stop()
+{
+  io_service_.stop();
+}
+
+void server::handle_accept(const boost::system::error_code& e)
+{
+  if (!e)
+  {
+    new_connection_->start();
+    new_connection_.reset(new connection(io_service_, manager_ptr_));
+    acceptor_.async_accept(new_connection_->l_socket(),
+	boost::bind(&server::handle_accept, this,
+	  boost::asio::placeholders::error));
+  }
+}
+
+} // namespace server3
+} // namespace http
