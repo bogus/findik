@@ -10,15 +10,17 @@ namespace findik{
        			 	 {
                 			if( boost::filesystem::is_directory(d1->path()) )
                				 {
-						pushToDb(d1->path);
+						pushToDb(d1->path());
 				         }
 				 }
+			}
+			import::~import(void){
 			}
 
 			void import::pushToDb(boost::filesystem::path p)
 			{
 				
-				std::cout<<p->string();
+				std::cout<<p.string();
 				
 			}
 		}

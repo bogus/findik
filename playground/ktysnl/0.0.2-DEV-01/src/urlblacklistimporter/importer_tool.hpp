@@ -19,7 +19,7 @@ namespace findik{
 			//std::string path;
 					
 			}
-		}
+		};
 	}
 }
 
