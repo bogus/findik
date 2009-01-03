@@ -20,6 +20,8 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <map>
+#include "pcre_parser.hpp"
 
 namespace findik {
 	namespace parser {
@@ -30,10 +32,14 @@ namespace findik {
 			virtual void create_doc(const char* html_content) = 0;
 			virtual void parse_html() = 0;
 			virtual std::string & get_content() = 0;
+			virtual std::map<std::string,int> & get_pcre_text_analyze() = 0;
+			
+			typedef boost::shared_ptr<html_parser> pointer;
 
 		protected:
 
 			std::string parsed_content;
+			std::map<std::string,int> pcre_text_analyzed_content;
 		};
 
 	}

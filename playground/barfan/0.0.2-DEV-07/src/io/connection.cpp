@@ -189,7 +189,8 @@ void connection::handle_read_response(const boost::system::error_code& e,
 		filter::response_filter filter(manager_,response_);
 		if(!filter.response_chain_filter())
 		{
-			reply_ = reply::stock_reply(reply::bad_request);
+			reply_ = reply::stock_reply(reply::filtered,filter.get_reply_string());
+
 			boost::asio::async_write(l_socket_, reply_.to_buffers(),
 			  strand_.wrap(
 				boost::bind(&connection::handle_write_response, shared_from_this(),

@@ -64,10 +64,33 @@ namespace findik {
 			this->dumpDoc();
 		}
 
+		std::map<std::string,int> & tidy_html_parser::get_pcre_text_analyze() 
+		{
+			pcrecpp::StringPiece input(parsed_content);
+			std::string match;
+			std::cout <<  parser::get_re_vector().size() << std::endl;
+			for( int i = 0; i < parser::get_re_vector().size(); i++ ) {
+				parser::get_re_vector()[i].get_re()->FindAndConsume(&input,&match);
+				std::cout <<  "----------------iii" << i << std::endl;
+				while(parser::get_re_vector()[i].get_re()->FindAndConsume(&input,&match)) {
+					std::cout <<  "----------------xxiii" << parser::get_re_vector().size() << std::endl;
+					std::transform(match.begin(), match.end(), match.begin(), tolower);
+					std::cout << "Expression Matched " << match << std::endl;
+					std::map<std::string, int>::const_iterator iter = pcre_text_analyzed_content.find(match);
+					if(iter != pcre_text_analyzed_content.end())
+						pcre_text_analyzed_content[match]++;
+					else
+						pcre_text_analyzed_content.insert(std::pair<std::string, int>(match, 1));
+				}	
+			}
+			return pcre_text_analyzed_content;
+		}
+
 		void tidy_html_parser::dumpDoc()
 		{
 			dumpNode( tdoc.GetRoot() );
 		}
+	
 
 		void tidy_html_parser::dumpNode(Tidy::Node *tnod)
 		{

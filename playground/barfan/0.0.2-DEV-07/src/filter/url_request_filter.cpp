@@ -33,7 +33,8 @@ namespace findik {
 			LOG4CXX_DEBUG(debug_logger, "checking for uri: " << request_.get_full_uri());
 			bool isOk = manager_->urlQuery(request_.get_full_uri());
 			if(!isOk) {
-				filter_report_->generate_report(filter_report::request_url,request_.get_full_uri());
+				LOG4CXX_WARN(logging::log_initializer::filter_logger, request_.get_full_uri() << " URL BLOCKED");
+				filter_report_->generate_report(filter_report::request_url,this->generate_report_data());
 			}
 			return isOk;
 		}
@@ -42,6 +43,19 @@ namespace findik {
 		{
 			return new url_request_filter(manager,request);
 		}
+
+		std::string url_request_filter::generate_report_data()
+                {
+                        std::string report_data;
+                        std::ostringstream stm;
+                        stm << ID;
+			report_data = "Reason : ";
+			report_data += "URL : ";
+			report_data += request_.get_full_uri();
+			report_data += " is banned by FINDIK, code : ";
+			report_data += stm.str();
+                        return report_data;
+                }
 
 		log4cxx::LoggerPtr url_request_filter::debug_logger(log4cxx::Logger::getLogger("findik.filter.url_request_filter"));
 	}

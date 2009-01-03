@@ -72,6 +72,14 @@ namespace findik {
                         */
 			filter_report::pointer filter_report_;
 
+			/*!
+                        Virtual function for extending classes to implement. Generates report data to be
+                        shown to user if filter fails
+
+                        \return report reason string
+                        */
+                        virtual std::string generate_report_data() = 0;
+
 			abstract_response_filter(persistency::dbmanager::pointer & manager, io::response & response);
 
 		};

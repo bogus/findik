@@ -73,6 +73,14 @@ namespace findik {
 			Filter report object to be used in extending classes to save failure notice in request filtering
 			*/
 			filter_report::pointer filter_report_;
+			
+			/*!
+			Virtual function for extending classes to implement. Generates report data to be 
+			shown to user if filter fails
+	
+			\return report reason string
+			*/
+			virtual std::string generate_report_data() = 0;
 
 			/*!
 			Constructor for this object and all extending classes.

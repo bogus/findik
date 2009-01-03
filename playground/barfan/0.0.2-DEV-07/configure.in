@@ -56,6 +56,7 @@ AC_CHECK_HEADER([libconfig.h++],[break])
 AC_CHECK_HEADER([mysql_connection.h],[break])
 AC_CHECK_HEADER([tidy.h],[break])
 AC_CHECK_HEADER([zlib.h],[break])
+AC_CHECK_HEADER([pcrecpp.h],[break])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL

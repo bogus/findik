@@ -58,6 +58,15 @@ namespace findik {
                         \param request request object which filtering operation will use
                         */
 			domain_request_filter(persistency::dbmanager::pointer & manager, io::request & request);
+
+			/*!
+                        Virtual function implementation. Generates report data to be
+                        shown to user if filter fails
+
+                        \return report reason string
+                        */
+                        std::string generate_report_data();
+			
 		protected:
 			static log4cxx::LoggerPtr debug_logger;
 

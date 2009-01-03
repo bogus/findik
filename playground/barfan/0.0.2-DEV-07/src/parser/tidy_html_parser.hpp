@@ -36,6 +36,7 @@ namespace findik {
 			void parse_html();
 			void clear();
 			std::string & get_content();
+			std::map<std::string,int> & get_pcre_text_analyze();			
 
 			typedef boost::shared_ptr<tidy_html_parser> pointer;
 

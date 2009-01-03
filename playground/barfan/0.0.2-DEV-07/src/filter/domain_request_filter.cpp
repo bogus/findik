@@ -34,13 +34,26 @@ namespace findik {
 			bool isOk = manager_->domainQuery(request_.host());
 			if(!isOk) {
 				LOG4CXX_WARN(logging::log_initializer::filter_logger, request_.host() << " DOMAIN BLOCKED");
-				filter_report_->generate_report(filter_report::request_domain,request_.host());
+				filter_report_->generate_report(filter_report::request_domain,this->generate_report_data());
 			}
 			return isOk;
 		}
 		findik::filter::abstract_request_filter *domain_request_filter::construct(persistency::dbmanager::pointer & manager, io::request & request)
 		{
 			return new domain_request_filter(manager,request);
+		}
+
+		std::string domain_request_filter::generate_report_data()
+		{
+			std::string report_data;
+			std::ostringstream stm;
+			stm << ID;
+			report_data = "Reason : ";
+			report_data += "Domain : ";
+			report_data += request_.host();
+			report_data += " is banned by FINDIK, code : ";
+			report_data += stm.str();
+			return report_data;
 		}
 
 		log4cxx::LoggerPtr domain_request_filter::debug_logger(log4cxx::Logger::getLogger("findik.filter.domain_request_filter"));

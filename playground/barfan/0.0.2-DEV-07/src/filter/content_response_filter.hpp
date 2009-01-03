@@ -19,6 +19,8 @@
 #ifndef FINDIK_FILTER_CONTENT_RESPONSE_FILTER_HPP
 #define FINDIK_FILTER_CONTENT_RESPONSE_FILTER_HPP
 
+#include <pcrecpp.h>
+#include <map>
 #include "abstract_response_filter.hpp"
 #include "tidy_html_parser.hpp"
 
@@ -60,6 +62,22 @@ namespace findik {
                         */	
 			content_response_filter(persistency::dbmanager::pointer & manager, io::response & response);
 			parser::tidy_html_parser::pointer html_parser_;
+
+			/*!
+                        Virtual function implementation. Generates report data to be
+                        shown to user if filter fails
+
+                        \return report reason string
+                        */
+                        std::string generate_report_data();
+
+			/*!
+			Analyzed content map
+			*/
+			std::map<std::string,int> pcre_text_analyzed_content;
+
+		protected:
+			static log4cxx::LoggerPtr debug_logger;
 
 		};
 	}
