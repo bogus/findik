@@ -35,6 +35,8 @@ namespace findik {
 			//
 			findik::filter::request_filter_factory_map_[domain_request_filter::ID] = domain_request_filter::construct;
 			findik::filter::request_filter_factory_map_[url_request_filter::ID] = url_request_filter::construct;
+			findik::filter::request_filter_factory_map_[domain_pcre_request_filter::ID] = domain_pcre_request_filter::construct;
+			findik::filter::request_filter_factory_map_[url_pcre_request_filter::ID] = url_pcre_request_filter::construct;
 		}
 	}
 }

@@ -16,6 +16,7 @@ namespace findik {
 
 		bool content_response_filter::filter()
 		{
+			LOG4CXX_DEBUG(debug_logger, "checking for html text content: " << response_.get_request().host());
 			bool isOk = true;
 			if(response_.content_type() == "text/html") {
 				html_parser_ = parser::tidy_html_parser::pointer(new findik::parser::tidy_html_parser());

@@ -48,6 +48,8 @@ namespace findik {
 				request_domain = 1,
 				request_url = 2,
 				request_content = 3,
+				request_domain_pcre = 4,
+				request_url_pcre = 5,
 				response_content = 100,
 				response_content_type = 101
 			} reason;
