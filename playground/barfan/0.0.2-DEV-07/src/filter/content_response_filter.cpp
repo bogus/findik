@@ -11,6 +11,7 @@ namespace findik {
 		content_response_filter::~content_response_filter(void)
 		{
 			html_parser_->clear();			
+			pcre_text_analyzed_content.clear();
 		}
 
 		bool content_response_filter::filter()
@@ -21,7 +22,6 @@ namespace findik {
 				html_parser_->create_doc(response_.content().c_str());
 				html_parser_->parse_html();
 				pcre_text_analyzed_content = html_parser_->get_pcre_text_analyze();
-				std::cout << "---------------------------------"<< parser::re_vector.size() << std::endl;
 				isOk = pcre_text_analyzed_content.empty();
 				if(!isOk) {
 					std::map<std::string, int>::const_iterator iter = pcre_text_analyzed_content.begin();
@@ -29,6 +29,8 @@ namespace findik {
 						LOG4CXX_WARN(logging::log_initializer::filter_logger, iter->first << " found " << iter->second << " times" << " CONTENT REGEX BLOCKED");
 					filter_report_->generate_report(filter_report::response_content,this->generate_report_data());
 				}
+				html_parser_->clear();
+				pcre_text_analyzed_content.clear();
 			}
 
 			return isOk;
