@@ -16,9 +16,10 @@ namespace findik {
 
 		bool content_response_filter::filter()
 		{
-			LOG4CXX_DEBUG(debug_logger, "checking for html text content: " << response_.get_request().host());
 			bool isOk = true;
-			if(response_.content_type() == "text/html") {
+			if(parser::magic_number_parser().get_magic_mime_type(&response_.content()).compare(0,4,"text") == 0) {
+			//if(response_.content_type() == "text/html") {
+				LOG4CXX_DEBUG(debug_logger, "checking for html text content: " << response_.get_request().host());
 				html_parser_ = parser::tidy_html_parser::pointer(new findik::parser::tidy_html_parser());
 				html_parser_->create_doc(response_.content().c_str());
 				html_parser_->parse_html();

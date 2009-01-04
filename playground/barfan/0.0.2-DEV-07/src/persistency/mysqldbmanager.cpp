@@ -75,14 +75,6 @@ namespace findik {
 			prepare_pool();
 		}
 
-		bool mysqldbmanager::contentQuery(std::string content) {
-			return true;
-		}
-
-		bool mysqldbmanager::contentRegexQuery(std::string content) {
-			return true;
-		}
-
 		bool mysqldbmanager::domainQuery(std::string hostname) {
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 			sql::PreparedStatement * ps_ = (sql::PreparedStatement *) dbconnection_->get_object(domain_query);
@@ -100,10 +92,6 @@ namespace findik {
 				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
 				return false;
 			}
-			return true;
-		}
-
-		bool mysqldbmanager::domainRegexQuery(std::string hostname) {
 			return true;
 		}
 
@@ -127,9 +115,25 @@ namespace findik {
 			return true;
 		}
 
-		bool mysqldbmanager::urlRegexQuery(std::string url) {
-			return true;
-		}
+		bool mysqldbmanager::pcreQuery(std::map<int,std::string> &pcre_map) {
+			try {
+				sql::Connection * myconn_ = driver->connect(host, username, password);
+				myconn_->setSchema(db);				
+				std::auto_ptr< sql::Statement > stmt(myconn_->createStatement());
+				std::auto_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT content,catid from blacklist_content"));
+				
+				while (res->next()) 
+				{  
+					  pcre_map.insert(std::pair<int,std::string>(res->getInt("catid"),res->getString("content")));
+				}
+
+			} catch (sql::SQLException &e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+				return false;
+			}
+
+                        return true;
+                }
 
 		log4cxx::LoggerPtr mysqldbmanager::debug_logger(log4cxx::Logger::getLogger("findik.persistency.mysqldbmanager"));
 	}

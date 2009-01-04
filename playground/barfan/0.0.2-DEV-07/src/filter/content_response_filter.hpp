@@ -23,6 +23,7 @@
 #include <map>
 #include "abstract_response_filter.hpp"
 #include "tidy_html_parser.hpp"
+#include "magic_number_parser.hpp"
 
 namespace findik {
 	namespace filter {

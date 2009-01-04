@@ -40,16 +40,20 @@ namespace findik {
 			this->category_id_ = category_id_;
 		}
 		
-		void generate_pcre_vector()
-		{
-			std::string re_str = "(adultsight|adultsite|adultsonly|adultweb|blowjob|bondage|centerfold|cumshot|cyberlust|cybercore|hardcore|incest|masturbat|obscene|pedophil|pedofil|playmate|pornstar|sexdream|softcore|striptease)";
-			int cat_id = 1;
-			re_vector.push_back(new pcre_parser(cat_id,re_str));
-		}
-
 		std::vector<pcre_parser *> & get_re_vector()
 		{
 			return re_vector;
+		}
+		
+		void generate_pcre_parser()
+		{
+			std::map<int,std::string> pcre_map;
+			findik::persistency::dbmanager::pointer dbmanager_(new findik::persistency::mysqldbmanager());
+			dbmanager_->pcreQuery(pcre_map);
+			for(std::map<int,std::string>::iterator iter = pcre_map.begin(); iter != pcre_map.end(); iter++)
+			{
+				get_re_vector().push_back(new pcre_parser(iter->first,iter->second));
+			}
 		}
 	}
 }

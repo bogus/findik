@@ -4,6 +4,8 @@
 #include <pcrecpp.h>
 #include <iostream>
 #include <vector>
+#include <map>
+#include "mysqldbmanager.hpp"
 
 namespace findik {
 	namespace parser {
@@ -30,7 +32,7 @@ namespace findik {
 		
 		std::vector<pcre_parser *> & get_re_vector();
 
-		void generate_pcre_vector();	
+		void generate_pcre_parser();
 	}	
 }
 

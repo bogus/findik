@@ -27,6 +27,7 @@
 #include "configuration.hpp"
 #include "log_initializer.hpp"
 #include "request_filter_factory_impl.hpp"
+#include "response_filter_factory_impl.hpp"
 #include "pcre_parser.hpp"
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("findik"));
@@ -146,13 +147,6 @@ int main(int argc, char* argv[])
 		port = argv[2];
 		num_threads = boost::lexical_cast<std::size_t>(argv[3]);
 	}
-    // Initialize request filter
-	findik::filter::generate_request_filter_factory_map();
-    // Initialize response filter
-	findik::filter::generate_response_filter_factory_map();
-    // Initialize PCRE vector
-	findik::parser::generate_pcre_vector(); 
-		
 
 	// Initialize log manager
 	//todo: fetch file paths, log level and accesslog on|off from conf file

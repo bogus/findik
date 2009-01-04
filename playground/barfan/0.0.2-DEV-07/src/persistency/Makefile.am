@@ -9,4 +9,5 @@ libfindik_persistency_la_LIBADD		=	@LTLIBOBJS@
 
 INCLUDES = \
         -I@top_srcdir@/src/config \
+        -I@top_srcdir@/src/parser \
         -I@top_srcdir@/src/logging

@@ -14,6 +14,9 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "request_filter_factory_impl.hpp"
+#include "response_filter_factory_impl.hpp"
+#include "pcre_parser.hpp"
 #include "server.hpp"
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
@@ -45,6 +48,13 @@ server::server(const std::string& address, const std::string& port,
 
 void server::run()
 {
+  // Initialize request filter
+  findik::filter::generate_request_filter_factory_map();
+  // Initialize response filter
+  findik::filter::generate_response_filter_factory_map();
+  // Initialize PCRE parser vector
+  findik::parser::generate_pcre_parser(); 
+
   // Create a pool of threads to run all of the io_services.
   std::vector<boost::shared_ptr<boost::thread> > threads;
   for (std::size_t i = 0; i < thread_pool_size_; ++i)

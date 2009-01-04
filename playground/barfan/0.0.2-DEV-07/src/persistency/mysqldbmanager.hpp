@@ -41,10 +41,7 @@ namespace findik {
 			void connectDb();
 			bool domainQuery(std::string hostname);
 			bool urlQuery(std::string url);
-			bool contentQuery(std::string content);
-			bool domainRegexQuery(std::string hostname);
-			bool urlRegexQuery(std::string url);
-			bool contentRegexQuery(std::string content);
+			bool pcreQuery(std::map<int,std::string> &pcre_map);
 
 		protected:
 
