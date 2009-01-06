@@ -11,7 +11,7 @@ namespace findik {
 		{
 			mime_type.clear();	
 		}
-                std::string &magic_number_parser::get_magic_mime_type(const std::string *content)	
+                std::string magic_number_parser::get_magic_mime_type(const char *magic_buf,int length)	
 		{
 			magic_t magic_mime = 0;
 			magic_mime = magic_open( MAGIC_MIME );
@@ -26,25 +26,21 @@ namespace findik {
 				magic_close(magic_mime);
 				return mime_type;
 			}
-			if(content == NULL){
+			if(magic_buffer == NULL){
 				LOG4CXX_DEBUG(debug_logger, "content null");
 				magic_close(magic_mime);
                                 return mime_type;
 			}
 
-			char *magic_number = new char[100];
-		  	int length = content->copy(magic_number,100,0);
 			if(length > 0)
 			{
-				mime_type = magic_buffer( magic_mime, magic_number, length );
-				delete magic_number;
+				mime_type = magic_buffer( magic_mime, magic_buf, length );
 				magic_close(magic_mime);
 				return mime_type;
 			}
 			else
 			{
 				LOG4CXX_DEBUG(debug_logger, "no content");
-				delete magic_number;
 				magic_close(magic_mime);
 				return mime_type;
 			}

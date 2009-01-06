@@ -57,7 +57,8 @@ namespace findik {
 
 			enum prepared_statement_types {
 				domain_query = 100,
-				url_query = 101
+				url_query = 101,
+				pcre_query = 102
 			};
 
 			static log4cxx::LoggerPtr debug_logger;

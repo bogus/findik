@@ -55,6 +55,9 @@ namespace findik {
 				dbconnection__->set_object(url_query,
 					myconn_->prepareStatement("SELECT url from blacklist_url where url=?"));
 
+				dbconnection__->set_object(pcre_query,
+					myconn_->prepareStatement("SELECT content,catid from blacklist_content"));
+				
 				return dbconnection__;
 			}
 			catch (sql::SQLException &e)
@@ -116,22 +119,25 @@ namespace findik {
 		}
 
 		bool mysqldbmanager::pcreQuery(std::map<int,std::string> &pcre_map) {
-			try {
-				sql::Connection * myconn_ = driver->connect(host, username, password);
-				myconn_->setSchema(db);				
-				std::auto_ptr< sql::Statement > stmt(myconn_->createStatement());
-				std::auto_ptr< sql::ResultSet > res(stmt->executeQuery("SELECT content,catid from blacklist_content"));
-				
-				while (res->next()) 
-				{  
-					  pcre_map.insert(std::pair<int,std::string>(res->getInt("catid"),res->getString("content")));
-				}
 
-			} catch (sql::SQLException &e) {
+			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+                        sql::PreparedStatement * ps_ = (sql::PreparedStatement *) dbconnection_->get_object(pcre_query);
+
+                        try {
+                                boost::scoped_ptr< sql::ResultSet > res(ps_->executeQuery());
+
+                                dbconnection_->unlock();
+
+				while (res->next())
+                                {
+                                          pcre_map.insert(std::pair<int,std::string>(res->getInt("catid"),res->getString("content")));
+                                }
+
+                        } catch (sql::SQLException &e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-				return false;
-			}
-
+                                return false;
+                        }
+	
                         return true;
                 }
 

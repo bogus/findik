@@ -19,7 +19,7 @@ namespace findik {
 			magic_number_parser();
 			~magic_number_parser();
 
-			std::string &get_magic_mime_type(const std::string *content);	
+			std::string get_magic_mime_type(const char *magic_buffer, int length);	
 
 			typedef boost::shared_ptr<magic_number_parser> pointer;
 			
