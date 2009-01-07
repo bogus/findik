@@ -1,5 +1,4 @@
 #include "importer_tool.hpp"
-
 namespace findik{
         namespace importer{
                 namespace tool{
@@ -20,14 +19,29 @@ namespace findik{
 			void import::pushToDb(boost::filesystem::path p)
 			{
 				
-				//findik::importer::persistence::dbmanager::pointer dbmanager_ =
-                		//findik::importer::persistence::dbmanager::pointer(new findik::importer::persistence::mysqldbmanager());
-        			//dbmanager_->connectDb();
-        			//int category_id = dbmanager_->newCategory(p.leaf());
+				
+				findik::importer::persistence::dbmanager::pointer dbmanager_ =
+                		findik::importer::persistence::dbmanager::pointer(new findik::importer::persistence::mysqldbmanager());
+        			dbmanager_->connectDb();
+        			int category_id = dbmanager_->newCategory(p.leaf());
 
         			//dbmanager_->newDomain("www.live.com",category_id);
         			//dbmanager_->newUrl("http://www.zen-cart.com/forum/showthread.php?t=40052",category_id);
-				std::cout<<p.leaf()<<std::endl;
+				//std::cout<<p.leaf()<<std::endl;
+				boost::filesystem::path temp(p);
+				temp /= "domains";
+				if(boost::filesystem::exists(temp))
+				{
+					std::string fpath(temp.string()); 
+					std::string line;
+					std::ifstream inp(fpath.c_str());
+					while(!inp.eof())
+					{
+						inp>>line;
+        					dbmanager_->newDomain(line,category_id);
+					}
+					
+				}
 				
 			}
 		}

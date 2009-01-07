@@ -4,7 +4,8 @@
 #include <iostream>
 #include <string>
 #include <boost/filesystem/operations.hpp>
-#include "configuration.hpp"
+#include <boost/filesystem/fstream.hpp>
+//#include "configuration.hpp"
 #include "mysqldbmanager.hpp"
 //#include "boost/scoped_ptr.hpp"
 
@@ -18,6 +19,8 @@ namespace findik{
 				
 			private:
 			void pushToDb(boost::filesystem::path p);
+                        
+
 			//std::string path;
 					
 			};
