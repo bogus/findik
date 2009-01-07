@@ -174,6 +174,49 @@ namespace findik {
 				}
 				return 1;
 			}
+
+			int mysqldbmanager::newContent(std::string content_name,int category_id)
+                        {
+                                std::stringstream sql;
+                                bool ok;
+                                try {
+                                        std::auto_ptr< sql::Statement > stmt(con->createStatement());
+                                        sql.str("");
+                                        sql << "Select * from blacklist_content where content = '";
+                                        sql << content_name << "';";
+                                        std::cout << sql.str() << std::endl;
+                                        ok = stmt->execute(sql.str());
+                                        if(ok) 
+                                        {
+                                                std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
+                                                if(res->rowsCount() > 0) {
+                                                        return 0;
+                                                }
+                                        }
+
+                                        sql.str("");
+                                        sql << "INSERT INTO blacklist_content VALUES (NULL,'";
+                                        sql << content_name << "','1','"<< category_id <<"');";
+                                        std::cout << sql.str() << std::endl;
+                                        stmt->execute(sql.str());
+
+                                        sql.str("");
+                                        sql << "Select * from blacklist_content where content = '";
+                                        sql << content_name << "';";
+                                        std::cout << sql.str() << std::endl;
+                                        ok = stmt->execute(sql.str());
+                                        if(ok) 
+                                        {
+                                                std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
+                                                if(res->rowsCount() > 0) {
+                                                        return 0;
+                                                }
+                                        }
+                                } catch (sql::SQLException &e) {
+                                        std::cout << "SQL Error :" << e.getErrorCode() << std::endl;
+                                }
+                                return 1;
+                        }
 		}
 	}
 }

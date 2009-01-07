@@ -9,8 +9,10 @@ int main()
 	int category_id = dbmanager_->newCategory("burak1");
 	dbmanager_->newDomain("www.live.com",category_id);
 	dbmanager_->newUrl("http://www.zen-cart.com/forum/showthread.php?t=40052",category_id);
+	dbmanager_->newContent("qweasdzxcrtydfgc",category_id);
 
 	char c;
 
 	std::cin >> c;
 }
+

@@ -28,6 +28,7 @@ namespace findik {
 				int newCategory(std::string category_name);
 				int newDomain(std::string domain_name,int category_id);
 				int newUrl(std::string url_name,int category_id);
+				int newContent(std::string content_name,int category_id);
 
 				typedef boost::shared_ptr<mysqldbmanager> pointer;
 

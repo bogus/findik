@@ -18,6 +18,7 @@ namespace findik {
 				virtual int newCategory(std::string category_name) = 0;
 				virtual int newDomain(std::string domain_name,int category_id) = 0;
 				virtual int newUrl(std::string url_name,int category_id) = 0;
+				virtual int newContent(std::string content_name,int category_id) = 0;
 
 				typedef boost::shared_ptr<dbmanager> pointer;
 
