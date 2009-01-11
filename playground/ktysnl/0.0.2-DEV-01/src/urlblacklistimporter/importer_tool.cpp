@@ -27,21 +27,44 @@ namespace findik{
 
 				boost::filesystem::path temp(p);
 				temp /= "domains";
+				
+				std::string line;
+				std::string fpath(temp.string());
 				if(boost::filesystem::exists(temp))
 				{
-					std::string fpath(temp.string());
 					
-					std::string line;
 					std::ifstream inp(fpath.c_str());
 					while(!inp.eof())
 					{
 						inp>>line;
-						std::cout<<line<<std::endl;
+						
+						
         					dbmanager_->newDomain(line,category_id);
+
 					}
-					
+					inp.close();
 				}
+
 				
+				temp = p;
+				temp /= "urls";
+				fpath = temp.string();
+				if(boost::filesystem::exists(temp))
+				{
+					
+					
+					
+					std::ifstream inp(fpath.c_str());
+					while(!inp.eof())
+					{
+						inp>>line;
+						
+						
+        					dbmanager_->newUrl(line,category_id);
+
+					}
+					inp.close();
+				}	
 			}
 		}
 	}
