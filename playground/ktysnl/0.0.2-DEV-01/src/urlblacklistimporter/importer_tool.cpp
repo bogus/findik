@@ -25,19 +25,18 @@ namespace findik{
         			dbmanager_->connectDb();
         			int category_id = dbmanager_->newCategory(p.leaf());
 
-        			//dbmanager_->newDomain("www.live.com",category_id);
-        			//dbmanager_->newUrl("http://www.zen-cart.com/forum/showthread.php?t=40052",category_id);
-				//std::cout<<p.leaf()<<std::endl;
 				boost::filesystem::path temp(p);
 				temp /= "domains";
 				if(boost::filesystem::exists(temp))
 				{
-					std::string fpath(temp.string()); 
+					std::string fpath(temp.string());
+					
 					std::string line;
 					std::ifstream inp(fpath.c_str());
 					while(!inp.eof())
 					{
 						inp>>line;
+						std::cout<<line<<std::endl;
         					dbmanager_->newDomain(line,category_id);
 					}
 					
@@ -47,3 +46,4 @@ namespace findik{
 		}
 	}
 }
+
