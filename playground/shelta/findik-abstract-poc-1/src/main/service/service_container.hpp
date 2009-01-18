@@ -19,9 +19,17 @@
 #ifndef FINDIK_SERVICE_SERVICE_CONTAINER_HPP
 #define FINDIK_SERVICE_SERVICE_CONTAINER_HPP
 
+#define FI_SERVICES findik::service::service_container::instance()
+
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
+
+#include <boost/asio.hpp>
+
+#include "session_service.hpp"
+#include "filter_service.hpp"
+#include "parser_service.hpp"
 
 namespace findik
 {
@@ -38,16 +46,58 @@ namespace findik
 		{
 		public:
 			/*!
-			Default constructor.
-			*/
-			service_container();
-
-			/*!
 			Destructor.
 			*/
 			~service_container();
 
+			/*!
+			Singleton method.
+			\returns singleton instance.
+			*/
+			static service_container_ptr instance();
+
+			/*!
+			Boost ASIO IO Service.
+			\returns IO Service.
+			*/
+			boost::asio::io_service & io_service();
+
+			/*!
+			Boost ASIO TCP IP resolver instance.
+			\returns TCP/IP resolver.
+			*/
+			boost::asio::ip::tcp::resolver & resolver();
+
+			/*!
+			Session service instance.
+			\returns session service instance.
+			*/
+			session_service & session_service();
+
+			/*!
+			Parser service instance.
+			\returns parser service instance.
+			*/
+			parser_service & parser_service();
+
+			/*!
+			Filter service instance.
+			\returns filter service instance.
+			*/
+			filter_service & filter_service();
+
 		protected:
+
+			/*!
+			Singleton instance.
+			*/
+			static service_container_ptr instance_;
+
+			/*!
+			Default constructor.
+			*/
+			service_container();
+
 			/*!
 			Session service instance.
 			*/
@@ -62,6 +112,16 @@ namespace findik
 			Filter service instance.
 			*/
 			filter_service filter_service_;
+
+			/*!
+			Boost ASIO IO service instance.
+			*/
+			boost::asio::io_service io_service_;
+
+			/*!
+			Boost ASIO TCP IP resolver instance.
+			*/
+			boost::asio::ip::tcp::resolver resolver_;
 		}
 		
 		typedef boost::shared_ptr<service_container> service_container_ptr;

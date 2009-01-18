@@ -16,44 +16,41 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_SERVICE_SESSION_SERVICE_HPP
-#define FINDIK_SERVICE_SESSION_SERVICE_HPP
+#include "filter_service.hpp"
 
-#include <boost/noncopyable.hpp>
-#include <deque>
-
-#include "session.hpp"
+#include <boost/tuple/tuple.hpp>
 
 namespace findik
 {
 	namespace service
 	{
-		/*!
-		Service for attaching connections to sessions.
-                \extends boost::noncopyable this class has designed to be not copyable.
-		*/
-		class session_service :
-                        private boost::noncopyable
+		filter_service::filter_service()
+		{}
+
+		filter_service::~filter_service()
+		{}
+
+		boost::tuple<bool, findik::filter::filter_reason> 
+			filter_service::filter(findik::io::connection_ptr connection_)
 		{
-		public:
-			/*!
-			Default constructor.
-			*/
-			session_service();
+			std::list<findik::filter::abstract_filter_ptr>::iterator it;
 
-			/*!
-			Destructor.
-			*/
-			~session_service();
-
-		protected:
-			/*!
-			Queue to store previous sessions.
-			When a new connection established, with a protocol specific method, new connection will be 
-			attached to a session.
-			*/
-			std::deque<findik::io::session_ptr> session_queue_;
-
+			for ( it=filter_list_.begin();
+				it != filter_list_.end(); it++ )
+				if ( (*it)->protocol() == connection_->protocol() && 
+					(
+						( connection_->current_data()->is_local() && 
+							(*it)->is_local() ) ||
+						( connection_->current_data()->is_remote() && 
+							(*it)->is_remote() ) 
+					))
+				{
+					boost::tuple<bool, findik::filter::filter_reason> result = 
+						(*it)->filter(connection_);
+					
+					if (!get<0>(result))
+						return result;
+				}
 		}
 	}
 }

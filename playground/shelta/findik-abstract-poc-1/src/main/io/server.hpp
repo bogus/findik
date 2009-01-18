@@ -27,6 +27,9 @@
 
 #include <string>
 
+#include "protocol.hpp"
+#include "connection.hpp"
+
 namespace findik
 {
 	namespace io
@@ -91,6 +94,12 @@ namespace findik
 			\param e error code of accept operation if there is an error.
 			*/
 			void handle_accept(const boost::system::error_code& e);
+
+			/*!
+			Creates a new connection instance for same protocol with server, then
+			registers it to async_accept service of IO.
+			*/
+			void create_new_connection_and_register();
 
 			/*!
 			Pointer to accepted new connection.

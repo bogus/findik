@@ -24,6 +24,9 @@
 
 #include <deque>
 
+#include "protocol.hpp"
+#include "connection.hpp"
+
 namespace findik
 {
 	namespace io
@@ -47,8 +50,21 @@ namespace findik
 			*/
 			~session();
 
+			/*!
+			Protocol of session implementation.
+			\returns protocol of session implementation.
+			*/
+			protocol protocol();
+
 		protected:
+			/*!
+			Protocol of session implementation.
+			*/
 			protocol protocol_;
+
+			/*!
+			Queue to store previous connections for this session.
+			*/
 			std::deque<connection_ptr> connection_queue_;
 		}
 		

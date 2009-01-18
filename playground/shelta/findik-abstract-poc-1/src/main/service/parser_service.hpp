@@ -19,11 +19,15 @@
 #ifndef FINDIK_SERVICE_PARSER_SERVICE_HPP
 #define FINDIK_SERVICE_PARSER_SERVICE_HPP
 
+#include <boost/logic/tribool.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
 
-#include <list>
+#include <map>
+
+#include "protocol.hpp"
+#include "connection.hpp"
+#include "abstract_parser.hpp"
 
 namespace findik
 {
@@ -32,11 +36,9 @@ namespace findik
 		/*!
 		Manageble container for parsers. 
                 \extends boost::noncopyable this class has designed to be not copyable.
-                \extends boost::enable_shared_from_this<parser_service> to use boost shared pointers.
 		*/
 		class parser_service :
-                        private boost::noncopyable,
-                        public boost::enable_shared_from_this<parser_service>
+                        private boost::noncopyable
 		{
 		public:
 			/*!
@@ -69,15 +71,18 @@ namespace findik
 
 		protected:
 			/*!
-			List to store parsers in an order. When parsing operation has been requested
-			parsers in this list will be started to be executed in order.
+			Map to store local parsers in an order. When local parsing operation has been requested
+			appropriate parser will be fetched from this map.
 			*/
-			std::list<findik::parser::abstract_parser_ptr> parser_list_;
+			std::map<findik::io::protocol, findik::parser::abstract_parser_ptr> local_parser_map_;
+
+			/*!
+			Map to store remote parsers in an order. When remote parsing operation has been requested
+			appropriate parser will be fetched from this map.
+			*/
+			std::map<findik::io::protocol, findik::parser::abstract_parser_ptr> remote_parser_map_;
 
 		}
-
-		typedef boost::shared_ptr<parser_service> parser_service_ptr;
-
 	}
 }
 

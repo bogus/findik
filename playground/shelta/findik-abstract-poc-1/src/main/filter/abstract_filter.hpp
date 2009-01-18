@@ -44,10 +44,13 @@ namespace findik
 		public:
                         /*!
                         Examines new_data of connection by using filters in filter_list_.
+			If method returns true for decision, service will execute other filters too,
+			otherwise it will stop execution and return false with reason of this operation.
                         \param connection_ connection contains new data to be inspected.
                         \returns a tuple containing whether content should be filter or not and reason of this decision.
                         */
-                        virtual boost::tuple<bool, filter_reason> filter(findik::io::connection_ptr connection_) = 0;
+                        virtual boost::tuple<bool, filter_reason> 
+				filter(findik::io::connection_ptr connection_) = 0;
 
 		protected:
 

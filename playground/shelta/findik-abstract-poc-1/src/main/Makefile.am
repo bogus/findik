@@ -26,7 +26,7 @@ LIBS = \
 	-lmysqlcppconn
 
 INCLUDES = \
-	-I@top_srcdir@/src/filter \
-	-I@top_srcdir@/src/io \
-	-I@top_srcdir@/src/parser \
-	-I@top_srcdir@/src/service
+	-I@top_srcdir@/src/main/filter \
+	-I@top_srcdir@/src/main/io \
+	-I@top_srcdir@/src/main/parser \
+	-I@top_srcdir@/src/main/service

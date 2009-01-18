@@ -16,44 +16,25 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_SERVICE_SESSION_SERVICE_HPP
-#define FINDIK_SERVICE_SESSION_SERVICE_HPP
-
-#include <boost/noncopyable.hpp>
-#include <deque>
-
-#include "session.hpp"
+#include "service_chain_element.hpp"
 
 namespace findik
 {
 	namespace service
 	{
-		/*!
-		Service for attaching connections to sessions.
-                \extends boost::noncopyable this class has designed to be not copyable.
-		*/
-		class session_service :
-                        private boost::noncopyable
+		findik::io::protocol service_chain_element::protocol()
 		{
-		public:
-			/*!
-			Default constructor.
-			*/
-			session_service();
+			return protocol_;
+		}
 
-			/*!
-			Destructor.
-			*/
-			~session_service();
+		bool service_chain_element::is_local()
+		{
+			return is_local_;
+		}
 
-		protected:
-			/*!
-			Queue to store previous sessions.
-			When a new connection established, with a protocol specific method, new connection will be 
-			attached to a session.
-			*/
-			std::deque<findik::io::session_ptr> session_queue_;
-
+		bool service_chain_element::is_remote()
+		{
+			return is_remote_;
 		}
 	}
 }

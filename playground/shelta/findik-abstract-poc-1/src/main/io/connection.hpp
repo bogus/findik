@@ -27,6 +27,8 @@
 
 #include <deque>
 
+#include "protocol.hpp"
+
 namespace findik
 {
 	namespace io
@@ -52,6 +54,32 @@ namespace findik
 			Destructor.
 			*/
 			~connection();
+
+			/*!
+			Start processing connection.
+			After constructor has been called connection instance will wait till this 
+			method has been called. After this method called connection will register 
+			itself into services and start processing. 
+			*/
+			void start_processing();
+
+			/*!
+			Protocol of this connection.
+			\returns protocol of this connection.
+			*/
+			protocol protocol();
+
+			/*!
+			Pointer to recieved (remote or local) new data.
+			\returns currently proccessed data.
+			*/
+			abstract_data_ptr current_data();
+
+			/*!
+			Socket for the local connection.
+			\returns local socket
+			*/
+			boost::asio::ip::tcp::socket & local_socket();
 
 		protected:
 			/*!

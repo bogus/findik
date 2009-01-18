@@ -16,26 +16,17 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_IO_ABSTRACT_LOCAL_DATA_HPP
-#define FINDIK_IO_ABSTRACT_LOCAL_DATA_HPP
+#include "session_service.hpp"
 
 namespace findik
 {
-	namespace io
+	namespace service
 	{
-		/*!
-		Abstract data encapsulator. This implementation will specifically be used for data coming from local side.
-		\extends abstract_data
-		@author H. Kerem Cevahir (shelta)
-		*/
-		class abstract_local_data :
-			public abstract_data
-		{
-		public:
+		session_service::session_service()
+		{}
 
-		protected:
-
-		}
+		session_service::~session_service()
+		{}
 	}
 }
 

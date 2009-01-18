@@ -19,11 +19,13 @@
 #ifndef FINDIK_SERVICE_FILTER_SERVICE_HPP
 #define FINDIK_SERVICE_FILTER_SERVICE_HPP
 
+#include <boost/tuple/tuple.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <list>
+
+#include "connection.hpp"
+#include "abstract_filter.hpp"
 
 namespace findik
 {
@@ -32,11 +34,9 @@ namespace findik
 		/*!
 		Manageble container for filters. 
                 \extends boost::noncopyable this class has designed to be not copyable.
-                \extends boost::enable_shared_from_this<filter_service> to use boost shared pointers.
 		*/
 		class filter_service :
-                        private boost::noncopyable,
-                        public boost::enable_shared_from_this<filter_service>
+                        private boost::noncopyable
 		{
 		public:
 			/*!
@@ -63,11 +63,7 @@ namespace findik
 			filters in this list will be started to be executed in order.
 			*/
 			std::list<findik::filter::abstract_filter_ptr> filter_list_;
-
 		}
-
-		typedef boost::shared_ptr<filter_service> filter_service_ptr;
-
 	}
 }
 

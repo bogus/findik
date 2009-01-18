@@ -29,12 +29,10 @@ namespace findik
 		/*!
 		Abstract parser object to inherit in order to implement parsers for findik.
 		\extends boost::enable_shared_from_this<abstract_parser> to use boost shared pointers.
-		\extends findik::service::service_chain_element to be used in service chains.
 		@author H. Kerem Cevahir (shelta)
 		*/
 		class abstract_parser :
-			public boost::enable_shared_from_this<abstract_parser>,
-			public findik::service::service_chain_element
+			public boost::enable_shared_from_this<abstract_parser>
 		{
 		public:
                         /*!

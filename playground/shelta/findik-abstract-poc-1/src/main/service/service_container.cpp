@@ -16,25 +16,45 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_IO_ABSTRACT_REMOTE_DATA_HPP
-#define FINDIK_IO_ABSTRACT_REMOTE_DATA_HPP
 
 namespace findik
 {
-	namespace io
+	namespace service
 	{
-		/*!
-		Abstract data encapsulator. This implementation will specifically be used for data coming from remote side.
-		\extends abstract_data
-		@author H. Kerem Cevahir (shelta)
-		*/
-		class abstract_remote_data :
-			public abstract_data
+		service_container::~service_container() :
+			resolver_(io_service_)
+		{}
+
+		static service_container_ptr service_container::instance()
 		{
-		public:
+			if (instance_.get() == 0)
+				instance_.reset(new service_container());
+			return instance_;
+		}
 
-		protected:
+		boost::asio::io_service & service_container::io_service()
+		{
+			return io_service_;
+		}
 
+		boost::asio::ip::tcp::resolver & service_container::resolver()
+		{
+			return resolver_;
+		}
+
+		session_service & service_container::session_service()
+		{
+			return session_service_;
+		}
+
+		parser_service & service_container::parser_service()
+		{
+			return parser_service_;
+		}
+
+		filter_service & service_container::filter_service()
+		{
+			return filter_service_;
 		}
 	}
 }

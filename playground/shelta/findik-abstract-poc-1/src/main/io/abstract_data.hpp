@@ -36,7 +36,44 @@ namespace findik
 		{
 		public:
 
+			/*!
+			Default destructor.
+			*/
+			~abstract_data();
+
+			/*!
+			If target is a stream, fetched data will be sent to other side immediatly 
+			even if fetching operation is not completed.
+			\returns whether data is a stream.
+			*/
+			bool is_stream();
+
+			/*!
+			Whether data is local.
+			*/
+			bool is_local();
+
+			/*!
+			Whether data is remote.
+			*/
+			bool is_remote();
+
 		protected:
+			
+			/*!
+			Default constructor.
+			*/
+			abstract_data(bool is_local_);
+
+			/*!
+			Whether data is local. If false, data is remote.
+			*/
+			bool is_local_;
+
+			/*!
+			Whether data is a stream.
+			*/
+			bool is_stream_;
 
 		}
 		

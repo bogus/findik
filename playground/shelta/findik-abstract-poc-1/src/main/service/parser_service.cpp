@@ -16,43 +16,33 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_SERVICE_SESSION_SERVICE_HPP
-#define FINDIK_SERVICE_SESSION_SERVICE_HPP
-
-#include <boost/noncopyable.hpp>
-#include <deque>
-
-#include "session.hpp"
+#include "parser_service.hpp"
 
 namespace findik
 {
 	namespace service
 	{
-		/*!
-		Service for attaching connections to sessions.
-                \extends boost::noncopyable this class has designed to be not copyable.
-		*/
-		class session_service :
-                        private boost::noncopyable
-		{
-		public:
-			/*!
-			Default constructor.
-			*/
-			session_service();
+			parser_service::parser_service()
+			{}
 
-			/*!
-			Destructor.
-			*/
-			~session_service();
+			parser_service::~parser_service()
+			{}
 
-		protected:
-			/*!
-			Queue to store previous sessions.
-			When a new connection established, with a protocol specific method, new connection will be 
-			attached to a session.
-			*/
-			std::deque<findik::io::session_ptr> session_queue_;
+			template <typename InputIterator>
+			boost::tuple<boost::tribool, InputIterator> parser_service::parse(
+					findik::io::connection_ptr connection_,
+					InputIterator begin, InputIterator end
+				)
+			{
+				if (connection_->current_data()->is_local())
+					local_parser_map_[connection->protocol()].parse(
+							connection_, begin, end
+						);
+				else
+					remote_parser_map_[connection->protocol()].parse(
+							connection_, begin, end
+						);
+			}
 
 		}
 	}
