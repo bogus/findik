@@ -63,7 +63,7 @@ namespace findik
 			/*!
 			Default constructor.
 			*/
-			abstract_data(bool is_local_);
+			abstract_data(bool is_local);
 
 			/*!
 			Whether data is local. If false, data is remote.
