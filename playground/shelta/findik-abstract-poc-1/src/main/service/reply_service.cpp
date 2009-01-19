@@ -16,42 +16,26 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "filter_service.hpp"
-
-#include <boost/tuple/tuple.hpp>
-
 namespace findik
 {
 	namespace service
 	{
-		filter_service::filter_service()
-		{}
-
-		filter_service::~filter_service()
-		{}
-
-		boost::tuple<bool, findik::filter::filter_reason> 
-			filter_service::filter(findik::io::connection_ptr connection_)
+		reply_service::reply_service()
 		{
-			std::list<findik::filter::abstract_filter_ptr>::iterator it;
+			stock_replies_[http][FC_BAD_LOCAL] = "Bad request!";
+			stock_replies_[http][FC_BAD_REMOTE] = "Bad response!";
+		}
+		
+		reply_service::~reply_service()
+		{}
 
-			for ( it=filter_list_.begin();
-				it != filter_list_.end(); it++ )
-				if ( (*it)->protocol() == connection_->protocol() && 
-					(
-						( connection_->current_data()->is_local() && 
-							(*it)->is_local() ) ||
-						( connection_->current_data()->is_remote() && 
-							(*it)->is_remote() ) 
-					))
-				{
-					boost::tuple<bool, findik::filter::filter_reason> result = 
-						(*it)->filter(connection_);
-					
-					if (!get<0>(result))
-						return result;
-				}
+		boost::asio::const_buffer reply_service::reply(
+			findik::io::protocol proto, unsigned int code)
+		{
+			return boost::asio::buffer(stock_replies_[proto][code]);
 		}
 	}
 }
+
+#endif
 

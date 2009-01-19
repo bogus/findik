@@ -50,7 +50,7 @@ namespace findik
 			{
 				new_connection_.reset(new connection(protocol_));
 				acceptor_.async_accept(new_connection_->local_socket(),
-						boost::bind(&server::handle_accept, this,
+						boost::bind(&server::handle_accept, shared_from_this(),
 							boost::asio::placeholders::error)
 					);
 			}
@@ -65,6 +65,4 @@ namespace findik
 		}
 	}
 }
-
-#endif
 

@@ -16,16 +16,17 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_SERVICE_FILTER_SERVICE_HPP
-#define FINDIK_SERVICE_FILTER_SERVICE_HPP
+#ifndef FINDIK_SERVICE_REPLY_SERVICE_HPP
+#define FINDIK_SERVICE_REPLY_SERVICE_HPP
 
-#include <boost/tuple/tuple.hpp>
+#define FC_BAD_LOCAL 400
+#define FC_BAD_REMOTE 500
+
+#include <boost/asio.hpp>
 #include <boost/noncopyable.hpp>
+#include <map>
 
-#include <list>
-
-#include "connection.hpp"
-#include "abstract_filter.hpp"
+#include "protocol.hpp"
 #include "filter_reason.hpp"
 
 namespace findik
@@ -33,37 +34,47 @@ namespace findik
 	namespace service
 	{
 		/*!
-		Manageble container for filters. 
+		Service for getting prepared replies.
                 \extends boost::noncopyable this class has designed to be not copyable.
 		*/
-		class filter_service :
+		class reply_service :
                         private boost::noncopyable
 		{
 		public:
 			/*!
 			Default constructor.
 			*/
-			filter_service();
+			reply_service();
 
 			/*!
 			Destructor.
 			*/
-			~filter_service();
+			~reply_service();
 
 			/*!
-			Examines new_data of connection by using filters in filter_list_.
-			\param connection_ connection contains new data to be inspected.
-			\returns a tuple containing whether content should be filter or not and reason of this decision.
+			Crafts request reply.
+
+			\param proto protocol of reply.
+			\param code reply code. 
+			\returns reply in a const ASIO buffer. 
 			*/
-			boost::tuple<bool, findik::filter::filter_reason_ptr> 
-				filter(findik::io::connection_ptr connection_);
+			boost::asio::const_buffer reply(findik::io::protocol proto, unsigned int code);
+
+			/*!
+			Crafts request reply.
+
+			\param proto protocol of reply.
+			\param reason deny reason of a filter.
+			\returns reply in a const ASIO buffer. 
+			*/
+			boost::asio::const_buffer reply(findik::io::protocol proto, filter_reason_ptr reason);
 
 		protected:
 			/*!
-			List to store filters in an order. When filter operation has been requested
-			filters in this list will be started to be executed in order.
+			Map to store stock replies.
 			*/
-			std::list<findik::filter::abstract_filter_ptr> filter_list_;
+			std::map<findik::io::protocol, std::map<unsigned int, std::string>> stock_replies_;
+
 		}
 	}
 }

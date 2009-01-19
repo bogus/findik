@@ -16,41 +16,45 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "filter_service.hpp"
-
-#include <boost/tuple/tuple.hpp>
+#include "filter_reason.hpp"
 
 namespace findik
 {
-	namespace service
+	namespace filter
 	{
-		filter_service::filter_service()
+		filter_reason(unsigned int code) :
+			code_(code)
 		{}
 
-		filter_service::~filter_service()
+		filter_reason(unsigned int code, const std::string & reason_str) :
+			code_(code),
+			reason_str_(reason_str)
 		{}
 
-		boost::tuple<bool, findik::filter::filter_reason> 
-			filter_service::filter(findik::io::connection_ptr connection_)
+		static filter_reason_ptr filter_reason::create_reason(unsigned int code)
 		{
-			std::list<findik::filter::abstract_filter_ptr>::iterator it;
+			filter_reason_ptr p(new filter_reason(code));
+			return p;
+		}
 
-			for ( it=filter_list_.begin();
-				it != filter_list_.end(); it++ )
-				if ( (*it)->protocol() == connection_->protocol() && 
-					(
-						( connection_->current_data()->is_local() && 
-							(*it)->is_local() ) ||
-						( connection_->current_data()->is_remote() && 
-							(*it)->is_remote() ) 
-					))
-				{
-					boost::tuple<bool, findik::filter::filter_reason> result = 
-						(*it)->filter(connection_);
-					
-					if (!get<0>(result))
-						return result;
-				}
+		static filter_reason_ptr filter_reason::create_reason(
+				unsigned int code, const std::string & reason_str)
+		{
+			filter_reason_ptr p(new filter_reason(code, reason_str));
+			return p;
+		}
+
+		filter_reason::~filter_reason()
+		{}
+
+		const std::string & reason_str()
+		{
+			return reason_str;
+		}
+
+		unsigned int code()
+		{
+			return code_;
 		}
 	}
 }

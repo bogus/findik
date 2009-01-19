@@ -58,6 +58,12 @@ namespace findik
 			*/
 			bool is_remote();
 
+			/*!
+			Raw data to sent other side.
+			\returns data in a buffer
+			*/
+			virtual boost::asio::const_buffer to_buffer() = 0;
+
 		protected:
 			
 			/*!

@@ -81,6 +81,18 @@ namespace findik
 			*/
 			boost::asio::ip::tcp::socket & local_socket();
 
+			/*!
+			Remote hostname.
+			\returns remote hostname to connect.
+			*/
+			std::string & remote_hostname();
+
+			/*!
+			Whether connection is keep alive.
+			\returns whether connection is keepalive supported.
+			*/
+			bool & is_keepalive();
+
 		protected:
 			/*!
 			Protocol of this connection.
@@ -101,11 +113,6 @@ namespace findik
 			Strand to ensure the connection's handlers are not called concurrently.
 			*/
 			boost::asio::io_service::strand strand_;
-
-			/*!
-			Resolver to resolve hostnames.
-			*/
-			boost::asio::ip::tcp::resolver resolver_;
 
 			/*!
 			Handle completion of a hostname resolve operation of.
@@ -131,7 +138,7 @@ namespace findik
 			\param e error code if there is an error
 			\param bytes_transferred number of transferred bytes
 			*/
-			void handle_read_local(const boost::system::error_code& e,
+			void handle_read_local(const boost::system::error_code& err,
 				std::size_t bytes_transferred);
 
 			/*!
@@ -139,7 +146,7 @@ namespace findik
 			
 			\param e error code if there is an error
 			*/
-			void handle_write_remote(const boost::system::error_code& e);
+			void handle_write_remote(const boost::system::error_code& err);
 
 			/*!
 			Handle completion of a remote write operation.
@@ -147,7 +154,7 @@ namespace findik
 			\param err error code if there is an error
 			\param bytes_transferred number of transferred bytes
 			*/
-			void handle_read_remote(const boost::system::error_code& e,
+			void handle_read_remote(const boost::system::error_code& err,
 				std::size_t bytes_transferred);
 
 			/*!
@@ -166,6 +173,73 @@ namespace findik
 			Pointer to recieved (remote or local) new data.
 			*/
 			abstract_data_ptr new_data_;
+
+			/*!
+			Prepare socket for operation. 
+			This methods set some socket options: NIO, TCP_NO_DELAY, NO_LINGER.
+			\param socket ASIO socket to set options.
+			*/
+			void prepare_socket(boost::asio::ip::tcp::socket & socket);
+
+			/*!
+			Local read buffer.
+			*/
+			boost::array<char, 8*1024> local_buffer_;
+
+			/*!
+			Remote read buffer.
+			*/
+			boost::array<char, 32*1024> remote_buffer_;
+
+			/*!
+			Register to ASIO service to read from local socket.
+			*/
+			void register_for_local_read();
+
+			/*!
+			Register to ASIO service to resolve a hostname.
+			\param hostname hostname to resolve.
+			*/
+			void register_for_resolve(const std::string & hostname);
+
+			/*!
+			Remote hostname.
+			*/
+			std::string remote_hostname_;
+
+			/*!
+			Register to ASIO service to write to local socket.
+			\param data data to write.
+			*/
+			void register_for_local_write(boost::asio::const_buffer data);
+
+			/*!
+			Register to ASIO service to connect an endpoint.
+			\param endpoint endpoint to connect.
+			*/
+			void register_for_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+
+			/*!
+			Register to ASIO service to write to remote socket.
+			\param data data to write.
+			*/
+			void register_for_remote_write(boost::asio::const_buffer data);
+
+			/*!
+			Register to ASIO service to read from remote socket.
+			*/
+			void register_for_remote_read();
+
+			/*!
+			Whether connection is keep alive.
+			*/
+			bool is_keepalive_;
+
+			/*!
+			Shutdown TCP socket.  
+			\param socket to shutdown.
+			*/
+			void shutdown_socket(boost::asio::ip::tcp::socket & socket);
 
 		}
 		

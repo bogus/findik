@@ -39,5 +39,3 @@ namespace findik
 	}
 }
 
-#endif
-

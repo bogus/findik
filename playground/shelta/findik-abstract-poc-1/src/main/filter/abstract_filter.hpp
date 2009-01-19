@@ -22,15 +22,12 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "filter_reason.hpp"
+
 namespace findik
 {
 	namespace filter
 	{
-		/*!
-		Type for reasons to return.
-		*/
-		typedef unsigned int filter_reason;
-
 		/*!
 		Abstract filter object to inherit in order to implement filters for findik.
 		\extends boost::enable_shared_from_this<abstract_filter> to use boost shared pointers.
@@ -49,7 +46,7 @@ namespace findik
                         \param connection_ connection contains new data to be inspected.
                         \returns a tuple containing whether content should be filter or not and reason of this decision.
                         */
-                        virtual boost::tuple<bool, filter_reason> 
+                        virtual boost::tuple<bool, filter_reason_ptr> 
 				filter(findik::io::connection_ptr connection_) = 0;
 
 		protected:

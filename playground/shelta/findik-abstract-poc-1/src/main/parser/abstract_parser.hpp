@@ -45,7 +45,7 @@ namespace findik
                         \param begin start point of parser
                         \param end stop point of parser
 
-                        \return a tuple which contains parse result and begin point. Parse result will be true if input is a proper protocol data and parsed successfully, false if input is not a proper protocol data, indeterminate if parser needs more data to decide whether input is proper.
+                        \returns a tuple which contains parse result and begin point. Parse result will be true if input is a proper protocol data and parsed successfully, false if input is not a proper protocol data, indeterminate if parser needs more data to decide whether input is proper.
                         */
                         template <typename InputIterator>
                         virtual boost::tuple<boost::tribool, InputIterator> parse(

@@ -1,4 +1,4 @@
-SUBDIRS = filter io parser service
+SUBDIRS = config filter io parser service
 
 lib_LTLIBRARIES		=	libfindik.la
 
@@ -26,6 +26,7 @@ LIBS = \
 	-lmysqlcppconn
 
 INCLUDES = \
+	-I@top_srcdir@/src/main/config \
 	-I@top_srcdir@/src/main/filter \
 	-I@top_srcdir@/src/main/io \
 	-I@top_srcdir@/src/main/parser \

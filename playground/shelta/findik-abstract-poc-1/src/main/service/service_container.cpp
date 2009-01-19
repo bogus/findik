@@ -16,7 +16,6 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 namespace findik
 {
 	namespace service
@@ -56,8 +55,16 @@ namespace findik
 		{
 			return filter_service_;
 		}
+
+		findik::config::configuration & config()
+		{
+			return config_;
+		}
+
+		reply_service & reply_service()
+		{
+			return reply_service_;
+		}
 	}
 }
-
-#endif
 

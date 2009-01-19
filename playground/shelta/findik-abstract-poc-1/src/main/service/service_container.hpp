@@ -86,6 +86,18 @@ namespace findik
 			*/
 			filter_service & filter_service();
 
+			/*!
+			Configuration service instance. To read options from config file.
+			\returns config service instance.
+			*/
+			findik::config::configuration & config();
+
+			/*!
+			Reply service instance. To generate replies for local.
+			\returns reply service instance.
+			*/
+			reply_service & reply_service();
+
 		protected:
 
 			/*!
@@ -122,6 +134,16 @@ namespace findik
 			Boost ASIO TCP IP resolver instance.
 			*/
 			boost::asio::ip::tcp::resolver resolver_;
+
+			/*!
+			Configuration service instance. To read options from config file.
+			*/
+			findik::config::configuration config_;
+
+			/*!
+			Reply service instance. To generate replies for local.
+			*/
+			reply_service reply_service_;
 		}
 		
 		typedef boost::shared_ptr<service_container> service_container_ptr;
