@@ -47,15 +47,14 @@ namespace findik
 
                         \returns a tuple which contains parse result and begin point. Parse result will be true if input is a proper protocol data and parsed successfully, false if input is not a proper protocol data, indeterminate if parser needs more data to decide whether input is proper.
                         */
-                        template <typename InputIterator>
-                        virtual boost::tuple<boost::tribool, InputIterator> parse(
+                        virtual boost::tuple<boost::tribool, char*> parse(
                                         findik::io::connection_ptr connection_,
-                                        InputIterator begin, InputIterator end
+                                        char* begin, char* end
                                 ) = 0;
 
 		protected:
 
-		}
+		};
 		
 		typedef boost::shared_ptr<abstract_parser> abstract_parser_ptr;
 	}

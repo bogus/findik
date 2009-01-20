@@ -30,14 +30,14 @@ namespace findik
 		filter_service::~filter_service()
 		{}
 
-		boost::tuple<bool, findik::filter::filter_reason> 
+		boost::tuple<bool, findik::filter::filter_reason_ptr> 
 			filter_service::filter(findik::io::connection_ptr connection_)
 		{
 			std::list<findik::filter::abstract_filter_ptr>::iterator it;
 
 			for ( it=filter_list_.begin();
 				it != filter_list_.end(); it++ )
-				if ( (*it)->protocol() == connection_->protocol() && 
+				if ( (*it)->proto() == connection_->proto() && 
 					(
 						( connection_->current_data()->is_local() && 
 							(*it)->is_local() ) ||
@@ -45,12 +45,16 @@ namespace findik
 							(*it)->is_remote() ) 
 					))
 				{
-					boost::tuple<bool, findik::filter::filter_reason> result = 
+					boost::tuple<bool, findik::filter::filter_reason_ptr> result = 
 						(*it)->filter(connection_);
 					
-					if (!get<0>(result))
+					if (!boost::get<0>(result))
 						return result;
 				}
+
+			//TODO: may be return score for greylisting
+			findik::filter::filter_reason_ptr frp;
+			return boost::make_tuple(true, frp);
 		}
 	}
 }

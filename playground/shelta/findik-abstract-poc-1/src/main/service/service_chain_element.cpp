@@ -22,9 +22,9 @@ namespace findik
 {
 	namespace service
 	{
-		findik::io::protocol service_chain_element::protocol()
+		findik::io::protocol service_chain_element::proto()
 		{
-			return protocol_;
+			return proto_;
 		}
 
 		bool service_chain_element::is_local()

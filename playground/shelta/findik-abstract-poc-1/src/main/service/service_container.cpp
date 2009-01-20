@@ -16,54 +16,54 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "service_container.hpp"
+
 namespace findik
 {
 	namespace service
 	{
-		service_container::~service_container() :
-			resolver_(io_service_)
+		service_container::service_container() :
+			resolver_srv_(io_srv_)
 		{}
 
-		static service_container_ptr service_container::instance()
+		service_container_ptr service_container::instance_;
+
+		service_container::~service_container() 
+		{}
+
+		boost::asio::io_service & service_container::io_srv()
 		{
-			if (instance_.get() == 0)
-				instance_.reset(new service_container());
-			return instance_;
+			return io_srv_;
 		}
 
-		boost::asio::io_service & service_container::io_service()
+		boost::asio::ip::tcp::resolver & service_container::resolver_srv()
 		{
-			return io_service_;
+			return resolver_srv_;
 		}
 
-		boost::asio::ip::tcp::resolver & service_container::resolver()
+		session_service & service_container::session_srv()
 		{
-			return resolver_;
+			return session_srv_;
 		}
 
-		session_service & service_container::session_service()
+		parser_service & service_container::parser_srv()
 		{
-			return session_service_;
+			return parser_srv_;
 		}
 
-		parser_service & service_container::parser_service()
+		filter_service & service_container::filter_srv()
 		{
-			return parser_service_;
+			return filter_srv_;
 		}
 
-		filter_service & service_container::filter_service()
+		findik::config::configuration & service_container::config_srv()
 		{
-			return filter_service_;
+			return config_srv_;
 		}
 
-		findik::config::configuration & config()
+		reply_service & service_container::reply_srv()
 		{
-			return config_;
-		}
-
-		reply_service & reply_service()
-		{
-			return reply_service_;
+			return reply_srv_;
 		}
 	}
 }

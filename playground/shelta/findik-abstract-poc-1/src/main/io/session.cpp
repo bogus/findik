@@ -16,7 +16,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "session.cpp"
+#include "session.hpp"
 
 namespace findik
 {
@@ -28,9 +28,9 @@ namespace findik
 		session::~session()
 		{}
 
-		protocol session::protocol()
+		protocol session::proto()
 		{
-			return protocol_;
+			return proto_;
 		}
 	}
 }

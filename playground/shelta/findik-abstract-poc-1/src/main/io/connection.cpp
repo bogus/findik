@@ -32,10 +32,10 @@ namespace findik
 	namespace io
 	{
 		connection::connection( protocol proto ) :
-			protocol_(proto),
-			local_socket_(FI_SERVICES->io_service()),
-			remote_socket_(FI_SERVICES->io_service()),
-			strand_(FI_SERVICES->io_service()),
+			proto_(proto),
+			local_socket_(FI_SERVICES->io_srv()),
+			remote_socket_(FI_SERVICES->io_srv()),
+			strand_(FI_SERVICES->io_srv()),
 			is_keepalive_(false)
 		{}
 
@@ -78,13 +78,13 @@ namespace findik
 						boost::asio::placeholders::bytes_transferred)));
 		}
 
-		void connection::register_for_resolve(const std::string & hostname)
+		void connection::register_for_resolve(const std::string & hostname, unsigned int port)
 		{
 			boost::asio::ip::tcp::resolver::query query_(
-                                hostname, boost::lexical_cast<std::string>((unsigned int) protocol())
+                                hostname, boost::lexical_cast<std::string>(port)
                                 );
 
-			FI_SERVICES->resolver().async_resolve(query_,
+			FI_SERVICES->resolver_srv().async_resolve(query_,
 				boost::bind(&connection::handle_resolve_remote, shared_from_this(),
 					boost::asio::placeholders::error,
 					boost::asio::placeholders::iterator));
@@ -92,7 +92,7 @@ namespace findik
 
 		void connection::register_for_local_write(boost::asio::const_buffer data)
 		{
-			boost::asio::async_write(local_socket_, data,
+			boost::asio::async_write(local_socket_, boost::asio::buffer(data),
 				strand_.wrap(
 					boost::bind(&connection::handle_write_local, shared_from_this(),
 					boost::asio::placeholders::error)));
@@ -100,13 +100,13 @@ namespace findik
 
 		void connection::register_for_remote_write(boost::asio::const_buffer data)
 		{
-			boost::asio::async_write(remote_socket_, data,
+			boost::asio::async_write(remote_socket_, boost::asio::buffer(data),
 				strand_.wrap(
 					boost::bind(&connection::handle_write_remote, shared_from_this(),
 					boost::asio::placeholders::error)));
 		}
 
-		void connection::register_for_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+		void connection::register_for_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
 		{
 			boost::asio::ip::tcp::endpoint endpoint = *endpoint_iterator;
 			remote_socket_.async_connect(endpoint,
@@ -126,14 +126,19 @@ namespace findik
 			return is_keepalive_;
 		}
 
+		unsigned int & connection::remote_port()
+		{
+			return remote_port_;
+		}
+
 		std::string & connection::remote_hostname()
 		{
 			return remote_hostname_;
 		}
 
-		protocol connection::protocol()
+		enum protocol connection::proto()
 		{
-			return protocol_;
+			return proto_;
 		}
 
 		abstract_data_ptr connection::current_data()
@@ -156,7 +161,7 @@ namespace findik
 			// parsing data.
 			boost::tribool parser_result;
 			boost::tie(parser_result, boost::tuples::ignore) = 
-				FI_SERVICES->parser_service().parse(
+				FI_SERVICES->parser_srv().parse(
 					shared_from_this(),
 					local_buffer_.data(), local_buffer_.data() + bytes_transferred);
 			
@@ -165,25 +170,25 @@ namespace findik
 				bool filter_result;
 				findik::filter::filter_reason_ptr filter_reason;
 				boost::tie(filter_result, filter_reason) =
-					FI_SERVICES->filter_service().filter(shared_from_this());
+					FI_SERVICES->filter_srv().filter(shared_from_this());
 				
 				if (filter_result) // not denied
 				{
-					registor_for_resolve(remote_hostname());
+					register_for_resolve(remote_hostname(), remote_port());
 				}
 				else // denied
 				{
 					register_for_local_write(
-							FI_SERVICES->reply_service().reply(
-								protocol(), filter_reason
+							FI_SERVICES->reply_srv().reply(
+								proto(), filter_reason
 						));
 				}
 			}
 			else if (!parser_result) // bad request
 			{
 				register_for_local_write(
-						FI_SERVICES->reply_service().reply(
-							protocol(), FC_BAD_LOCAL
+						FI_SERVICES->reply_srv().reply(
+							proto(), FC_BAD_LOCAL
 					));
 			}
 			else // more data required
@@ -205,7 +210,7 @@ namespace findik
 		void connection::handle_connect_remote(const boost::system::error_code& err,
 			boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
 		{
-			if (err!) // connected
+			if (!err) // connected
 			{
 				prepare_socket(remote_socket_);
 				register_for_remote_write(current_data()->to_buffer());
@@ -242,7 +247,7 @@ namespace findik
                         // parsing data.
                         boost::tribool parser_result;
                         boost::tie(parser_result, boost::tuples::ignore) =
-                                FI_SERVICES->parser_service().parse(
+                                FI_SERVICES->parser_srv().parse(
                                         shared_from_this(),
                                         remote_buffer_.data(), remote_buffer_.data() + bytes_transferred);
 
@@ -254,7 +259,7 @@ namespace findik
                                 bool filter_result;
                                 findik::filter::filter_reason_ptr filter_reason;
                                 boost::tie(filter_result, filter_reason) =
-                                        FI_SERVICES->filter_service().filter(shared_from_this());
+                                        FI_SERVICES->filter_srv().filter(shared_from_this());
 
                                 if (filter_result) // not denied
                                 {
@@ -263,8 +268,8 @@ namespace findik
                                 else // denied
                                 {
                                         register_for_local_write(
-                                                        FI_SERVICES->reply_service().reply(
-                                                                protocol(), filter_reason
+                                                        FI_SERVICES->reply_srv().reply(
+                                                                proto(), filter_reason
                                                 ));
                                 }
                         }
@@ -274,8 +279,8 @@ namespace findik
                                         shutdown_socket(remote_socket_);
 
                                 register_for_local_write(
-                                                FI_SERVICES->reply_service().reply(
-                                                        protocol(), FC_BAD_REMOTE
+                                                FI_SERVICES->reply_srv().reply(
+                                                        proto(), FC_BAD_REMOTE
                                         ));
                         }
                         else // more data required

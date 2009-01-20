@@ -54,7 +54,7 @@ namespace findik
 			*/
 			std::deque<findik::io::session_ptr> session_queue_;
 
-		}
+		};
 	}
 }
 

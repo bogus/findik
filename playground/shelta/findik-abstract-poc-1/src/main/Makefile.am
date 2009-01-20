@@ -5,6 +5,7 @@ lib_LTLIBRARIES		=	libfindik.la
 libfindik_la_SOURCES	=
 libfindik_la_LDFLAGS	=	-no-undefined -version-info 0:0:0
 libfindik_la_LIBADD	= \
+	config/libfindik_config.la \
 	filter/libfindik_filter.la \
 	io/libfindik_io.la \
 	parser/libfindik_parser.la \
@@ -13,6 +14,7 @@ libfindik_la_LIBADD	= \
 bin_PROGRAMS		=	findik
 
 findik_SOURCES		=	findik.cpp
+
 findik_LDADD		=	libfindik.la
 
 LIBS = \

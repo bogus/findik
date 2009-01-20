@@ -23,6 +23,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "filter_reason.hpp"
+#include "service_chain_element.hpp"
 
 namespace findik
 {
@@ -51,7 +52,7 @@ namespace findik
 
 		protected:
 
-		}
+		};
 		
 		typedef boost::shared_ptr<abstract_filter> abstract_filter_ptr;
 	}

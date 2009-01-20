@@ -42,7 +42,11 @@ namespace findik
 			\param code code of reason.
 			\returns a new filter reason instance
 			*/
-			static filter_reason_ptr create_reason(unsigned int code);
+			static boost::shared_ptr<filter_reason> create_reason(unsigned int code)
+			{
+				boost::shared_ptr<filter_reason> p(new filter_reason(code));
+				return p;
+			}
 
 			/*
 			Factory method.
@@ -50,7 +54,12 @@ namespace findik
 			\param reason_str detail of reason.
 			\returns a new filter reason instance
 			*/
-			static filter_reason_ptr create_reason(unsigned int code, const std::string & reason_str);
+			static boost::shared_ptr<filter_reason> create_reason(
+					unsigned int code, const std::string & reason_str)
+			{
+				boost::shared_ptr<filter_reason> p(new filter_reason(code, reason_str));
+				return p;
+			}
 
 			/*!
 			Destructor.
@@ -89,7 +98,7 @@ namespace findik
 			Reason detail in a string.
 			*/
 			std::string reason_str_;
-		}
+		};
 		
 		typedef boost::shared_ptr<filter_reason> filter_reason_ptr;
 	}

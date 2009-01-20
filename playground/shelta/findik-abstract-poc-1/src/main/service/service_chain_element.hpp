@@ -22,6 +22,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "protocol.hpp"
+
 namespace findik
 {
 	namespace service
@@ -40,7 +42,7 @@ namespace findik
 			Protocol of element.
 			\returns protocol of element
 			*/	
-			findik::io::protocol protocol();
+			findik::io::protocol proto();
 
 			/*!
 			Whether element should be used in local chain.
@@ -59,7 +61,7 @@ namespace findik
 			/*!
 			Protocol of element.
 			*/	
-			findik::io::protocol protocol_;
+			findik::io::protocol proto_;
 
 			/*!
 			Whether element should be used in local chain.
@@ -71,7 +73,7 @@ namespace findik
 			*/
 			bool is_remote_;
 
-		}
+		};
 		
 		typedef boost::shared_ptr<service_chain_element> service_chain_element_ptr;
 	}

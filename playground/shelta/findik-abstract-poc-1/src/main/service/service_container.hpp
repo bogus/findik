@@ -30,6 +30,8 @@
 #include "session_service.hpp"
 #include "filter_service.hpp"
 #include "parser_service.hpp"
+#include "reply_service.hpp"
+#include "configuration.hpp"
 
 namespace findik
 {
@@ -54,56 +56,62 @@ namespace findik
 			Singleton method.
 			\returns singleton instance.
 			*/
-			static service_container_ptr instance();
+			static boost::shared_ptr<service_container> instance()
+			{
+				if (instance_.get() == 0)
+					instance_.reset(new service_container());
+				return instance_;
+			}
+
 
 			/*!
 			Boost ASIO IO Service.
 			\returns IO Service.
 			*/
-			boost::asio::io_service & io_service();
+			boost::asio::io_service & io_srv();
 
 			/*!
 			Boost ASIO TCP IP resolver instance.
 			\returns TCP/IP resolver.
 			*/
-			boost::asio::ip::tcp::resolver & resolver();
+			boost::asio::ip::tcp::resolver & resolver_srv();
 
 			/*!
 			Session service instance.
 			\returns session service instance.
 			*/
-			session_service & session_service();
+			session_service & session_srv();
 
 			/*!
 			Parser service instance.
 			\returns parser service instance.
 			*/
-			parser_service & parser_service();
+			parser_service & parser_srv();
 
 			/*!
 			Filter service instance.
 			\returns filter service instance.
 			*/
-			filter_service & filter_service();
+			filter_service & filter_srv();
 
 			/*!
 			Configuration service instance. To read options from config file.
 			\returns config service instance.
 			*/
-			findik::config::configuration & config();
+			findik::config::configuration & config_srv();
 
 			/*!
 			Reply service instance. To generate replies for local.
 			\returns reply service instance.
 			*/
-			reply_service & reply_service();
+			reply_service & reply_srv();
 
 		protected:
 
 			/*!
 			Singleton instance.
 			*/
-			static service_container_ptr instance_;
+			static boost::shared_ptr<service_container> instance_;
 
 			/*!
 			Default constructor.
@@ -113,38 +121,38 @@ namespace findik
 			/*!
 			Session service instance.
 			*/
-			session_service session_service_;
+			session_service session_srv_;
 
 			/*!
 			Parser service instance.
 			*/
-			parser_service parser_service_;
+			parser_service parser_srv_;
 
 			/*!
 			Filter service instance.
 			*/
-			filter_service filter_service_;
+			filter_service filter_srv_;
 
 			/*!
 			Boost ASIO IO service instance.
 			*/
-			boost::asio::io_service io_service_;
+			boost::asio::io_service io_srv_;
 
 			/*!
 			Boost ASIO TCP IP resolver instance.
 			*/
-			boost::asio::ip::tcp::resolver resolver_;
+			boost::asio::ip::tcp::resolver resolver_srv_;
 
 			/*!
 			Configuration service instance. To read options from config file.
 			*/
-			findik::config::configuration config_;
+			findik::config::configuration config_srv_;
 
 			/*!
 			Reply service instance. To generate replies for local.
 			*/
-			reply_service reply_service_;
-		}
+			reply_service reply_srv_;
+		};
 		
 		typedef boost::shared_ptr<service_container> service_container_ptr;
 	}

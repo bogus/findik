@@ -54,19 +54,19 @@ namespace findik
 			Protocol of session implementation.
 			\returns protocol of session implementation.
 			*/
-			protocol protocol();
+			protocol proto();
 
 		protected:
 			/*!
 			Protocol of session implementation.
 			*/
-			protocol protocol_;
+			protocol proto_;
 
 			/*!
 			Queue to store previous connections for this session.
 			*/
 			std::deque<connection_ptr> connection_queue_;
-		}
+		};
 		
 		typedef boost::shared_ptr<session> session_ptr;
 	}

@@ -67,15 +67,15 @@ namespace findik
 			\param reason deny reason of a filter.
 			\returns reply in a const ASIO buffer. 
 			*/
-			boost::asio::const_buffer reply(findik::io::protocol proto, filter_reason_ptr reason);
+			boost::asio::const_buffer reply(findik::io::protocol proto, findik::filter::filter_reason_ptr reason);
 
 		protected:
 			/*!
 			Map to store stock replies.
 			*/
-			std::map<findik::io::protocol, std::map<unsigned int, std::string>> stock_replies_;
+			std::map<findik::io::protocol, std::map<unsigned int, std::string> > stock_replies_;
 
-		}
+		};
 	}
 }
 

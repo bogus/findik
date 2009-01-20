@@ -16,14 +16,16 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "reply_service.hpp"
+
 namespace findik
 {
 	namespace service
 	{
 		reply_service::reply_service()
 		{
-			stock_replies_[http][FC_BAD_LOCAL] = "Bad request!";
-			stock_replies_[http][FC_BAD_REMOTE] = "Bad response!";
+			stock_replies_[findik::io::http][FC_BAD_LOCAL] = "Bad request!";
+			stock_replies_[findik::io::http][FC_BAD_REMOTE] = "Bad response!";
 		}
 		
 		reply_service::~reply_service()
@@ -34,8 +36,12 @@ namespace findik
 		{
 			return boost::asio::buffer(stock_replies_[proto][code]);
 		}
+
+		boost::asio::const_buffer reply_service::reply(findik::io::protocol proto, findik::filter::filter_reason_ptr reason)
+		{
+			// TODO: reply generator chain .
+			return boost::asio::buffer(stock_replies_[proto][reason->code()]);
+		}
 	}
 }
-
-#endif
 

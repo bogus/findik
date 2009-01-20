@@ -22,37 +22,24 @@ namespace findik
 {
 	namespace filter
 	{
-		filter_reason(unsigned int code) :
+		filter_reason::filter_reason(unsigned int code) :
 			code_(code)
 		{}
 
-		filter_reason(unsigned int code, const std::string & reason_str) :
+		filter_reason::filter_reason(unsigned int code, const std::string & reason_str) :
 			code_(code),
 			reason_str_(reason_str)
 		{}
 
-		static filter_reason_ptr filter_reason::create_reason(unsigned int code)
-		{
-			filter_reason_ptr p(new filter_reason(code));
-			return p;
-		}
-
-		static filter_reason_ptr filter_reason::create_reason(
-				unsigned int code, const std::string & reason_str)
-		{
-			filter_reason_ptr p(new filter_reason(code, reason_str));
-			return p;
-		}
-
 		filter_reason::~filter_reason()
 		{}
 
-		const std::string & reason_str()
+		const std::string & filter_reason::reason_str()
 		{
-			return reason_str;
+			return reason_str_;
 		}
 
-		unsigned int code()
+		unsigned int filter_reason::code()
 		{
 			return code_;
 		}

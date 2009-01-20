@@ -19,6 +19,8 @@
 #ifndef FINDIK_IO_ABSTRACT_DATA_HPP
 #define FINDIK_IO_ABSTRACT_DATA_HPP
 
+#include <boost/asio.hpp>
+
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -35,11 +37,6 @@ namespace findik
 			public boost::enable_shared_from_this<abstract_data>
 		{
 		public:
-
-			/*!
-			Default destructor.
-			*/
-			~abstract_data();
 
 			/*!
 			If target is a stream, fetched data will be sent to other side immediatly 
@@ -81,7 +78,7 @@ namespace findik
 			*/
 			bool is_stream_;
 
-		}
+		};
 		
 		typedef boost::shared_ptr<abstract_data> abstract_data_ptr;
 	}

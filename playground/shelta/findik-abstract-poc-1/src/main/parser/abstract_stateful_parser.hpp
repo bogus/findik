@@ -52,7 +52,7 @@ namespace findik
 			*/
 			std::map<findik::io::connection_ptr, parser_state> parser_state_map_;
 
-		}
+		};
 		
 		typedef boost::shared_ptr<abstract_stateful_parser> abstract_stateful_parser_ptr;
 	}

@@ -105,7 +105,7 @@ namespace findik
 			Pointer to accepted new connection.
 			*/
 			connection_ptr new_connection_;
-		}
+		};
 		
 		typedef boost::shared_ptr<server> server_ptr;
 	}

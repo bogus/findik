@@ -64,7 +64,7 @@ namespace findik
 			filters in this list will be started to be executed in order.
 			*/
 			std::list<findik::filter::abstract_filter_ptr> filter_list_;
-		}
+		};
 	}
 }
 

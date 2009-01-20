@@ -18,51 +18,57 @@
 
 #include "server.hpp"
 
+#include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
+
+#include <string>
+
 #include "service_container.hpp"
 
 namespace findik
 {
 	namespace io
 	{
-			server::server( protocol proto, std::string listen_address,
-					unsigned int listen_port, bool is_ssl) :
-				protocol_(proto),
-				listen_address_(listen_address),
-				listen_port_(listen_port),
-				is_ssl_(is_ssl),
-				acceptor_(FI_SERVICES->io_service())
-			{
-				boost::asio::ip::tcp::resolver::query query(listen_address_, listen_port_);
-				boost::asio::ip::tcp::endpoint endpoint = 
-					*(FI_SERVICES->resolver().resolve(query));
-				acceptor_.open(endpoint.protocol());
-				acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-				acceptor_.bind(endpoint);
-				acceptor_.listen();
+		server::server( protocol proto, std::string listen_address,
+				unsigned int listen_port, bool is_ssl) :
+			protocol_(proto),
+			listen_address_(listen_address),
+			listen_port_(listen_port),
+			is_ssl_(is_ssl),
+			acceptor_(FI_SERVICES->io_srv())
+		{
+			boost::asio::ip::tcp::resolver::query query(
+				listen_address_, boost::lexical_cast<std::string>(listen_port_));
+			boost::asio::ip::tcp::endpoint endpoint = 
+				*(FI_SERVICES->resolver_srv().resolve(query));
+			acceptor_.open(endpoint.protocol());
+			acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+			acceptor_.bind(endpoint);
+			acceptor_.listen();
 
-				create_new_connection_and_register();
-			}
-
-			server::~server()
-			{}
-
-                        void server::create_new_connection_and_register()
-			{
-				new_connection_.reset(new connection(protocol_));
-				acceptor_.async_accept(new_connection_->local_socket(),
-						boost::bind(&server::handle_accept, shared_from_this(),
-							boost::asio::placeholders::error)
-					);
-			}
-
-
-			void server::handle_accept(const boost::system::error_code& e)
-			{
-				new_connection_->start_processing();
-				create_new_connection_and_register();
-			}
-
+			create_new_connection_and_register();
 		}
+
+		server::~server()
+		{}
+
+		void server::create_new_connection_and_register()
+		{
+			new_connection_.reset(new connection(protocol_));
+			new_connection_->local_socket();
+			acceptor_.async_accept(new_connection_->local_socket(),
+					boost::bind(&server::handle_accept, this,
+						boost::asio::placeholders::error)
+				);
+		}
+
+
+		void server::handle_accept(const boost::system::error_code& e)
+		{
+			new_connection_->start_processing();
+			create_new_connection_and_register();
+		}
+
 	}
 }
 

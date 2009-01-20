@@ -28,6 +28,7 @@
 #include <deque>
 
 #include "protocol.hpp"
+#include "abstract_data.hpp"
 
 namespace findik
 {
@@ -67,7 +68,7 @@ namespace findik
 			Protocol of this connection.
 			\returns protocol of this connection.
 			*/
-			protocol protocol();
+			enum protocol proto();
 
 			/*!
 			Pointer to recieved (remote or local) new data.
@@ -88,6 +89,12 @@ namespace findik
 			std::string & remote_hostname();
 
 			/*!
+			Remote port.
+			\returns remote port to connect.
+			*/
+			unsigned int & remote_port();
+
+			/*!
 			Whether connection is keep alive.
 			\returns whether connection is keepalive supported.
 			*/
@@ -97,7 +104,7 @@ namespace findik
 			/*!
 			Protocol of this connection.
 			*/
-			protocol protocol_;
+			protocol proto_;
 
 			/*!
 			Socket for the local connection.
@@ -200,12 +207,17 @@ namespace findik
 			Register to ASIO service to resolve a hostname.
 			\param hostname hostname to resolve.
 			*/
-			void register_for_resolve(const std::string & hostname);
+			void register_for_resolve(const std::string & hostname, unsigned int port);
 
 			/*!
 			Remote hostname.
 			*/
 			std::string remote_hostname_;
+
+			/*!
+			Remote port.
+			*/
+			unsigned int remote_port_;
 
 			/*!
 			Register to ASIO service to write to local socket.
@@ -241,7 +253,7 @@ namespace findik
 			*/
 			void shutdown_socket(boost::asio::ip::tcp::socket & socket);
 
-		}
+		};
 		
 		typedef boost::shared_ptr<connection> connection_ptr;
 	}

@@ -22,29 +22,27 @@ namespace findik
 {
 	namespace service
 	{
-			parser_service::parser_service()
-			{}
+		parser_service::parser_service()
+		{}
 
-			parser_service::~parser_service()
-			{}
+		parser_service::~parser_service()
+		{}
 
-			template <typename InputIterator>
-			boost::tuple<boost::tribool, InputIterator> parser_service::parse(
-					findik::io::connection_ptr connection_,
-					InputIterator begin, InputIterator end
-				)
-			{
-				if (connection_->current_data()->is_local())
-					local_parser_map_[connection->protocol()].parse(
-							connection_, begin, end
-						);
-				else
-					remote_parser_map_[connection->protocol()].parse(
-							connection_, begin, end
-						);
-			}
-
+		boost::tuple<boost::tribool, char*> parser_service::parse(
+				findik::io::connection_ptr connection_,
+				char* begin, char* end
+			)
+		{
+			if (connection_->current_data()->is_local())
+				return local_parser_map_[connection_->proto()]->parse(
+						connection_, begin, end
+					);
+			else
+				return remote_parser_map_[connection_->proto()]->parse(
+						connection_, begin, end
+					);
 		}
+
 	}
 }
 
