@@ -1,4 +1,4 @@
-SUBDIRS = config filter logging io parser service
+SUBDIRS = config filter logging io parser protocols service
 
 lib_LTLIBRARIES		=	libfindik.la
 
@@ -10,12 +10,11 @@ libfindik_la_LIBADD	= \
 	logging/libfindik_logging.la \
 	io/libfindik_io.la \
 	parser/libfindik_parser.la \
+	protocols/libfindik_protocols.la \
 	service/libfindik_service.la
 
 bin_PROGRAMS		=	findik
-
 findik_SOURCES		=	findik.cpp
-
 findik_LDADD		=	libfindik.la
 
 LIBS = \
@@ -34,4 +33,5 @@ INCLUDES = \
 	-I@top_srcdir@/src/main/logging \
 	-I@top_srcdir@/src/main/io \
 	-I@top_srcdir@/src/main/parser \
+	-I@top_srcdir@/src/main/protocols \
 	-I@top_srcdir@/src/main/service
