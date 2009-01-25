@@ -27,6 +27,8 @@
 
 #include <deque>
 
+#include "log.hpp"
+
 #include "protocol.hpp"
 #include "abstract_data.hpp"
 
@@ -101,6 +103,11 @@ namespace findik
 			bool & is_keepalive();
 
 		protected:
+			/*!
+			Debug logger for server class.
+			*/
+                        static log4cxx::LoggerPtr debug_logger;
+
 			/*!
 			Protocol of this connection.
 			*/

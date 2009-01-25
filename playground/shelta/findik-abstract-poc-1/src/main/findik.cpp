@@ -30,8 +30,6 @@
 #include <pthread.h>
 #include <signal.h>
 
-//log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("findik"));
-
 int main(int argc, char* argv[])
 {
 	try
@@ -67,13 +65,10 @@ int main(int argc, char* argv[])
 		//findik::filter::generate_request_filter_factory_map();
 		//findik::filter::generate_response_filter_factory_map();
 
-		// Initialize log manager
-		//todo: fetch file paths, log level and accesslog on|off from conf file
-		//findik::logging::log_initializer log_init;
-		//log_init.load_conf("findik_log.conf");
-
 		// Initialise server.
 		findik::io::server s(findik::io::http, address, port);
+
+		// LOG4CXX_INFO(findik::log_initializer::user_logger,"findik started to listen " + address + ":" + port);
 
 		// Create a pool of threads to run all of the io_services.
 		std::vector<boost::shared_ptr<boost::thread> > threads;
@@ -84,8 +79,7 @@ int main(int argc, char* argv[])
 			threads.push_back(thread);
 		}
 
-		//LOG4CXX_INFO(findik::logging::log_initializer::user_logger,"findik started to listen " + address + ":" + port);
-		//LOG4CXX_DEBUG(findik::logging::log_initializer::debug_logger,"listening with " << num_threads << " threads");
+		// LOG4CXX_DEBUG(findik::logging::log_initializer::debug_logger,"listening with " << num_threads << " threads");
 
 		// Restore previous signals.
 		pthread_sigmask(SIG_SETMASK, &old_mask, 0);
@@ -100,6 +94,7 @@ int main(int argc, char* argv[])
 		int sig = 0;
 		sigwait(&wait_mask, &sig);
 
+		FI_SERVICES->io_srv().stop(); // stop IO service
 		// Wait for all threads in the pool to exit.
 		for (std::size_t i = 0; i < threads.size(); ++i)
 			threads[i]->join();

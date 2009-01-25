@@ -1,4 +1,4 @@
-SUBDIRS = config filter io parser service
+SUBDIRS = config filter logging io parser service
 
 lib_LTLIBRARIES		=	libfindik.la
 
@@ -7,6 +7,7 @@ libfindik_la_LDFLAGS	=	-no-undefined -version-info 0:0:0
 libfindik_la_LIBADD	= \
 	config/libfindik_config.la \
 	filter/libfindik_filter.la \
+	logging/libfindik_logging.la \
 	io/libfindik_io.la \
 	parser/libfindik_parser.la \
 	service/libfindik_service.la
@@ -30,6 +31,7 @@ LIBS = \
 INCLUDES = \
 	-I@top_srcdir@/src/main/config \
 	-I@top_srcdir@/src/main/filter \
+	-I@top_srcdir@/src/main/logging \
 	-I@top_srcdir@/src/main/io \
 	-I@top_srcdir@/src/main/parser \
 	-I@top_srcdir@/src/main/service

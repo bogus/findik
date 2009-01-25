@@ -11,6 +11,7 @@ libfindik_io_la_LIBADD		=	@LTLIBOBJS@
 INCLUDES 			= \
         -I@top_srcdir@/src/main/config \
         -I@top_srcdir@/src/main/filter \
+        -I@top_srcdir@/src/main/logging \
         -I@top_srcdir@/src/main/parser \
         -I@top_srcdir@/src/main/service
 

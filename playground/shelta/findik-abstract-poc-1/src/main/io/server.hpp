@@ -30,6 +30,8 @@
 #include "protocol.hpp"
 #include "connection.hpp"
 
+#include "log.hpp"
+
 namespace findik
 {
 	namespace io
@@ -64,6 +66,11 @@ namespace findik
 			~server();
 
 		protected:
+			/*!
+			Debug logger for server class.
+			*/
+                        static log4cxx::LoggerPtr debug_logger;
+
 			/*!
 			Address string which server will bind to.
 			*/

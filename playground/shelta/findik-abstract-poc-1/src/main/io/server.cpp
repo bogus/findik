@@ -29,6 +29,8 @@ namespace findik
 {
 	namespace io
 	{
+		log4cxx::LoggerPtr server::debug_logger(log4cxx::Logger::getLogger("findik.io.server"));
+
 		server::server( protocol proto, std::string listen_address,
 				unsigned int listen_port, bool is_ssl) :
 			protocol_(proto),
@@ -54,6 +56,7 @@ namespace findik
 
 		void server::create_new_connection_and_register()
 		{
+			LOG4CXX_DEBUG(debug_logger, "Creating a new connection object and registering for next accept");
 			new_connection_.reset(new connection(protocol_));
 			new_connection_->local_socket();
 			acceptor_.async_accept(new_connection_->local_socket(),
@@ -65,6 +68,7 @@ namespace findik
 
 		void server::handle_accept(const boost::system::error_code& e)
 		{
+			std::cout << "handle accept" << std::endl;
 			new_connection_->start_processing();
 			create_new_connection_and_register();
 		}

@@ -18,13 +18,20 @@
 
 #include "service_container.hpp"
 
+log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("findik"));
+
 namespace findik
 {
 	namespace service
 	{
 		service_container::service_container() :
 			resolver_srv_(io_srv_)
-		{}
+		{
+			// Initialize log manager
+			//todo: fetch file paths, log level and accesslog on|off from conf file
+			findik::logging::log_initializer log_init;
+			log_init.load_conf("findik_log.conf");
+		}
 
 		service_container_ptr service_container::instance_;
 
