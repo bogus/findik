@@ -68,6 +68,7 @@ AC_CONFIG_FILES([
 	src/main/Makefile
 	src/main/config/Makefile
 	src/main/filter/Makefile
+	src/main/logging/Makefile
 	src/main/io/Makefile
 	src/main/parser/Makefile
 	src/main/service/Makefile
