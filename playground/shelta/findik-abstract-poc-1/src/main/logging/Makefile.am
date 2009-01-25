@@ -5,3 +5,6 @@ libfindik_logging_la_SOURCES	= \
 
 libfindik_logging_la_LIBADD	=	@LTLIBOBJS@
 
+INCLUDES 			= \
+	-I@top_srcdir@/src/include/logging 
+

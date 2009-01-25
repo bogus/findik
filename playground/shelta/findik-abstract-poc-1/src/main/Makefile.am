@@ -10,7 +10,7 @@ libfindik_la_LIBADD	= \
 	logging/libfindik_logging.la \
 	io/libfindik_io.la \
 	parser/libfindik_parser.la \
-	protocols/libfindik_protocols.la \
+	protocols/http/libfindik_http.la \
 	service/libfindik_service.la
 
 bin_PROGRAMS		=	findik
@@ -27,11 +27,11 @@ LIBS = \
 	-ltidy \
 	-lmysqlcppconn
 
-INCLUDES = \
-	-I@top_srcdir@/src/main/config \
-	-I@top_srcdir@/src/main/filter \
-	-I@top_srcdir@/src/main/logging \
-	-I@top_srcdir@/src/main/io \
-	-I@top_srcdir@/src/main/parser \
-	-I@top_srcdir@/src/main/protocols \
-	-I@top_srcdir@/src/main/service
+INCLUDES 			= \
+	-I@top_srcdir@/src/include/config \
+	-I@top_srcdir@/src/include/filter \
+	-I@top_srcdir@/src/include/io \
+	-I@top_srcdir@/src/include/logging \
+	-I@top_srcdir@/src/include/parser \
+	-I@top_srcdir@/src/include/service 
+
