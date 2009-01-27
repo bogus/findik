@@ -24,6 +24,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <vector>
+
 namespace findik
 {
 	namespace io
@@ -46,12 +48,16 @@ namespace findik
 			bool is_stream();
 
 			/*!
-			Whether data is local.
+			Various FINDIK subsystems should know whether data is local in order to process it with
+			components prepared for local data.
+			\returns whether data is local.
 			*/
 			bool is_local();
 
 			/*!
-			Whether data is remote.
+			Various FINDIK subsystems should know whether data is remote in order to process it with
+			components prepared for remote data.
+			\returns whether data is remote.
 			*/
 			bool is_remote();
 
@@ -61,13 +67,16 @@ namespace findik
 			*/
 			virtual boost::asio::const_buffer to_buffer() = 0;
 
+			/*!
+			In some cases, data may not have content, it could contain nothing more than meta data.
+			For situation like this, filters should know whether data has content in order to avoid
+			running unnecessary algorithms.
+			\returns whether data has content.
+			*/
+			bool has_content();
+
 		protected:
 			
-			/*!
-			Default constructor.
-			*/
-			abstract_data(bool is_local);
-
 			/*!
 			Whether data is local. If false, data is remote.
 			*/
@@ -77,6 +86,11 @@ namespace findik
 			Whether data is a stream.
 			*/
 			bool is_stream_;
+
+			/*!
+			Content of data.
+			*/
+			std::vector<unsigned char> content_;
 
 		};
 		

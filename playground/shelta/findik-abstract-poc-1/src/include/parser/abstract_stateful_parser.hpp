@@ -22,7 +22,12 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "abstract_parser.hpp"
+#include "connection.hpp"
+
 #include <map>
+
+#define FI_STATE_OF(conn) parser_state_map_[conn]
 
 namespace findik
 {
@@ -31,8 +36,8 @@ namespace findik
 
 		/*!
 		Abstract stateful parser object to inherit in order to implement stateful parsers for findik.
-		\extends boost::enable_shared_from_this<abstract_stategul_parser> to use boost shared pointers.
-		\extends findik::service::service_chain_element to be used in service chains.
+		\extends boost::enable_shared_from_this<abstract_stateful_parser> to use boost shared pointers.
+		\extends findik::parser::abstract_parser to be used in parser service.
 		@author H. Kerem Cevahir (shelta)
 		*/
 		class abstract_stateful_parser :

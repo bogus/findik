@@ -16,31 +16,36 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "abstract_data.hpp"
+#ifndef FINDIK_PROTOCOLS_HTTP_HEADER_HPP
+#define FINDIK_PROTOCOLS_HTTP_HEADER_HPP
 
-namespace findik
-{
-	namespace io
-	{
-		bool abstract_data::is_stream()
-		{
-			return is_stream_;
-		}
+#include <string>
 
-		bool abstract_data::is_local()
-		{
-			return is_local_;
-		}
+namespace findik {
+	namespace protocols {
+		namespace http {
 
-		bool abstract_data::is_remote()
-		{
-			return ! is_local_;
-		}
+			/*!
+			A struct to store an HTTP Header
 
-		bool abstract_data::has_content()
-		{
-			return ! content_.empty();
-		}
+			@author H. Kerem Cevahir (shelta)
+			*/
+			struct header
+			{
+				/*!
+				Name of HTTP header.
+				*/
+				std::string name;
+
+				/*!
+				Value of HTTP header.
+				*/
+				std::string value;
+			};
+
+		} 
 	}
 }
+
+#endif
 

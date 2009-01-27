@@ -16,30 +16,47 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "abstract_data.hpp"
+#include "data.hpp"
+
+#include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 namespace findik
 {
-	namespace io
+	namespace protocols
 	{
-		bool abstract_data::is_stream()
+		namespace http
 		{
-			return is_stream_;
-		}
+			data::data() :
+				content_length_(0)
+			{}
 
-		bool abstract_data::is_local()
-		{
-			return is_local_;
-		}
+			void data::add_blank_header()
+			{
+				headers_.push_back(header());
+			}
 
-		bool abstract_data::is_remote()
-		{
-			return ! is_local_;
-		}
+			header & data::last_header()
+			{
+				return headers_.back();
+			}
 
-		bool abstract_data::has_content()
-		{
-			return ! content_.empty();
+			const std::vector<header> & data::get_headers()
+			{
+				return headers_;
+			}
+
+			unsigned int data::content_length()
+			{
+				if (content_length_ == 0)
+					BOOST_FOREACH( header h, headers_ )
+						if (h.name == "Content-Length")
+							content_length_ =
+							boost::lexical_cast< unsigned int >(h.value);
+
+				return content_length_;
+			}
+
 		}
 	}
 }

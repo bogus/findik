@@ -16,30 +16,22 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "abstract_data.hpp"
+#include "request.hpp"
 
 namespace findik
 {
-	namespace io
+	namespace protocols
 	{
-		bool abstract_data::is_stream()
+		namespace http
 		{
-			return is_stream_;
-		}
+			request::request()
+			{
+				is_local_ = true;
+			}
 
-		bool abstract_data::is_local()
-		{
-			return is_local_;
-		}
+			request::~request()
+			{}
 
-		bool abstract_data::is_remote()
-		{
-			return ! is_local_;
-		}
-
-		bool abstract_data::has_content()
-		{
-			return ! content_.empty();
 		}
 	}
 }

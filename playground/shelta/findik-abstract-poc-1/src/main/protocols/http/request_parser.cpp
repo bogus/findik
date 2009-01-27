@@ -16,30 +16,39 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "abstract_data.hpp"
+#include "request_parser.hpp"
+
+#include <boost/logic/tribool.hpp>
+#include <boost/tuple/tuple.hpp>
 
 namespace findik
 {
-	namespace io
+	namespace protocols
 	{
-		bool abstract_data::is_stream()
+		namespace http
 		{
-			return is_stream_;
-		}
 
-		bool abstract_data::is_local()
-		{
-			return is_local_;
-		}
+			boost::tuple<boost::tribool, char*> request_parser::parse(
+					findik::io::connection_ptr connection_,
+					char* begin, char* end
+				)
+			{
+				while (begin != end)
+				{
+					boost::tribool result = consume(connection_, *begin++);
+					if (result || !result)
+						return boost::make_tuple(result, begin);
+				}
 
-		bool abstract_data::is_remote()
-		{
-			return ! is_local_;
-		}
+				boost::tribool result = boost::indeterminate;
+				return boost::make_tuple(result, begin);
+			}
 
-		bool abstract_data::has_content()
-		{
-			return ! content_.empty();
+			boost::tribool request_parser::consume(findik::io::connection_ptr connection_, char input)
+			{
+				return false;
+			}
+
 		}
 	}
 }
