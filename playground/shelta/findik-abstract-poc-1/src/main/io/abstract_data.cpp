@@ -41,6 +41,16 @@ namespace findik
 		{
 			return ! content_.empty();
 		}
+
+		void abstract_data::push_to_content(char input)
+		{
+			content_.push_back(input);
+		}
+
+		std::size_t abstract_data::content_size()
+		{
+			return content_.size();
+		}
 	}
 }
 

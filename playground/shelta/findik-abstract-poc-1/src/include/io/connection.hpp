@@ -79,6 +79,12 @@ namespace findik
 			abstract_data_ptr current_data();
 
 			/*!
+			Overwrites new_data pointer with given.
+			\param data_ new value to replace new_data_ pointer.
+			*/
+			void update_current_data(abstract_data_ptr data_);
+
+			/*!
 			Socket for the local connection.
 			\returns local socket
 			*/

@@ -75,6 +75,18 @@ namespace findik
 			*/
 			bool has_content();
 
+			/*!
+			Pushes character to raw content vector.
+			\param input char to be pushed.
+			*/
+			void push_to_content(char input);
+
+			/*!
+			Size of raw content.
+			\returns size of raw content;
+			*/
+			std::size_t content_size();
+
 		protected:
 			
 			/*!
@@ -90,7 +102,7 @@ namespace findik
 			/*!
 			Content of data.
 			*/
-			std::vector<unsigned char> content_;
+			std::vector<char> content_;
 
 		};
 		

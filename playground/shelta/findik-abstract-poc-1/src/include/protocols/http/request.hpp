@@ -26,6 +26,8 @@
 
 #include "data.hpp"
 
+#include <string>
+
 namespace findik
 {
 	namespace protocols
@@ -46,7 +48,36 @@ namespace findik
 				request();
 				~request();
 
-				virtual boost::asio::const_buffer to_buffer() = 0;
+				/*!
+				Method of request.
+				*/
+				enum request_method {
+					get,
+					post,
+					head,
+					put,
+					delete_,
+					trace,
+					options,
+					connect
+				} method;
+
+				/*!
+				Uri in HTTP request command line.
+				*/
+				std::string uri;
+
+				/*!
+				Major number of HTTP Version in HTTP request command line.
+				*/
+				unsigned int http_version_major;
+
+				/*!
+				Minor number of HTTP Version in HTTP request command line.
+				*/
+				unsigned int http_version_minor;
+
+				boost::asio::const_buffer to_buffer();
 
 			protected:
 				

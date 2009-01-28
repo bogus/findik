@@ -24,6 +24,7 @@
 
 #include "abstract_stateful_parser.hpp"
 #include "connection.hpp"
+#include "request.hpp"
 
 #include <map>
 #include <string>

@@ -154,6 +154,11 @@ namespace findik
 			return new_data_;
 		}
 
+		void connection::update_current_data(abstract_data_ptr data_)
+		{
+			new_data_ = data_;
+		}
+
 		boost::asio::ip::tcp::socket & connection::local_socket()
 		{
 			return local_socket_;

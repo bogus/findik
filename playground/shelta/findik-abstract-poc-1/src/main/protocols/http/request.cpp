@@ -32,6 +32,12 @@ namespace findik
 			request::~request()
 			{}
 
+			boost::asio::const_buffer request::to_buffer()
+			{
+				int i[3];
+				return boost::asio::buffer(i);
+			}
+
 		}
 	}
 }
