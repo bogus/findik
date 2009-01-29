@@ -36,7 +36,7 @@ namespace findik
 		{
 			/*!
 			Local data implementation for HTTP protocol.
-			\extends boost::enable_shared_from_this<abstract_data> to use boost shared pointers.
+			\extends boost::enable_shared_from_this<request> to use boost shared pointers.
 			\extends findik::protocols::http::data because this is a data for http protocol.
 			@author H. Kerem Cevahir (shelta)
 			*/

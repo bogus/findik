@@ -3,7 +3,9 @@ lib_LTLIBRARIES			=	libfindik_http.la
 libfindik_http_la_SOURCES	= \
 	data.cpp \
 	request.cpp \
-	request_parser.cpp
+	request_parser.cpp \
+	response.cpp \
+	response_parser.cpp
 
 libfindik_http_la_LIBADD	=	@LTLIBOBJS@
 

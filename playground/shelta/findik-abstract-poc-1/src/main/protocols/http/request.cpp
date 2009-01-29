@@ -26,6 +26,7 @@ namespace findik
 		{
 			request::request()
 			{
+				content_length_ = 0;
 				is_local_ = true;
 			}
 
