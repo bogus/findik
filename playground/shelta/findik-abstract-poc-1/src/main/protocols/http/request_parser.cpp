@@ -21,6 +21,9 @@
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple.hpp>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
+
 #include <string>
 #include <cctype>
 
@@ -32,6 +35,7 @@ namespace findik
 	{
 		namespace http
 		{
+			log4cxx::LoggerPtr request_parser::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.request_parser"));
 
 			boost::tuple<boost::tribool, char*> request_parser::parse(
 					findik::io::connection_ptr connection_,
@@ -54,12 +58,13 @@ namespace findik
 
 				if (parser_state_map_.find(connection_) == parser_state_map_.end())
 				{
+					LOG4CXX_DEBUG(debug_logger, "Creating new state entry for connection.");
 					FI_STATE_OF(connection_) = method_start;
 					request_ptr p(new request());
 					connection_->update_current_data(p);
 				}
 
-				request_ptr req( (request*) (connection_->current_data().get()) );
+				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 
 				switch (FI_STATE_OF(connection_))
 				{
@@ -383,6 +388,46 @@ namespace findik
 					default:
 						return false;
 				}
+			}
+
+			void request_parser::update_hostname_of(findik::io::connection_ptr connection_)
+			{
+				if (connection_->current_data()->is_remote())
+					return;
+
+				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
+
+				BOOST_FOREACH( header h, req->get_headers() )
+					if (h.name == "Host")
+					{
+						std::size_t pos_ = h.value.find_first_of(":");
+
+						if (pos_ == std::string::npos)
+							connection_->remote_hostname() = h.value;
+						else
+							connection_->remote_hostname() = h.value.substr(0,pos_);
+					}
+			}
+
+			void request_parser::update_port_of(findik::io::connection_ptr connection_)
+			{
+				if (connection_->current_data()->is_remote())
+					return;
+
+				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
+
+				BOOST_FOREACH( header h, req->get_headers() )
+					if (h.name == "Host")
+					{
+						std::size_t pos_ = h.value.find_first_of(":");
+
+						if (pos_ == std::string::npos)
+							connection_->remote_port() = 80;
+						else
+							connection_->remote_port() = boost::lexical_cast< unsigned int >(
+									h.value.substr(pos_)
+								);
+					}
 			}
 
 		}

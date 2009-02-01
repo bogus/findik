@@ -22,6 +22,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "abstract_local_parser.hpp"
 #include "abstract_stateful_parser.hpp"
 #include "connection.hpp"
 #include "request.hpp"
@@ -46,6 +47,7 @@ namespace findik
 			*/
 			class request_parser :
 				public boost::enable_shared_from_this<request_parser>,
+				public findik::parser::abstract_local_parser,
 				public findik::parser::abstract_stateful_parser
 			{
 			public:
@@ -67,7 +69,24 @@ namespace findik
 						char* begin, char* end
 					);
 
+				/*!
+				Scans all headers, then updates remote_hostname parameter of connection.
+				\param connection_
+				*/
+				void update_hostname_of(findik::io::connection_ptr connection_);
+
+				/*!
+				Scans all headers, then updates remote_port parameter of connection.
+				\param connection_
+				*/
+				void update_port_of(findik::io::connection_ptr connection_);
+
 			protected:
+				/*!
+				Debug logger for server class.
+				*/
+				static log4cxx::LoggerPtr debug_logger;
+
 				/*!
 				Defined parser states.
 				*/

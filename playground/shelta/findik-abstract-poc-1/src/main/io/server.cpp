@@ -68,7 +68,6 @@ namespace findik
 
 		void server::handle_accept(const boost::system::error_code& e)
 		{
-			std::cout << "handle accept" << std::endl;
 			new_connection_->start_processing();
 			create_new_connection_and_register();
 		}

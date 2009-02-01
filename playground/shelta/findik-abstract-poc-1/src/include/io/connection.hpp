@@ -204,12 +204,22 @@ namespace findik
 			/*!
 			Local read buffer.
 			*/
-			boost::array<char, 8*1024> local_buffer_;
+			boost::array<char, 8*1024> local_read_buffer_;
 
 			/*!
 			Remote read buffer.
 			*/
-			boost::array<char, 32*1024> remote_buffer_;
+			boost::array<char, 32*1024> remote_read_buffer_;
+
+			/*!
+			Local write buffer.
+			*/
+			boost::asio::streambuf local_write_buffer_;
+
+			/*!
+			Remote write buffer.
+			*/
+			boost::asio::streambuf remote_write_buffer_;
 
 			/*!
 			Register to ASIO service to read from local socket.
@@ -233,10 +243,9 @@ namespace findik
 			unsigned int remote_port_;
 
 			/*!
-			Register to ASIO service to write to local socket.
-			\param data data to write.
+			Register to ASIO service to write local_write_buffer_ to local socket.
 			*/
-			void register_for_local_write(boost::asio::const_buffer data);
+			void register_for_local_write();
 
 			/*!
 			Register to ASIO service to connect an endpoint.
@@ -245,10 +254,9 @@ namespace findik
 			void register_for_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
 
 			/*!
-			Register to ASIO service to write to remote socket.
-			\param data data to write.
+			Register to ASIO service to write remote_write_buffer_ to remote socket.
 			*/
-			void register_for_remote_write(boost::asio::const_buffer data);
+			void register_for_remote_write();
 
 			/*!
 			Register to ASIO service to read from remote socket.

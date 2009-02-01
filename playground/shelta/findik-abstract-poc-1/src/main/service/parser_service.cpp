@@ -25,15 +25,20 @@ namespace findik
 {
 	namespace service
 	{
+                log4cxx::LoggerPtr parser_service::debug_logger(log4cxx::Logger::getLogger("findik.service.parser_service"));
+
 		parser_service::parser_service()
 		{
+			LOG4CXX_DEBUG(debug_logger, "Creating parser objects: http request parser.");
 			findik::protocols::http::request_parser_ptr rq(
 					new findik::protocols::http::request_parser()
 				);
+			local_parser_map_[findik::io::http] = rq;
+
+			LOG4CXX_DEBUG(debug_logger, "Creating parser objects: http response parser.");
 			findik::protocols::http::response_parser_ptr rs(
 					new findik::protocols::http::response_parser()
 				);
-			local_parser_map_[findik::io::http] = rq;
 			remote_parser_map_[findik::io::http] = rs;
 		}
 
@@ -41,11 +46,11 @@ namespace findik
 		{}
 
 		boost::tuple<boost::tribool, char*> parser_service::parse(
-				findik::io::connection_ptr connection_,
+				findik::io::connection_ptr connection_, bool is_local,
 				char* begin, char* end
 			)
 		{
-			if (connection_->current_data()->is_local())
+			if (is_local)
 				return local_parser_map_[connection_->proto()]->parse(
 						connection_, begin, end
 					);
@@ -55,6 +60,15 @@ namespace findik
 					);
 		}
 
+		void parser_service::update_hostname_of(findik::io::connection_ptr connection_)
+		{
+			local_parser_map_[connection_->proto()]->update_hostname_of(connection_);
+		}
+
+		void parser_service::update_port_of(findik::io::connection_ptr connection_)
+		{
+			local_parser_map_[connection_->proto()]->update_port_of(connection_);
+		}
 	}
 }
 

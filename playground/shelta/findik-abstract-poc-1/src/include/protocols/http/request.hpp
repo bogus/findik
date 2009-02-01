@@ -77,7 +77,11 @@ namespace findik
 				*/
 				unsigned int http_version_minor;
 
-				boost::asio::const_buffer to_buffer();
+				/*!
+				Raw data to sent other side.
+				\param sbuf streambuffer to insert raw data into.
+				*/
+				void into_buffer(boost::asio::streambuf & sbuf);
 
 			protected:
 				

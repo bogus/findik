@@ -61,7 +61,7 @@ namespace findik
 					connection_->update_current_data(p);
 				}
 
-				response_ptr resp( (response*) (connection_->current_data().get()) );
+				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 
 				switch (FI_STATE_OF(connection_))
 				{

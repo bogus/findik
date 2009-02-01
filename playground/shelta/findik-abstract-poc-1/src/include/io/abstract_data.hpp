@@ -63,9 +63,9 @@ namespace findik
 
 			/*!
 			Raw data to sent other side.
-			\returns data in a buffer
+			\param sbuf streambuffer to insert raw data into.
 			*/
-			virtual boost::asio::const_buffer to_buffer() = 0;
+			virtual void into_buffer(boost::asio::streambuf & sbuf) = 0;
 
 			/*!
 			In some cases, data may not have content, it could contain nothing more than meta data.

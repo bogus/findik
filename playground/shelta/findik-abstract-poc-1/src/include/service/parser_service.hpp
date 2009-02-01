@@ -28,6 +28,8 @@
 #include "protocol.hpp"
 #include "connection.hpp"
 #include "abstract_parser.hpp"
+#include "abstract_local_parser.hpp"
+#include "abstract_remote_parser.hpp"
 
 namespace findik
 {
@@ -57,29 +59,47 @@ namespace findik
 			data is required. The InputIterator return value indicates how much of the
 			input has been consumed.
 
-			\param connection_ connection object to populate data onject into with parsing results. 
+			\param connection_ connection object to populate data object into with parsing results. 
+			\param is_local whether current read of connection is local
 			\param begin start point of parser
 			\param end stop point of parser
 
 			\return a tuple which contains parse result and begin point. Parse result will be true if input is a proper protocol data and parsed successfully, false if input is not a proper protocol data, indeterminate if parser needs more data to decide whether input is proper.
 			*/
 			boost::tuple<boost::tribool, char*> parse(
-					findik::io::connection_ptr connection_,
+					findik::io::connection_ptr connection_, bool is_local,
 					char* begin, char* end
 				);
 
+			/*!
+			Updates remote_hostname parameter of connection.
+			\param connection_
+			*/
+			void update_hostname_of(findik::io::connection_ptr connection_);
+
+			/*!
+			Updates remote_port parameter of connection.
+			\param connection_
+			*/
+			void update_port_of(findik::io::connection_ptr connection_);
+
 		protected:
+			/*!
+			Debug logger for server class.
+			*/
+                        static log4cxx::LoggerPtr debug_logger;
+
 			/*!
 			Map to store local parsers in an order. When local parsing operation has been requested
 			appropriate parser will be fetched from this map.
 			*/
-			std::map<findik::io::protocol, findik::parser::abstract_parser_ptr> local_parser_map_;
+			std::map<findik::io::protocol, findik::parser::abstract_local_parser_ptr> local_parser_map_;
 
 			/*!
 			Map to store remote parsers in an order. When remote parsing operation has been requested
 			appropriate parser will be fetched from this map.
 			*/
-			std::map<findik::io::protocol, findik::parser::abstract_parser_ptr> remote_parser_map_;
+			std::map<findik::io::protocol, findik::parser::abstract_remote_parser_ptr> remote_parser_map_;
 
 		};
 	}

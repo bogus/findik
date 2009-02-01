@@ -31,16 +31,19 @@ namespace findik
 		reply_service::~reply_service()
 		{}
 
-		boost::asio::const_buffer reply_service::reply(
+		void reply_service::reply(boost::asio::streambuf & sbuf,
 			findik::io::protocol proto, unsigned int code)
 		{
-			return boost::asio::buffer(stock_replies_[proto][code]);
+			std::ostream os(&sbuf);
+			os << stock_replies_[proto][code];
 		}
 
-		boost::asio::const_buffer reply_service::reply(findik::io::protocol proto, findik::filter::filter_reason_ptr reason)
+		void reply_service::reply(boost::asio::streambuf & sbuf,
+				findik::io::protocol proto, findik::filter::filter_reason_ptr reason)
 		{
 			// TODO: reply generator chain .
-			return boost::asio::buffer(stock_replies_[proto][reason->code()]);
+			std::ostream os(&sbuf);
+			os << stock_replies_[proto][reason->code()];
 		}
 	}
 }

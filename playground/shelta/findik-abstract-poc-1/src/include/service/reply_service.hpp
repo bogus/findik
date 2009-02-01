@@ -52,22 +52,22 @@ namespace findik
 			~reply_service();
 
 			/*!
-			Crafts request reply.
+			Crafts request reply into given stream buffer.
 
-			\param proto protocol of reply.
-			\param code reply code. 
-			\returns reply in a const ASIO buffer. 
-			*/
-			boost::asio::const_buffer reply(findik::io::protocol proto, unsigned int code);
-
-			/*!
-			Crafts request reply.
-
+			\param sbuf buffer to populate reply into. 
 			\param proto protocol of reply.
 			\param reason deny reason of a filter.
-			\returns reply in a const ASIO buffer. 
 			*/
-			boost::asio::const_buffer reply(findik::io::protocol proto, findik::filter::filter_reason_ptr reason);
+			void reply(boost::asio::streambuf & sbuf, findik::io::protocol proto, findik::filter::filter_reason_ptr reason);
+
+			/*!
+			Crafts request reply into given stream buffer.
+
+			\param sbuf buffer to populate reply into. 
+			\param proto protocol of reply.
+			\param code reply code.
+			*/
+			void reply(boost::asio::streambuf & sbuf, findik::io::protocol proto, unsigned int code);
 
 		protected:
 			/*!

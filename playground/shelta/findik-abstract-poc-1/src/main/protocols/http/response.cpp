@@ -107,10 +107,8 @@ namespace findik
 				return content_encoding_;
 			}
 
-			boost::asio::const_buffer response::to_buffer()
+			void response::into_buffer(boost::asio::streambuf & sbuf)
 			{
-				int i[3];
-				return boost::asio::buffer(i);
 			}
 
 		}

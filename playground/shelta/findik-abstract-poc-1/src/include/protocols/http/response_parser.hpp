@@ -22,6 +22,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "abstract_remote_parser.hpp"
 #include "abstract_stateful_parser.hpp"
 #include "connection.hpp"
 #include "response.hpp"
@@ -47,6 +48,7 @@ namespace findik
 			*/
 			class response_parser :
 				public boost::enable_shared_from_this<response_parser>,
+				public findik::parser::abstract_remote_parser,
 				public findik::parser::abstract_stateful_parser
 			{
 			public:
