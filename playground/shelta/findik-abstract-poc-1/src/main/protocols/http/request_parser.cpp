@@ -56,7 +56,7 @@ namespace findik
 			boost::tribool request_parser::consume(findik::io::connection_ptr connection_, char input)
 			{
 
-				if (parser_state_map_.find(connection_) == parser_state_map_.end())
+				if (connection_->current_data().get() == 0)
 				{
 					LOG4CXX_DEBUG(debug_logger, "Creating new state entry for connection.");
 					FI_STATE_OF(connection_) = method_start;
@@ -390,7 +390,7 @@ namespace findik
 				}
 			}
 
-			void request_parser::update_hostname_of(findik::io::connection_ptr connection_)
+			void request_parser::update_hostname_of(findik::io::connection_ptr connection_, std::string & hostname_)
 			{
 				if (connection_->current_data()->is_remote())
 					return;
@@ -403,13 +403,13 @@ namespace findik
 						std::size_t pos_ = h.value.find_first_of(":");
 
 						if (pos_ == std::string::npos)
-							connection_->remote_hostname() = h.value;
+							hostname_ = h.value;
 						else
-							connection_->remote_hostname() = h.value.substr(0,pos_);
+							hostname_ = h.value.substr(0,pos_);
 					}
 			}
 
-			void request_parser::update_port_of(findik::io::connection_ptr connection_)
+			void request_parser::update_port_of(findik::io::connection_ptr connection_, unsigned int & port_)
 			{
 				if (connection_->current_data()->is_remote())
 					return;
@@ -422,9 +422,9 @@ namespace findik
 						std::size_t pos_ = h.value.find_first_of(":");
 
 						if (pos_ == std::string::npos)
-							connection_->remote_port() = 80;
+							port_ = 80;
 						else
-							connection_->remote_port() = boost::lexical_cast< unsigned int >(
+							port_ = boost::lexical_cast< unsigned int >(
 									h.value.substr(pos_)
 								);
 					}

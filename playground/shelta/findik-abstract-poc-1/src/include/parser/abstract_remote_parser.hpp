@@ -23,7 +23,6 @@
 #include <boost/shared_ptr.hpp>
 
 #include <boost/logic/tribool.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include "abstract_parser.hpp"
 #include "connection.hpp"
@@ -42,6 +41,12 @@ namespace findik
 			public findik::parser::abstract_parser
 		{
 		public:
+			/*!
+			Updates is_keepalive_ parameter of connection.
+			\param connection_ to inspect.
+			\param is_keepalive_ to update.
+			*/
+			virtual void update_is_keepalive_of(findik::io::connection_ptr connection_, boost::tribool & is_keepalive_) = 0;
 
 		protected:
 

@@ -83,7 +83,31 @@ namespace findik
 				*/
 				void into_buffer(boost::asio::streambuf & sbuf);
 
+				/*!
+				Gets full uri of request. This methods craft full uri from HTTP request command line and "Host:" header.
+
+				\return full uri of request.
+				*/
+				const std::string & request_uri();
+
+				/*!
+				Gets request path. This methods gets request path from HTTP request command line.
+
+				\return full uri of request.
+				*/
+				const std::string & request_path();
+
 			protected:
+				
+				/*!
+				Request path.
+				*/
+				std::string request_path_;
+
+				/*!
+				Request uri.
+				*/
+				std::string request_uri_;
 				
 			};
 			

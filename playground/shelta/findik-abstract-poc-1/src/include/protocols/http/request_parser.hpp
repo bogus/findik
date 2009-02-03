@@ -71,15 +71,17 @@ namespace findik
 
 				/*!
 				Scans all headers, then updates remote_hostname parameter of connection.
-				\param connection_
+				\param connection_ to inspect.
+				\param hostname_ to update.
 				*/
-				void update_hostname_of(findik::io::connection_ptr connection_);
+				void update_hostname_of(findik::io::connection_ptr connection_, std::string & hostname_);
 
 				/*!
 				Scans all headers, then updates remote_port parameter of connection.
-				\param connection_
+				\param connection_ to inspect.
+				\param port_ to update.
 				*/
-				void update_port_of(findik::io::connection_ptr connection_);
+				void update_port_of(findik::io::connection_ptr connection_, unsigned int & port_);
 
 			protected:
 				/*!

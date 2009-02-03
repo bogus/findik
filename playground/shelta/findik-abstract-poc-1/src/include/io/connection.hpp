@@ -25,6 +25,8 @@
 
 #include <boost/asio.hpp>
 
+#include <boost/logic/tribool.hpp>
+
 #include <deque>
 
 #include "log.hpp"
@@ -94,19 +96,25 @@ namespace findik
 			Remote hostname.
 			\returns remote hostname to connect.
 			*/
-			std::string & remote_hostname();
+			const std::string & remote_hostname();
 
 			/*!
 			Remote port.
 			\returns remote port to connect.
 			*/
-			unsigned int & remote_port();
+			unsigned int remote_port();
 
 			/*!
 			Whether connection is keep alive.
 			\returns whether connection is keepalive supported.
 			*/
-			bool & is_keepalive();
+			bool is_keepalive();
+
+			/*!
+			Data queue of connection.
+			\returns data queue of connection.
+			*/
+			const std::deque<abstract_data_ptr> & data_queue();
 
 		protected:
 			/*!
@@ -266,13 +274,18 @@ namespace findik
 			/*!
 			Whether connection is keep alive.
 			*/
-			bool is_keepalive_;
+			boost::tribool is_keepalive_;
 
 			/*!
 			Shutdown TCP socket.  
 			\param socket to shutdown.
 			*/
 			void shutdown_socket(boost::asio::ip::tcp::socket & socket);
+
+			/*!
+			Pushes current data to queue and sets new_data_ to NULL.
+			*/
+			void push_current_data_to_queue();
 
 		};
 		

@@ -22,9 +22,6 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "abstract_parser.hpp"
-#include "connection.hpp"
-
 #include <map>
 
 #define FI_STATE_OF(conn) parser_state_map_[conn]
@@ -41,8 +38,7 @@ namespace findik
 		@author H. Kerem Cevahir (shelta)
 		*/
 		class abstract_stateful_parser :
-			public boost::enable_shared_from_this<abstract_stateful_parser>,
-			public findik::parser::abstract_parser
+			public boost::enable_shared_from_this<abstract_stateful_parser>
 		{
 		public:
 

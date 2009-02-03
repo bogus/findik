@@ -22,11 +22,13 @@
 #include <boost/tuple/tuple.hpp>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 #include <string>
 #include <cctype>
 
 #include "parser_util.hpp"
+#include "request.hpp"
 
 namespace findik
 {
@@ -54,7 +56,7 @@ namespace findik
 			boost::tribool response_parser::consume(findik::io::connection_ptr connection_, char input)
 			{
 
-				if (parser_state_map_.find(connection_) == parser_state_map_.end())
+				if (connection_->current_data().get() == 0)
 				{
 					FI_STATE_OF(connection_) = http_version_start;
 					response_ptr p(new response());
@@ -327,7 +329,7 @@ namespace findik
 							FI_STATE_OF(connection_) = chunked_size_start;
 							return boost::indeterminate;
 						}
-						else if (resp->has_content())
+						else if (last_request_of(connection_)->method != request::head)
 						{
 							if (resp->content_length() == 0)
 								return true;
@@ -420,6 +422,46 @@ namespace findik
 						return false;
 				}
 
+			}
+
+			void response_parser::update_is_keepalive_of(findik::io::connection_ptr connection_, boost::tribool & is_keepalive_)
+			{
+				if (connection_->current_data()->is_local())
+					return;
+
+				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
+
+				BOOST_FOREACH( header h, resp->get_headers() )
+					if (h.name == "Connection")  
+						if ((h.value == "keep-alive") ||
+							(h.value == "Keep-alive") ||
+							(h.value == "Keep-Alive") 
+							)
+						{
+							is_keepalive_ = true;
+							return;
+						} 
+						else if ((h.value == "close") ||
+							(h.value == "Close") 
+							)
+						{
+							is_keepalive_ = false;
+							return;
+						}
+
+				is_keepalive_ = false;
+			}
+
+			request_ptr response_parser::last_request_of(findik::io::connection_ptr connection_)
+			{
+				request_ptr req;
+				BOOST_FOREACH(findik::io::abstract_data_ptr data_, connection_->data_queue())
+					if (data_->is_local())
+					{
+						req = boost::static_pointer_cast<request>(data_);
+					}
+
+				return req;
 			}
 
 		}

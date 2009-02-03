@@ -131,22 +131,25 @@ namespace findik
 			register_for_local_read();
 		}
 
-                bool & connection::is_keepalive()
+                bool connection::is_keepalive()
 		{
+			if (boost::logic::indeterminate(is_keepalive_))
+				FI_SERVICES->parser_srv().update_is_keepalive_of(shared_from_this(), is_keepalive_);
+
 			return is_keepalive_;
 		}
 
-		unsigned int & connection::remote_port()
+		unsigned int connection::remote_port()
 		{
 			if (remote_port_ == 0)
-				FI_SERVICES->parser_srv().update_port_of(shared_from_this());
+				FI_SERVICES->parser_srv().update_port_of(shared_from_this(), remote_port_);
 			return remote_port_;
 		}
 
-		std::string & connection::remote_hostname()
+		const std::string & connection::remote_hostname()
 		{
 			if (remote_hostname_ == "")
-				FI_SERVICES->parser_srv().update_hostname_of(shared_from_this());
+				FI_SERVICES->parser_srv().update_hostname_of(shared_from_this(), remote_hostname_);
 			return remote_hostname_;
 		}
 
@@ -163,6 +166,17 @@ namespace findik
 		void connection::update_current_data(abstract_data_ptr data_)
 		{
 			new_data_ = data_;
+		}
+
+		void connection::push_current_data_to_queue()
+		{
+			data_queue_.push_front(new_data_);
+			new_data_.reset( (abstract_data *) 0 );
+		}
+
+		const std::deque<abstract_data_ptr> & connection::data_queue()
+		{
+			return data_queue_;
 		}
 
 		boost::asio::ip::tcp::socket & connection::local_socket()
@@ -262,6 +276,7 @@ namespace findik
 			if (err)
 				return;
 
+			push_current_data_to_queue();
 			register_for_remote_read();
 		}
 
@@ -332,6 +347,11 @@ namespace findik
 			if (!is_keepalive()) {
 				LOG4CXX_DEBUG(debug_logger, "Shutting down local socket.");
 				shutdown_socket(local_socket_);
+			} 
+			else
+			{
+				push_current_data_to_queue();
+				register_for_local_read();
 			}
 		}
 	}

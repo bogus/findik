@@ -51,6 +51,12 @@ namespace findik
 		{
 			return content_.size();
 		}
+
+		const std::vector<char> & abstract_data::content()
+		{
+			return content_;
+		}
+
 	}
 }
 

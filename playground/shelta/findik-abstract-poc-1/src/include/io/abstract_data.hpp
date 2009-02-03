@@ -87,6 +87,12 @@ namespace findik
 			*/
 			std::size_t content_size();
 
+			/*!
+			Raw content.
+			\returns raw content;
+			*/
+			const std::vector<char> & content();
+
 		protected:
 			
 			/*!

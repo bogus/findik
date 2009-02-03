@@ -60,14 +60,22 @@ namespace findik
 					);
 		}
 
-		void parser_service::update_hostname_of(findik::io::connection_ptr connection_)
+		void parser_service::update_hostname_of(findik::io::connection_ptr connection_,
+				std::string & hostname_)
 		{
-			local_parser_map_[connection_->proto()]->update_hostname_of(connection_);
+			local_parser_map_[connection_->proto()]->update_hostname_of(connection_, hostname_);
 		}
 
-		void parser_service::update_port_of(findik::io::connection_ptr connection_)
+		void parser_service::update_port_of(findik::io::connection_ptr connection_,
+				unsigned int & port_)
 		{
-			local_parser_map_[connection_->proto()]->update_port_of(connection_);
+			local_parser_map_[connection_->proto()]->update_port_of(connection_, port_);
+		}
+
+		void parser_service::update_is_keepalive_of(findik::io::connection_ptr connection_,
+				boost::tribool & is_keepalive_)
+		{
+			remote_parser_map_[connection_->proto()]->update_is_keepalive_of(connection_, is_keepalive_);
 		}
 	}
 }

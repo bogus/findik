@@ -26,6 +26,7 @@
 #include "abstract_stateful_parser.hpp"
 #include "connection.hpp"
 #include "response.hpp"
+#include "request.hpp"
 
 #include <map>
 #include <string>
@@ -70,7 +71,21 @@ namespace findik
 						char* begin, char* end
 					);
 
+				/*!
+				Updates is_keepalive_ parameter of connection.
+				\param connection_ to inspect.
+				\param is_keepalive_ to update.
+				*/
+				void update_is_keepalive_of(findik::io::connection_ptr connection_, boost::tribool & is_keepalive_);
+
 			protected:
+
+				/*!
+				Iterates over data_queue of connection and returns most recent local data. 
+				\param connection_
+				\returns most recent local data.
+				*/
+				request_ptr last_request_of(findik::io::connection_ptr connection_);
 
 				/*!
 				Defined parser states.

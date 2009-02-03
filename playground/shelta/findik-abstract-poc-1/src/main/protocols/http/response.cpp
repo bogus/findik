@@ -28,7 +28,8 @@ namespace findik
 		namespace http
 		{
 			response::response() :
-				content_encoding_(indeterminate)
+				content_encoding_(indeterminate),
+				is_chunked_(boost::indeterminate)
 			{
 				content_length_ = 0;
 				is_local_ = false;
@@ -39,7 +40,7 @@ namespace findik
 
 			bool response::is_chunked()
 			{
-				if ( is_chunked_ == boost::indeterminate )
+				if ( boost::logic::indeterminate(is_chunked_) )
 				{
 					BOOST_FOREACH( header h, get_headers() )
 						if (h.name == "Transfer-Encoding" && h.value == "chunked")
@@ -109,6 +110,19 @@ namespace findik
 
 			void response::into_buffer(boost::asio::streambuf & sbuf)
 			{
+				std::ostream response_stream(&sbuf);
+
+				response_stream << "HTTP/" << http_version_major << "."
+					<< http_version_minor << " " << status_code << " "
+					<< status_line << "\r\n";
+
+				BOOST_FOREACH( header h, get_headers() )
+					response_stream << h.name << ": " << h.value << "\r\n";
+
+				response_stream << "\r\n";
+
+				if (has_content())
+					response_stream.write(&(content()[0]), content_size());
 			}
 
 		}
