@@ -362,7 +362,7 @@ namespace findik
 					case expecting_newline_3:
 						if (input != '\n')
 							return false;
-						else if (req->has_content()) 
+						else if (req->method == request::post) 
 						{
 							if (req->content_length() == 0)
 							{
