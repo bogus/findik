@@ -172,6 +172,12 @@ namespace findik
 		{
 			data_queue_.push_front(new_data_);
 			new_data_.reset( (abstract_data *) 0 );
+
+			int size = 8;
+			FI_SERVICES->config_srv().getConfigValue_Int("findik.connection.queue_size", size);
+
+			if (data_queue_.size() > size)
+				data_queue_.pop_back();
 		}
 
 		const std::deque<abstract_data_ptr> & connection::data_queue()
