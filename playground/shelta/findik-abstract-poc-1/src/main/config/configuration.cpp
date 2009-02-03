@@ -39,14 +39,26 @@ namespace findik {
 		{
 		}
 
-		bool configuration::getConfigValue_String(std::string setting_path,std::string & value)
+		bool configuration::getConfigValue_String(std::string setting_path, std::string & value)
 		{
 			return config_.lookupValue(setting_path,value);
 		}
 
-		bool configuration::getConfigValue_Int(std::string setting_path,int & value)
+		bool configuration::getConfigValue_Int(std::string setting_path, int & value)
 		{
 			return config_.lookupValue(setting_path,value);
+		}
+
+		bool configuration::getConfigValue_Bool(std::string setting_path, bool & value)
+		{
+			return config_.lookupValue(setting_path,value);
+		}
+
+		bool configuration::returnBool(std::string setting_path)
+		{
+			bool ret;
+			getConfigValue_Bool(setting_path, ret);
+			return ret;
 		}
 
 	}

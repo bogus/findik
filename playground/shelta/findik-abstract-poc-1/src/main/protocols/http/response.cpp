@@ -17,6 +17,7 @@
 */
 
 #include "response.hpp"
+#include "service_container.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
@@ -116,8 +117,19 @@ namespace findik
 					<< http_version_minor << " " << status_code << " "
 					<< status_line << "\r\n";
 
-				BOOST_FOREACH( header h, get_headers() )
-					response_stream << h.name << ": " << h.value << "\r\n";
+				if (FI_SERVICES->config_srv().returnBool("findik.server.run_as_proxy"))
+				{
+					BOOST_FOREACH( header h, get_headers() )
+						if (h.name == "Connection")
+							response_stream << "Proxy-Connection: " << h.value << "\r\n";
+						else
+							response_stream << h.name << ": " << h.value << "\r\n";
+				}
+				else
+				{
+					BOOST_FOREACH( header h, get_headers() )
+						response_stream << h.name << ": " << h.value << "\r\n";
+				}
 
 				response_stream << "\r\n";
 

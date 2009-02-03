@@ -55,7 +55,6 @@ namespace findik
 
 			boost::tribool response_parser::consume(findik::io::connection_ptr connection_, char input)
 			{
-
 				if (connection_->current_data().get() == 0)
 				{
 					FI_STATE_OF(connection_) = http_version_start;
@@ -432,7 +431,7 @@ namespace findik
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 
 				BOOST_FOREACH( header h, resp->get_headers() )
-					if (h.name == "Connection")  
+					if (h.name == "Connection" || h.name == "Proxy-Connection")
 						if ((h.value == "keep-alive") ||
 							(h.value == "Keep-alive") ||
 							(h.value == "Keep-Alive") 

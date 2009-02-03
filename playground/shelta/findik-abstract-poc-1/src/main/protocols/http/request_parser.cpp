@@ -55,7 +55,6 @@ namespace findik
 
 			boost::tribool request_parser::consume(findik::io::connection_ptr connection_, char input)
 			{
-
 				if (connection_->current_data().get() == 0)
 				{
 					LOG4CXX_DEBUG(debug_logger, "Creating new state entry for connection.");

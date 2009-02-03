@@ -52,7 +52,7 @@ namespace findik {
 			 \return true if path is correct and can read configuration value
 			 \sa getConfigValue_Int()
 			*/
-			bool getConfigValue_String(std::string setting_path,std::string & value);
+			bool getConfigValue_String(std::string setting_path, std::string & value);
 			
 			/*!
                          Returns an integer represented configuration value. It takes a path from configuration file and
@@ -62,7 +62,25 @@ namespace findik {
                          \return true if path is correct and can read configuration value
                          \sa getConfigValue_String()
                         */
-			bool getConfigValue_Int(std::string setting_path,int & value);
+			bool getConfigValue_Int(std::string setting_path, int & value);
+			
+			/*!
+                         Returns a boolean represented configuration value. It takes a path from configuration file and
+                         boolean reference and saves configuration value into boolean reference if path is correct.
+                         \param setting_path path to configuration setting in the configuration file
+                         \param value variable in which configuration value will be put
+                         \return true if path is correct and can read configuration value
+                         \sa getConfigValue_String()
+                        */
+			bool getConfigValue_Bool(std::string setting_path, bool & value);
+
+			/*!
+                         Returns a boolean represented configuration value.
+                         \param setting_path path to configuration setting in the configuration file
+                         \returns value of setting path as a boolean
+                         \sa getConfigValue_Bool()
+                        */
+			bool returnBool(std::string setting_path);
 
 		protected:
 			libconfig::Config config_;

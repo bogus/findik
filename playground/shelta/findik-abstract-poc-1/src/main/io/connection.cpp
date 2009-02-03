@@ -38,7 +38,7 @@ namespace findik
 			local_socket_(FI_SERVICES->io_srv()),
 			remote_socket_(FI_SERVICES->io_srv()),
 			strand_(FI_SERVICES->io_srv()),
-			is_keepalive_(false),
+			is_keepalive_(boost::indeterminate),
 			remote_port_(0),
 			remote_hostname_("")
 		{}
@@ -209,7 +209,16 @@ namespace findik
 				if (filter_result) // not denied
 				{
 					LOG4CXX_DEBUG(debug_logger, "Accepted local data.");
-					register_for_resolve(remote_hostname(), remote_port());
+
+					if (is_keepalive())
+					{
+						current_data()->into_buffer(remote_write_buffer_);
+						register_for_remote_write();
+					}
+					else
+					{
+						register_for_resolve(remote_hostname(), remote_port());
+					}
 				}
 				else // denied
 				{
@@ -297,6 +306,7 @@ namespace findik
                         if (parser_result) // successfully parsed
                         {
 				LOG4CXX_DEBUG(debug_logger, "Handling remote read: data successfully parsed.");
+
 				if (!is_keepalive()) {
 					LOG4CXX_DEBUG(debug_logger, "Shutting down remote socket.");
 					shutdown_socket(remote_socket_);
@@ -324,6 +334,7 @@ namespace findik
                         else if (!parser_result) // bad response
                         {
 				LOG4CXX_ERROR(debug_logger, "Handling remote read: data can not be parsed.");
+
 				if (!is_keepalive())
                                         shutdown_socket(remote_socket_);
 
