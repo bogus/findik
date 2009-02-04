@@ -51,6 +51,12 @@ namespace findik
 			~filter_service();
 
 			/*!
+			Registers a filter for filter service in order to filter with that.
+			\param filter_ filter to register
+			*/
+			void register_filter(findik::filter::abstract_filter_ptr filter_);
+
+			/*!
 			Examines new_data of connection by using filters in filter_list_.
 			\param connection_ connection contains new data to be inspected.
 			\returns a tuple containing whether content should be filter or not and reason of this decision.

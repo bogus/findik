@@ -30,6 +30,11 @@ namespace findik
 		filter_service::~filter_service()
 		{}
 
+		void filter_service::register_filter(findik::filter::abstract_filter_ptr filter_)
+		{
+			filter_list_.push_back(filter_);
+		}
+
 		boost::tuple<bool, findik::filter::filter_reason_ptr> 
 			filter_service::filter(findik::io::connection_ptr connection_)
 		{
@@ -37,13 +42,7 @@ namespace findik
 
 			for ( it=filter_list_.begin();
 				it != filter_list_.end(); it++ )
-				if ( (*it)->proto() == connection_->proto() && 
-					(
-						( connection_->current_data()->is_local() && 
-							(*it)->is_local() ) ||
-						( connection_->current_data()->is_remote() && 
-							(*it)->is_remote() ) 
-					))
+				if ( (*it)->is_applicable(connection_) )
 				{
 					boost::tuple<bool, findik::filter::filter_reason_ptr> result = 
 						(*it)->filter(connection_);
