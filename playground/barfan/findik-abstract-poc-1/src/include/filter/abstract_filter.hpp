@@ -24,6 +24,8 @@
 
 #include "filter_reason.hpp"
 #include "service_chain_element.hpp"
+#include "connection.hpp"
+#include "log.hpp"
 
 namespace findik
 {
