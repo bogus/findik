@@ -28,6 +28,8 @@
 #include <cctype>
 
 #include "parser_util.hpp"
+#include "service_container.hpp"
+#include "protocol.hpp"
 
 namespace findik
 {
@@ -36,6 +38,15 @@ namespace findik
 		namespace http
 		{
 			log4cxx::LoggerPtr request_parser::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.request_parser"));
+
+			request_parser::initializer::initializer()
+			{
+				request_parser_ptr p(new request_parser());
+
+				FI_SERVICES->parser_srv().register_local_parser(findik::io::http, p);
+			}
+
+			request_parser::initializer request_parser::initializer::instance;
 
 			boost::tuple<boost::tribool, char*> request_parser::parse(
 					findik::io::connection_ptr connection_,

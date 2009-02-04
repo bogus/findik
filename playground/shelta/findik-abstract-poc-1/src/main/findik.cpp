@@ -65,6 +65,9 @@ int main(int argc, char* argv[])
 		//findik::filter::generate_request_filter_factory_map();
 		//findik::filter::generate_response_filter_factory_map();
 
+		findik::logging::log_initializer log_init;
+		log_init.load_conf("findik_log.conf");
+
 		// Initialise server.
 		findik::io::server s(findik::io::http, address, port);
 

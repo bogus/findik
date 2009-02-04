@@ -28,22 +28,22 @@ namespace findik
                 log4cxx::LoggerPtr parser_service::debug_logger(log4cxx::Logger::getLogger("findik.service.parser_service"));
 
 		parser_service::parser_service()
-		{
-			LOG4CXX_DEBUG(debug_logger, "Creating parser objects: http request parser.");
-			findik::protocols::http::request_parser_ptr rq(
-					new findik::protocols::http::request_parser()
-				);
-			local_parser_map_[findik::io::http] = rq;
-
-			LOG4CXX_DEBUG(debug_logger, "Creating parser objects: http response parser.");
-			findik::protocols::http::response_parser_ptr rs(
-					new findik::protocols::http::response_parser()
-				);
-			remote_parser_map_[findik::io::http] = rs;
-		}
+		{}
 
 		parser_service::~parser_service()
 		{}
+
+		void parser_service::register_local_parser(findik::io::protocol proto, 
+				findik::parser::abstract_local_parser_ptr local_parser)
+		{
+			local_parser_map_[proto] = local_parser;
+		}
+
+		void parser_service::register_remote_parser(findik::io::protocol proto, 
+				findik::parser::abstract_remote_parser_ptr remote_parser)
+		{
+			remote_parser_map_[proto] = remote_parser;
+		}
 
 		boost::tuple<boost::tribool, char*> parser_service::parse(
 				findik::io::connection_ptr connection_, bool is_local,

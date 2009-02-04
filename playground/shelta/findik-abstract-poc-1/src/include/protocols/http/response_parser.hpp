@@ -53,6 +53,20 @@ namespace findik
 				public findik::parser::abstract_stateful_parser
 			{
 			public:
+				class initializer
+				{
+				protected:
+					/*!
+					Default constructor.
+					Construction of this object will register a response_parser instance to parser_service.
+					*/
+					initializer();
+
+					/*!
+					Instance to create initializer once.
+					*/
+					static initializer instance;
+				};
 
 				/*!
 				Parse some data. The tribool return value is true when a complete request

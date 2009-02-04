@@ -1,4 +1,4 @@
-lib_LTLIBRARIES			=	libfindik_http.la
+noinst_LTLIBRARIES		=	libfindik_http.la
 
 libfindik_http_la_SOURCES	= \
 	data.cpp \

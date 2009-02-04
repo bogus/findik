@@ -52,6 +52,21 @@ namespace findik
 			{
 			public:
 
+				class initializer
+				{
+				protected:
+					/*!
+					Default constructor.
+					Construction of this object will register a request_parser instance to parser_service.
+					*/
+					initializer();
+
+					/*!
+					Instance to create initializer once.
+					*/
+					static initializer instance;
+				};
+
 				/*!
 				Parse some data. The tribool return value is true when a complete request
 				has been parsed, false if the data is invalid, indeterminate when more

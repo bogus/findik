@@ -29,6 +29,8 @@
 
 #include "parser_util.hpp"
 #include "request.hpp"
+#include "service_container.hpp"
+#include "protocol.hpp"
 
 namespace findik
 {
@@ -36,6 +38,15 @@ namespace findik
 	{
 		namespace http
 		{
+			response_parser::initializer::initializer()
+			{
+				response_parser_ptr p(new response_parser());
+
+				FI_SERVICES->parser_srv().register_remote_parser(findik::io::http, p);
+			}
+
+			response_parser::initializer response_parser::initializer::instance;
+
 
 			boost::tuple<boost::tribool, char*> response_parser::parse(
 					findik::io::connection_ptr connection_,

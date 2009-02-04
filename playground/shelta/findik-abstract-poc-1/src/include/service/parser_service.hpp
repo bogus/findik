@@ -55,6 +55,22 @@ namespace findik
 			~parser_service();
 
 			/*!
+			Registers a local parser for parser service in order to parse specified protocol.
+			\param proto protocol to use parser
+			\param local_parser parser to register
+			*/
+			void register_local_parser(findik::io::protocol proto, 
+					findik::parser::abstract_local_parser_ptr local_parser);
+
+			/*!
+			Registers a local parser for parser service in order to parse specified protocol.
+			\param proto protocol to use parser
+			\param remote_parser parser to register
+			*/
+			void register_remote_parser(findik::io::protocol proto, 
+					findik::parser::abstract_remote_parser_ptr remote_parser);
+
+			/*!
 			Parse some data. The tribool return value is true when a complete request
 			has been parsed, false if the data is invalid, indeterminate when more
 			data is required. The InputIterator return value indicates how much of the
