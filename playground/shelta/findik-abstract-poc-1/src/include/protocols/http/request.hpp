@@ -68,16 +68,6 @@ namespace findik
 				std::string uri;
 
 				/*!
-				Major number of HTTP Version in HTTP request command line.
-				*/
-				unsigned int http_version_major;
-
-				/*!
-				Minor number of HTTP Version in HTTP request command line.
-				*/
-				unsigned int http_version_minor;
-
-				/*!
 				Raw data to sent other side.
 				\param sbuf streambuffer to insert raw data into.
 				*/

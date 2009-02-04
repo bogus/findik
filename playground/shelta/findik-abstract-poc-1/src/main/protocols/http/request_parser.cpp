@@ -440,6 +440,12 @@ namespace findik
 					}
 			}
 
+			void request_parser::cleanup(findik::io::connection_ptr connection_)
+			{
+				parser_state_map_.erase(connection_);
+				parser_temp_str_map_.erase(connection_);
+			}
+
 		}
 	}
 } 

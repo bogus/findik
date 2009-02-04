@@ -47,6 +47,16 @@ namespace findik
 			public:
 
 				/*!
+				Major number of HTTP Version.
+				*/
+				unsigned int http_version_major;
+
+				/*!
+				Minor number of HTTP Version.
+				*/
+				unsigned int http_version_minor;
+
+				/*!
 				Adds new black header object to end of header array.
 				*/
 				void add_blank_header();

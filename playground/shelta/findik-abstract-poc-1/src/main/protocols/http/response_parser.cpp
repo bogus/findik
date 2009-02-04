@@ -474,6 +474,13 @@ namespace findik
 				return req;
 			}
 
+			void response_parser::cleanup(findik::io::connection_ptr connection_)
+			{
+				parser_state_map_.erase(connection_);
+				parser_temp_str_map_.erase(connection_);
+				parser_temp_int_map_.erase(connection_);
+			}
+
 		}
 	}
 } 

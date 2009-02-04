@@ -116,6 +116,12 @@ namespace findik
                         static log4cxx::LoggerPtr debug_logger;
 
 			/*!
+			Remove connection object from registered parsers.
+			\param connection_ connection to remove
+			*/
+			void cleanup(findik::io::connection_ptr connection_);
+
+			/*!
 			Map to store local parsers in an order. When local parsing operation has been requested
 			appropriate parser will be fetched from this map.
 			*/

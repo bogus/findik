@@ -98,6 +98,12 @@ namespace findik
 				*/
 				void update_port_of(findik::io::connection_ptr connection_, unsigned int & port_);
 
+				/*!
+				Remove connection object from registers.
+				\param connection_ connection to remove
+				*/
+				void cleanup(findik::io::connection_ptr connection_);
+
 			protected:
 				/*!
 				Debug logger for server class.

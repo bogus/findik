@@ -142,16 +142,6 @@ namespace findik
 				};
 
 				/*!
-				Major number of HTTP Version in HTTP response command line.
-				*/
-				unsigned int http_version_major;
-
-				/*!
-				Minor number of HTTP Version in HTTP response command line.
-				*/
-				unsigned int http_version_minor;
-
-				/*!
 				Checks if response content is chunked.
 				\return true if content is chunked, else false.ç
 				*/

@@ -52,7 +52,7 @@ namespace findik
 
 			/*!
 			Filter should return whether current data of connection applicable for self or not.
-			For example a filter designed content analysis is not applicable for dat objects without content or
+			For example a filter designed to analysis content is not applicable for dat objects without content or
 			a filter designed for local data is not applicable for remote data.
 			\param connection_ to test applicability
 			\return whether filter is applicable

@@ -50,14 +50,24 @@ namespace findik
 				char* begin, char* end
 			)
 		{
+			boost::tribool parser_result;
 			if (is_local)
-				return local_parser_map_[connection_->proto()]->parse(
+				boost::tie(parser_result, boost::tuples::ignore) = 
+					local_parser_map_[connection_->proto()]->parse(
 						connection_, begin, end
 					);
 			else
-				return remote_parser_map_[connection_->proto()]->parse(
+				boost::tie(parser_result, boost::tuples::ignore) = 
+					remote_parser_map_[connection_->proto()]->parse(
 						connection_, begin, end
 					);
+
+			if (parser_result)
+				cleanup(connection_);
+			else if (!parser_result)
+				cleanup(connection_);
+
+			return parser_result;
 		}
 
 		void parser_service::update_hostname_of(findik::io::connection_ptr connection_,
@@ -76,6 +86,12 @@ namespace findik
 				boost::tribool & is_keepalive_)
 		{
 			remote_parser_map_[connection_->proto()]->update_is_keepalive_of(connection_, is_keepalive_);
+		}
+
+		void parser_service::cleanup(findik::io::connection_ptr connection_)
+		{
+			local_parser_map_[connection_->proto()]->cleanup(connection_);
+			remote_parser_map_[connection_->proto()]->cleanup(connection_);
 		}
 	}
 }

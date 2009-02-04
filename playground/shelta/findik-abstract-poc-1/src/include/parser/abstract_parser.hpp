@@ -57,6 +57,12 @@ namespace findik
                                         char* begin, char* end
                                 ) = 0;
 
+			/*!
+			Remove connection object from registers.
+			\param connection_ connection to remove
+			*/
+			virtual void cleanup(findik::io::connection_ptr connection_) = 0;
+
 		protected:
 
 		};

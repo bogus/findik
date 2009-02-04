@@ -42,6 +42,7 @@ namespace findik
 
 			for ( it=filter_list_.begin();
 				it != filter_list_.end(); it++ )
+
 				if ( (*it)->is_applicable(connection_) )
 				{
 					boost::tuple<bool, findik::filter::filter_reason_ptr> result = 

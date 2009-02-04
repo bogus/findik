@@ -92,6 +92,12 @@ namespace findik
 				*/
 				void update_is_keepalive_of(findik::io::connection_ptr connection_, boost::tribool & is_keepalive_);
 
+				/*!
+				Remove connection object from registers.
+				\param connection_ connection to remove
+				*/
+				void cleanup(findik::io::connection_ptr connection_);
+
 			protected:
 
 				/*!
