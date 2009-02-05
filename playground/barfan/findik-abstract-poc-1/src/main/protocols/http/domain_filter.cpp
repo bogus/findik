@@ -18,6 +18,8 @@
 
 #include "domain_filter.hpp"
 #include "service_container.hpp"
+#include "tidy_html_parser.hpp"
+#include "response.hpp"
 
 namespace findik
 {
@@ -41,7 +43,7 @@ namespace findik
 			boost::tuple<bool, findik::filter::filter_reason_ptr> domain_filter::filter(findik::io::connection_ptr connection_) 
 			{
 				LOG4CXX_DEBUG(debug_logger, "Domain name filter entered"); // log for filter entrance
-			
+				
 				// get request object from current data
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 				std::string hostname;
@@ -61,12 +63,21 @@ namespace findik
 					LOG4CXX_DEBUG(debug_logger, "Domain name filter passed for domain " + hostname);
 					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));	
 				}
+				
+				/*bool is_html = false;
+				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
+				if(resp->content_type() == "text/html") {
+					tidy_html_parser *tdoc = new tidy_html_parser();
+					tdoc->parse(connection_->current_data()->content());
+				}
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));*/
 			}
 
                         bool domain_filter::is_applicable(findik::io::connection_ptr connection_)
 			{
 				// set this filter to be used in request only
 				return connection_->proto() == findik::io::http && connection_->current_data()->is_local();	
+				//return connection_->proto() == findik::io::http && connection_->current_data()->is_remote();	
 			}
 		}
 	}
