@@ -143,6 +143,7 @@ namespace findik
 		{
 			if (remote_port_ == 0)
 				FI_SERVICES->parser_srv().update_port_of(shared_from_this(), remote_port_);
+
 			return remote_port_;
 		}
 
@@ -150,6 +151,7 @@ namespace findik
 		{
 			if (remote_hostname_ == "")
 				FI_SERVICES->parser_srv().update_hostname_of(shared_from_this(), remote_hostname_);
+
 			return remote_hostname_;
 		}
 

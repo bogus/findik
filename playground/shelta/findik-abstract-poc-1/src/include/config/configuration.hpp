@@ -24,6 +24,8 @@
 #include <libconfig.h++>
 #include <iostream>
 
+#include "log.hpp"
+
 namespace findik {
 	namespace config {
 
@@ -43,6 +45,11 @@ namespace findik {
 			*/
 			configuration(void);
 			~configuration(void);
+
+			/*!
+			Checks wheter config values are valid.
+			*/
+			bool check();
 			
 			/*!
 			 Returns a string represented configuration value. It takes a path from configuration file and
@@ -53,6 +60,16 @@ namespace findik {
 			 \sa getConfigValue_Int()
 			*/
 			bool getConfigValue_String(std::string setting_path, std::string & value);
+			
+			/*!
+                         Returns an unsigned integer represented configuration value. It takes a path from configuration file and
+                         unsigned integer reference and saves configuration value into unsigned integer reference if path is correct.
+                         \param setting_path path to configuration setting in the configuration file
+                         \param value variable in which configuration value will be put
+                         \return true if path is correct and can read configuration value
+                         \sa getConfigValue_String()
+                        */
+			bool getConfigValue_UInt(std::string setting_path, unsigned int & value);
 			
 			/*!
                          Returns an integer represented configuration value. It takes a path from configuration file and
@@ -83,6 +100,11 @@ namespace findik {
 			bool returnBool(std::string setting_path);
 
 		protected:
+			/*!
+			Debug logger for server class.
+			*/
+                        static log4cxx::LoggerPtr debug_logger;
+
 			libconfig::Config config_;
 		};
 	}

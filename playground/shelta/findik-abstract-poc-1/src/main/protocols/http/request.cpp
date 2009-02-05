@@ -59,22 +59,22 @@ namespace findik
 				else if (method == connect)
 					request_stream << "CONNECT";
 
-				request_stream	<< " " << request_path() << " HTTP/" <<
-				http_version_major << "." << http_version_minor << "\r\n";
+				request_stream	<< " ";
 
-				if (FI_SERVICES->config_srv().returnBool("findik.server.run_as_proxy"))
+				if (FI_SERVICES->config_srv().returnBool("findik.server.http.run_with_squid"))
 				{
-					BOOST_FOREACH( header h, get_headers() )
-						if (h.name == "Proxy-Connection")
-							request_stream << "Connection: " << h.value << "\r\n";
-						else
-							request_stream << h.name << ": " << h.value << "\r\n";
+					request_stream << request_uri();
 				}
 				else
 				{
-					BOOST_FOREACH( header h, get_headers() )
-						request_stream << h.name << ": " << h.value << "\r\n";
+					request_stream << request_path();
 				}
+
+				request_stream << " HTTP/" << http_version_major << "." << http_version_minor << "\r\n";
+
+
+				BOOST_FOREACH( header h, get_headers() )
+					request_stream << h.name << ": " << h.value << "\r\n";
 
 				request_stream << "\r\n";
 

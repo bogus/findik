@@ -405,18 +405,25 @@ namespace findik
 				if (connection_->current_data()->is_remote())
 					return;
 
-				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
+				if (FI_SERVICES->config_srv().returnBool("findik.server.http.run_with_squid"))
+				{
+					FI_SERVICES->config_srv().getConfigValue_String("findik.server.http.squid_host", hostname_);
+				}
+				else
+				{
+					request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 
-				BOOST_FOREACH( header h, req->get_headers() )
-					if (h.name == "Host")
-					{
-						std::size_t pos_ = h.value.find_first_of(":");
+					BOOST_FOREACH( header h, req->get_headers() )
+						if (h.name == "Host")
+						{
+							std::size_t pos_ = h.value.find_first_of(":");
 
-						if (pos_ == std::string::npos)
-							hostname_ = h.value;
-						else
-							hostname_ = h.value.substr(0,pos_);
-					}
+							if (pos_ == std::string::npos)
+								hostname_ = h.value;
+							else
+								hostname_ = h.value.substr(0,pos_);
+						}
+				}
 			}
 
 			void request_parser::update_port_of(findik::io::connection_ptr connection_, unsigned int & port_)
@@ -424,20 +431,27 @@ namespace findik
 				if (connection_->current_data()->is_remote())
 					return;
 
-				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
+				if (FI_SERVICES->config_srv().returnBool("findik.server.http.run_with_squid"))
+				{
+					FI_SERVICES->config_srv().getConfigValue_UInt("findik.server.http.squid_port", port_);
+				}
+				else
+				{
+					request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 
-				BOOST_FOREACH( header h, req->get_headers() )
-					if (h.name == "Host")
-					{
-						std::size_t pos_ = h.value.find_first_of(":");
+					BOOST_FOREACH( header h, req->get_headers() )
+						if (h.name == "Host")
+						{
+							std::size_t pos_ = h.value.find_first_of(":");
 
-						if (pos_ == std::string::npos)
-							port_ = 80;
-						else
-							port_ = boost::lexical_cast< unsigned int >(
-									h.value.substr(pos_)
-								);
-					}
+							if (pos_ == std::string::npos)
+								port_ = 80;
+							else
+								port_ = boost::lexical_cast< unsigned int >(
+										h.value.substr(pos_)
+									);
+						}
+				}
 			}
 
 			void request_parser::cleanup(findik::io::connection_ptr connection_)

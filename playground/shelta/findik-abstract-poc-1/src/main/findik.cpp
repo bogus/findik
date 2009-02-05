@@ -66,7 +66,11 @@ int main(int argc, char* argv[])
 		//findik::filter::generate_response_filter_factory_map();
 
 		findik::logging::log_initializer log_init;
-		log_init.load_conf("findik_log.conf");
+		log_init.load_conf("/etc/findik_log.conf");
+		
+		//First accesto FI_SERVICES must be under log init.
+		if (! FI_SERVICES->config_srv().check())
+			exit(1);
 
 		// Initialise server.
 		findik::io::server s(findik::io::http, address, port);
