@@ -1,4 +1,4 @@
-SUBDIRS = config filter logging io parser protocols service
+SUBDIRS = config filter logging io parser persistency protocols service
 
 lib_LTLIBRARIES		=	libfindik.la
 
@@ -10,6 +10,7 @@ libfindik_la_LIBADD	= \
 	logging/libfindik_logging.la \
 	io/libfindik_io.la \
 	parser/libfindik_parser.la \
+	persistency/libfindik_persistency.la \
 	protocols/http/libfindik_http.la \
 	service/libfindik_service.la
 
@@ -33,5 +34,6 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/io \
 	-I@top_srcdir@/src/include/logging \
 	-I@top_srcdir@/src/include/parser \
+	-I@top_srcdir@/src/include/persistency \
 	-I@top_srcdir@/src/include/service 
 

@@ -71,6 +71,7 @@ AC_CONFIG_FILES([
 	src/main/logging/Makefile
 	src/main/io/Makefile
 	src/main/parser/Makefile
+	src/main/persistency/Makefile
 	src/main/protocols/Makefile
 	src/main/protocols/http/Makefile
 	src/main/service/Makefile

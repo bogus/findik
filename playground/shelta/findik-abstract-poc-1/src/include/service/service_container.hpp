@@ -32,6 +32,7 @@
 #include "parser_service.hpp"
 #include "reply_service.hpp"
 #include "configuration.hpp"
+#include "mysqldbmanager.hpp"
 
 namespace findik
 {
@@ -63,6 +64,11 @@ namespace findik
 				return instance_;
 			}
 
+			/*!
+			Method to start services.
+			Some services like db_srv_ needs FI_SERVICES for construction, so we have to create these after initialization.
+			*/
+			void start();
 
 			/*!
 			Boost ASIO IO Service.
@@ -105,6 +111,12 @@ namespace findik
 			\returns reply service instance.
 			*/
 			reply_service & reply_srv();
+
+			/*!
+			DB Manager to access database via findik specific interface.
+			\returns dbmanager instasnce.
+			*/
+			findik::persistency::mysqldbmanager & db_srv();
 
 		protected:
 
@@ -152,6 +164,11 @@ namespace findik
 			Reply service instance. To generate replies for local.
 			*/
 			reply_service reply_srv_;
+
+			/*!
+			DB Manager to access database via findik specific interface.
+			*/
+			findik::persistency::mysqldbmanager db_srv_;
 		};
 		
 		typedef boost::shared_ptr<service_container> service_container_ptr;

@@ -72,6 +72,8 @@ int main(int argc, char* argv[])
 		if (! FI_SERVICES->config_srv().check())
 			exit(1);
 
+		FI_SERVICES->start();
+
 		// Initialise server.
 		findik::io::server s(findik::io::http, address, port);
 

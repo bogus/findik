@@ -18,9 +18,6 @@
 
 #include "parser_service.hpp"
 
-#include "request_parser.hpp"
-#include "response_parser.hpp"
-
 namespace findik
 {
 	namespace service

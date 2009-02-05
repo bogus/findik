@@ -33,6 +33,11 @@ namespace findik
 		service_container::~service_container() 
 		{}
 
+		void service_container::start()
+		{
+			db_srv_.connect();
+		}
+
 		boost::asio::io_service & service_container::io_srv()
 		{
 			return io_srv_;
@@ -66,6 +71,11 @@ namespace findik
 		reply_service & service_container::reply_srv()
 		{
 			return reply_srv_;
+		}
+
+		findik::persistency::mysqldbmanager & service_container::db_srv()
+		{
+			return db_srv_;
 		}
 	}
 }

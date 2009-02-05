@@ -1,13 +1,9 @@
-noinst_LTLIBRARIES		=	libfindik_http.la
+noinst_LTLIBRARIES		=	libfindik_persistency.la
 
-libfindik_http_la_SOURCES	= \
-	data.cpp \
-	request.cpp \
-	request_parser.cpp \
-	response.cpp \
-	response_parser.cpp
+libfindik_persistency_la_SOURCES		= \
+	mysqldbmanager.cpp
 
-libfindik_http_la_LIBADD	=	@LTLIBOBJS@
+libfindik_io_la_LIBADD		=	@LTLIBOBJS@
 
 INCLUDES 			= \
 	-I@top_srcdir@/src/include/config \
@@ -16,6 +12,5 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/logging \
 	-I@top_srcdir@/src/include/parser \
 	-I@top_srcdir@/src/include/persistency \
-	-I@top_srcdir@/src/include/protocols/http \
 	-I@top_srcdir@/src/include/service 
 
