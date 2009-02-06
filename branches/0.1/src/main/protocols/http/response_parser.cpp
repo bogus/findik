@@ -194,6 +194,7 @@ namespace findik
 						{
 							resp->status_code = (response::status_type) 
 								boost::lexical_cast< unsigned int >(FI_TMPSTR_OF(connection_));
+
 							FI_TMPSTR_OF(connection_).clear();
 							FI_STATE_OF(connection_) = status_line_start;
 							return boost::indeterminate;
@@ -334,15 +335,15 @@ namespace findik
 					case expecting_newline_3:
 						if (input != '\n')
 							return false;
+						else if ( resp->status_code == 304 || resp->status_code == 204 ||
+								(resp->status_code > 99 && resp->status_code < 200) )
+						{
+							return true;
+						}
 						else if (resp->is_chunked()) 
 						{
 							FI_STATE_OF(connection_) = chunked_size_start;
 							return boost::indeterminate;
-						}
-						else if ( status_code == 304 || status_code == 204 ||
-								(status_code > 99 && status_code < 200) )
-						{
-							return true;
 						}
 						else if (http_version_major == 1 &&
 								http_version_minor == 1)
