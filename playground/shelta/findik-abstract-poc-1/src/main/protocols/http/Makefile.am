@@ -7,6 +7,7 @@ libfindik_http_la_SOURCES	= \
 	response.cpp \
 	response_parser.cpp \
 	domain_filter.cpp \
+	url_filter.cpp \
 	tidy_html_parser.cpp
 
 libfindik_http_la_LIBADD	=	@LTLIBOBJS@

@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_PROTOCOLS_HTTP_DOMAIN_FILTER_HPP
-#define FINDIK_PROTOCOLS_HTTP_DOMAIN_FILTER_HPP
+#ifndef FINDIK_PROTOCOLS_HTTP_URL_FILTER_HPP
+#define FINDIK_PROTOCOLS_HTTP_URL_FILTER_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -43,13 +43,13 @@ namespace findik
 		{
 			
 			/*!
-                        Domain based request filter for HTTP protocol.
+                        URL based request filter for HTTP protocol.
                         \extends boost::enable_shared_from_this<data> to use boost shared pointers.
                         \extends findik::filter::abstract_filter because this is a filter for FINDIK HTTP subsystem.
                         @author Burak OGUZ (barfan)
                         */
-			class domain_filter:
-				public boost::enable_shared_from_this<domain_filter>,
+			class url_filter:
+				public boost::enable_shared_from_this<url_filter>,
                                 public findik::filter::abstract_filter
                         {
 			
@@ -62,7 +62,7 @@ namespace findik
                                 protected:
                                         /*!
                                         Default constructor.
-                                        Construction of this object will register a domain_filter instance to filter_service.
+                                        Construction of this object will register a url_filter instance to filter_service.
                                         */
                                         initializer();
 
@@ -77,11 +77,10 @@ namespace findik
 				static log4cxx::LoggerPtr debug_logger;			
 			};
 
-			typedef boost::shared_ptr<domain_filter> domain_filter_ptr;
+			typedef boost::shared_ptr<url_filter> url_filter_ptr;
 
 		}
 	}
 }
 
 #endif
-
