@@ -22,6 +22,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
+#include "zlib_util.hpp"
+
 namespace findik
 {
 	namespace protocols
@@ -124,6 +126,38 @@ namespace findik
 
 				if (has_content())
 					response_stream.write(&(content()[0]), content_size());
+			}
+
+			const std::vector<char> & response::content_hr()
+			{
+				switch (content_encoding())
+				{
+				case none:
+					return content_unchunked();
+				case gzip:
+				case deflate:
+					if (content_hr_.empty())
+						if (findik::util::zlib_inflate(content_unchunked(), content_hr_) != Z_OK)
+							content_hr_.clear();
+					return content_hr_;
+				default:
+					return content_unchunked();
+				}
+			}
+
+			const std::vector<char> & response::content_unchunked()
+			{
+				if (is_chunked())
+					return content_unchunked_;
+				else
+					return content();
+			}
+
+			void response::push_chunked_to_content(char input)
+			{
+				push_to_content(input); // inherited method
+
+				content_unchunked_.push_back(input);
 			}
 
 		}

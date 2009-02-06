@@ -29,6 +29,7 @@
 #include "data.hpp"
 
 #include <string>
+#include <vector>
 
 namespace findik
 {
@@ -169,10 +170,24 @@ namespace findik
 				content_encoding_type content_encoding();
 
 				/*!
+				Detects whether response is chunked and whether response is deflated, then processes raw
+				content and generates new data into a new vector.
+				\returns human readable content.
+				*/
+				const std::vector<char> & content_hr();
+
+				/*!
 				Raw data to sent other side.
 				\param sbuf streambuffer to insert raw data into.
 				*/
 				void into_buffer(boost::asio::streambuf & sbuf);
+
+				/*!
+				A wrapper to inherited push_to_content() method. 
+				This pushes character to both raw content vector and unchunked content vector.
+				\param input char to be pushed.
+				*/
+				void push_chunked_to_content(char input);
 
 			protected:
 
@@ -195,6 +210,25 @@ namespace findik
 				Encoding of response content.
 				*/
 				content_encoding_type content_encoding_;
+
+				/*!
+				Human readable content.
+				Populated when content_hr() called.
+				*/
+				std::vector<char> content_hr_;
+
+				/*!
+				Unchunkked content.
+				Populated when content_unchunkked() called.
+				*/
+				std::vector<char> content_unchunked_;
+
+				/*!
+				Detects whether response is chunked and whether response is deflated, then processes raw
+				content and generates new data into a new vector.
+				\returns human readable content.
+				*/
+				const std::vector<char> & content_unchunked();
 
 			};
 			

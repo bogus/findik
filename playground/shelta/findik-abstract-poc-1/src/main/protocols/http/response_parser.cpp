@@ -339,16 +339,34 @@ namespace findik
 							FI_STATE_OF(connection_) = chunked_size_start;
 							return boost::indeterminate;
 						}
-						else if (last_request_of(connection_)->method != request::head)
+						else if ( status_code == 304 || status_code == 204 ||
+								(status_code > 99 && status_code < 200) )
+						{
+							return true;
+						}
+						else if (http_version_major == 1 &&
+								http_version_minor == 1)
 						{
 							if (resp->content_length() == 0)
 								return true;
+
 							FI_STATE_OF(connection_) = content;
 
 							return boost::indeterminate;
 						}
 						else
-							return true;
+						{
+							if (resp->content_length() == 0)
+								FI_STATE_OF(connection_) = content_10;
+							else
+								FI_STATE_OF(connection_) = content;
+
+							return boost::indeterminate;
+						}
+					case content_10:
+						resp->push_to_content(input); // not chunked
+
+						return boost::indeterminate;
 					case content:
 						resp->push_to_content(input); // not chunked
 
@@ -403,7 +421,8 @@ namespace findik
 						else
 							return false;
 					case chunked_line:
-						resp->push_to_content(input); // chunked
+						resp->push_chunked_to_content(input); // chunked
+
 						FI_TMPINT_OF(connection_)--;
 						if (FI_TMPINT_OF(connection_) == 0)
 						{

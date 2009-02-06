@@ -133,8 +133,8 @@ namespace findik
 
                 bool connection::is_keepalive()
 		{
-			if (boost::logic::indeterminate(is_keepalive_))
-				FI_SERVICES->parser_srv().update_is_keepalive_of(shared_from_this(), is_keepalive_);
+		//	if (boost::logic::indeterminate(is_keepalive_))
+			FI_SERVICES->parser_srv().update_is_keepalive_of(shared_from_this(), is_keepalive_);
 
 			return is_keepalive_;
 		}
@@ -300,16 +300,29 @@ namespace findik
 		void connection::handle_read_remote(const boost::system::error_code& err,
 			std::size_t bytes_transferred)
 		{
+                        boost::tribool parser_result;
+
 			//TODO: call logger
 			if (err)
-				return;
-
-                        // parsing data.
-                        boost::tribool parser_result;
-                        boost::tie(parser_result, boost::tuples::ignore) =
-                                FI_SERVICES->parser_srv().parse(
-                                        shared_from_this(), false,
-                                        remote_read_buffer_.data(), remote_read_buffer_.data() + bytes_transferred);
+			{
+				if (err == boost::asio::error::eof)
+				{
+					parser_result = true;
+				}
+				else
+				{
+					return;
+				}
+					//TODO: call logger
+			}
+			else 
+			{
+				// parsing data.
+				boost::tie(parser_result, boost::tuples::ignore) =
+					FI_SERVICES->parser_srv().parse(
+						shared_from_this(), false,
+						remote_read_buffer_.data(), remote_read_buffer_.data() + bytes_transferred);
+			}
 
                         if (parser_result) // successfully parsed
                         {
