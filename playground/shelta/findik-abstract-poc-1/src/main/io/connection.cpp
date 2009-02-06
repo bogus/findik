@@ -305,7 +305,7 @@ namespace findik
 			//TODO: call logger
 			if (err)
 			{
-				if (err == boost::asio::error::eof)
+				if (err == boost::asio::error::eof && current_data().get() != 0)
 				{
 					parser_result = true;
 				}
