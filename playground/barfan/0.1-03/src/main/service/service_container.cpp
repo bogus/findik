@@ -36,6 +36,7 @@ namespace findik
 		void service_container::start()
 		{
 			db_srv_.connect();
+			util_srv_.start();
 		}
 
 		boost::asio::io_service & service_container::io_srv()
@@ -66,6 +67,11 @@ namespace findik
 		findik::config::configuration & service_container::config_srv()
 		{
 			return config_srv_;
+		}
+
+		util_service & service_container::util_srv()
+		{
+			return util_srv_;
 		}
 
 		reply_service & service_container::reply_srv()

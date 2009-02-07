@@ -31,6 +31,7 @@
 #include "filter_service.hpp"
 #include "parser_service.hpp"
 #include "reply_service.hpp"
+#include "util_service.hpp"
 #include "configuration.hpp"
 #include "mysqldbmanager.hpp"
 
@@ -113,6 +114,12 @@ namespace findik
 			reply_service & reply_srv();
 
 			/*!
+			Util service instance. To access utilities.
+			\returns util service instance.
+			*/
+			util_service & util_srv();
+
+			/*!
 			DB Manager to access database via findik specific interface.
 			\returns dbmanager instasnce.
 			*/
@@ -159,6 +166,11 @@ namespace findik
 			Configuration service instance. To read options from config file.
 			*/
 			findik::config::configuration config_srv_;
+
+			/*!
+			Util service instance. To access utilities.
+			*/
+			util_service util_srv_;
 
 			/*!
 			Reply service instance. To generate replies for local.

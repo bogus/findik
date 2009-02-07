@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_PROTOCOLS_HTTP_PCRE_PARSER_HPP
-#define FINDIK_PROTOCOLS_HTTP_PCRE_PARSER_HPP
+#ifndef FINDIK_UTIL_PCRE_PARSER_HPP
+#define FINDIK_UTIL_PCRE_PARSER_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -32,40 +32,32 @@
 
 namespace findik
 {
-	namespace protocols
+	namespace util
 	{
-		namespace http
+		/*!
+		PCRE Parser class for regular expression operations.
+		@author Burak OGUZ (barfan)
+		 */
+		class pcre_parser
 		{
-			
-			/*!
-                        PCRE Parser class for regular expression operations.
-			@author Burak OGUZ (barfan)
-			 */
-			class pcre_parser
-			{
-				public:
-					pcre_parser();
-					~pcre_parser();
-					pcre_parser(int category_id_, std::string & pattern_);
-					pcre_parser(pcre_parser const &pcre_parser_);
-					pcrecpp::RE * get_re();
-					void set_re(pcrecpp::RE *re_);
-					int get_category_id();
-					void set_category_id(int category_id_);
+			public:
+				pcre_parser();
+				~pcre_parser();
+				pcre_parser(int category_id_, std::string & pattern_);
+				pcre_parser(pcre_parser const &pcre_parser_);
+				pcrecpp::RE * get_re();
+				void set_re(pcrecpp::RE *re_);
+				int get_category_id();
+				void set_category_id(int category_id_);
 
-				private:
-					pcrecpp::RE * re_;
-					int category_id_;
-					pcrecpp::RE_Options *options_;
-			};
+			private:
+				pcrecpp::RE * re_;
+				int category_id_;
+				pcrecpp::RE_Options *options_;
+		};
 
-			static std::vector<pcre_parser *> re_vector;
+		//void generate_pcre_parser();
 
-			std::vector<pcre_parser *> & get_re_vector();
-
-			void generate_pcre_parser();
-
-		}
 	}
 }
 

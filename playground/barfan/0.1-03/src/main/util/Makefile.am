@@ -1,9 +1,9 @@
-noinst_LTLIBRARIES		=	libfindik_persistency.la
+noinst_LTLIBRARIES		=	libfindik_util.la
 
-libfindik_persistency_la_SOURCES		= \
-	mysqldbmanager.cpp
+libfindik_util_la_SOURCES	= \
+	pcre_parser.cpp
 
-libfindik_io_la_LIBADD		=	@LTLIBOBJS@
+libfindik_util_la_LIBADD	=	@LTLIBOBJS@
 
 INCLUDES 			= \
 	-I@top_srcdir@/src/include/config \

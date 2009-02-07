@@ -34,6 +34,7 @@ AC_CHECK_LIB([log4cxx],[break])
 AC_CHECK_LIB([config++],[break])
 AC_CHECK_LIB([z],[break])
 AC_CHECK_LIB([tidy],[break])
+AC_CHECK_LIB([pcrecpp],[break])
 AC_CHECK_LIB([mysqlcppconn],[break])
 
 # Checks for header files.
@@ -55,6 +56,7 @@ AC_CHECK_HEADER([cppconn/driver.h],[break])
 AC_CHECK_HEADER([libconfig.h++],[break])
 AC_CHECK_HEADER([mysql_connection.h],[break])
 AC_CHECK_HEADER([tidy.h],[break])
+AC_CHECK_HEADER([pcrecpp.h],[break])
 AC_CHECK_HEADER([zlib.h],[break])
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -75,6 +77,7 @@ AC_CONFIG_FILES([
 	src/main/protocols/Makefile
 	src/main/protocols/http/Makefile
 	src/main/service/Makefile
+	src/main/util/Makefile
 	src/test/Makefile
 ])
 

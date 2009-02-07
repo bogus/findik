@@ -12,5 +12,6 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/logging \
 	-I@top_srcdir@/src/include/parser \
 	-I@top_srcdir@/src/include/persistency \
-	-I@top_srcdir@/src/include/service 
+	-I@top_srcdir@/src/include/service \
+	-I@top_srcdir@/src/include/util
 
