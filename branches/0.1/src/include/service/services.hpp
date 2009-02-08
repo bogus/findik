@@ -16,52 +16,10 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "abstract_data.hpp"
+#ifndef FINDIK_SERVICE_SERVICES_HPP
+#define FINDIK_SERVICE_SERVICES_HPP
 
-namespace findik
-{
-	namespace io
-	{
-		bool abstract_data::is_stream()
-		{
-			return is_stream_;
-		}
+#include "service_container.hpp"
 
-		bool abstract_data::is_local()
-		{
-			return is_local_;
-		}
-
-		bool abstract_data::is_remote()
-		{
-			return ! is_local_;
-		}
-
-		bool abstract_data::has_content()
-		{
-			return ! content_.empty();
-		}
-
-		void abstract_data::push_to_content(char input)
-		{
-			content_.push_back(input);
-		}
-
-		std::size_t abstract_data::content_size()
-		{
-			return content_.size();
-		}
-
-		const std::vector<char> & abstract_data::content()
-		{
-			return content_;
-		}
-
-		bool abstract_data::is_expecting_eof()
-		{
-			return is_expecting_eof_;
-		}
-
-	}
-}
+#endif
 

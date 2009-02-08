@@ -189,6 +189,13 @@ namespace findik
 				*/
 				void push_chunked_to_content(char input);
 
+				/*!
+				In HTTP/1.0 server could respond with no content-length related header. 
+				In this situation terimination of data will be done by socket close from server side.
+				Calling this method will set is_expecting_eof_ variable to true.
+				*/
+				void wait_for_eof();
+
 			protected:
 
 				/*!

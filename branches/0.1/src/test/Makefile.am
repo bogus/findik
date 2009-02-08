@@ -15,6 +15,7 @@ LIBS = \
 	-lconfig++ \
 	-lz \
 	-ltidy \
+	-lpcrecpp \
 	-lmysqlcppconn
 
 INCLUDES = \

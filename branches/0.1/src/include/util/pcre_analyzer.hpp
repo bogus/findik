@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
+  Copyright (C) 2008 Burak OGUZ (barfan) <findikmail@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,52 +16,42 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "abstract_data.hpp"
+#ifndef FINDIK_UTIL_PCRE_ANALYZER_HPP
+#define FINDIK_UTIL_PCRE_ANALYZER_HPP
+
+#include <iostream>
+#include <string>
 
 namespace findik
 {
-	namespace io
+	namespace util
 	{
-		bool abstract_data::is_stream()
+		/*!
+		PCRE analyzer class which saves results for regular expression operations.
+		@author Burak OGUZ (barfan)
+		 */
+		class pcre_analyzer
 		{
-			return is_stream_;
-		}
+			public:
+				pcre_analyzer();
+				~pcre_analyzer();
+				
+				void set_word(std::string word);
+				std::string get_word();
+				void set_count(int count);
+				int get_count();
+				void set_catid(int catid);
+				int get_catid();
 
-		bool abstract_data::is_local()
-		{
-			return is_local_;
-		}
+			protected:
+				std::string word;
+				int count;
+				int catid;	
+		};
 
-		bool abstract_data::is_remote()
-		{
-			return ! is_local_;
-		}
-
-		bool abstract_data::has_content()
-		{
-			return ! content_.empty();
-		}
-
-		void abstract_data::push_to_content(char input)
-		{
-			content_.push_back(input);
-		}
-
-		std::size_t abstract_data::content_size()
-		{
-			return content_.size();
-		}
-
-		const std::vector<char> & abstract_data::content()
-		{
-			return content_;
-		}
-
-		bool abstract_data::is_expecting_eof()
-		{
-			return is_expecting_eof_;
-		}
 
 	}
 }
+
+#endif
 

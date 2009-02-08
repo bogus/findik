@@ -22,6 +22,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <boost/thread/mutex.hpp>
+
 #include "abstract_local_parser.hpp"
 #include "abstract_stateful_parser.hpp"
 #include "connection.hpp"
@@ -30,7 +32,8 @@
 #include <map>
 #include <string>
 
-#define FI_TMPSTR_OF(conn) parser_temp_str_map_[conn]
+#define FI_TMPSTR_OF(conn) boost::mutex::scoped_lock parser_temp_str_map_lock(parser_temp_str_map_mutex_);parser_temp_str_map_[conn]
+#define FIR_TMPSTR_OF(conn) parser_temp_str_map_[conn]
 
 namespace findik
 {
@@ -150,6 +153,11 @@ namespace findik
 				A map to store parser temporary strings per connection.
 				*/
 				std::map<findik::io::connection_ptr, std::string> parser_temp_str_map_;
+
+				/*!
+				Mutex for threadsafe access to parser_tmp_str_map_
+				*/
+				boost::mutex parser_temp_str_map_mutex_;
 
 			};
 			
