@@ -57,6 +57,11 @@ namespace findik
 			return content_;
 		}
 
+		bool abstract_data::is_expecting_eof()
+		{
+			return is_expecting_eof_;
+		}
+
 	}
 }
 

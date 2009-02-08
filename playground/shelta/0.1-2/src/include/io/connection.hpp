@@ -212,12 +212,12 @@ namespace findik
 			/*!
 			Local read buffer.
 			*/
-			boost::array<char, 8*1024> local_read_buffer_;
+			boost::array<char, 16*1024> local_read_buffer_;
 
 			/*!
 			Remote read buffer.
 			*/
-			boost::array<char, 32*1024> remote_read_buffer_;
+			boost::array<char, 64*1024> remote_read_buffer_;
 
 			/*!
 			Local write buffer.
@@ -275,6 +275,28 @@ namespace findik
 			Whether connection is keep alive.
 			*/
 			boost::tribool is_keepalive_;
+
+			/*!
+			Whether connection is in a stream.
+			This will be used in some io handles.
+			\returns whether connection is in a stream.
+			*/
+			bool is_streaming();
+
+			/*!
+			Whether connection is in a stream.
+			*/
+			bool is_streaming_;
+
+			/*!
+			Set is_streaming to true.
+			*/
+			void mark_as_streaming();
+			
+			/*!
+			Set is_streaming to false.
+			*/
+			void mark_as_not_streaming();
 
 			/*!
 			Shutdown TCP socket.  

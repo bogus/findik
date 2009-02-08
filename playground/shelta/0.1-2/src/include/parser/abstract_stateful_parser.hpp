@@ -22,9 +22,12 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <boost/thread/mutex.hpp>
+
 #include <map>
 
-#define FI_STATE_OF(conn) parser_state_map_[conn]
+#define FI_STATE_OF(conn) boost::mutex::scoped_lock parser_state_map_lock(parser_state_map_mutex_);parser_state_map_[conn]
+#define FIR_STATE_OF(conn) parser_state_map_[conn]
 
 namespace findik
 {
@@ -52,6 +55,11 @@ namespace findik
 			A map to store parser states per connection.
 			*/
 			std::map<findik::io::connection_ptr, parser_state> parser_state_map_;
+
+			/*!
+			Mutex for threadsafe access to parser_state_map_
+			*/
+			boost::mutex parser_state_map_mutex_;
 
 		};
 		

@@ -76,7 +76,7 @@ namespace findik
 
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 
-				switch (FI_STATE_OF(connection_))
+				switch (FIR_STATE_OF(connection_))
 				{
 					case method_start:
 						if (!is_char(input) || is_ctl(input) || is_tspecial(input))
@@ -87,34 +87,34 @@ namespace findik
 						{
 							FI_STATE_OF(connection_) = method;
 							FI_TMPSTR_OF(connection_).clear();
-							FI_TMPSTR_OF(connection_).push_back(toupper(input));
+							FIR_TMPSTR_OF(connection_).push_back(toupper(input));
 							return boost::indeterminate;
 						}
 					case method:
 						if (input == ' ')
 						{
-							if (FI_TMPSTR_OF(connection_) == "GET")
+							if (FIR_TMPSTR_OF(connection_) == "GET")
 								req->method = request::get;
 
-							else if (FI_TMPSTR_OF(connection_) == "POST")
+							else if (FIR_TMPSTR_OF(connection_) == "POST")
 								req->method = request::post;
 
-							else if (FI_TMPSTR_OF(connection_) == "HEAD")
+							else if (FIR_TMPSTR_OF(connection_) == "HEAD")
 								req->method = request::head;
 
-							else if (FI_TMPSTR_OF(connection_) == "PUT")
+							else if (FIR_TMPSTR_OF(connection_) == "PUT")
 								req->method = request::put;
 
-							else if (FI_TMPSTR_OF(connection_) == "DELETE")
+							else if (FIR_TMPSTR_OF(connection_) == "DELETE")
 								req->method = request::delete_;
 
-							else if (FI_TMPSTR_OF(connection_) == "TRACE")
+							else if (FIR_TMPSTR_OF(connection_) == "TRACE")
 								req->method = request::trace;
 
-							else if (FI_TMPSTR_OF(connection_) == "OPTIONS")
+							else if (FIR_TMPSTR_OF(connection_) == "OPTIONS")
 								req->method = request::options;
 
-							else if (FI_TMPSTR_OF(connection_) == "CONNECT")
+							else if (FIR_TMPSTR_OF(connection_) == "CONNECT")
 								req->method = request::connect;
 							else
 								return false;
@@ -456,6 +456,9 @@ namespace findik
 
 			void request_parser::cleanup(findik::io::connection_ptr connection_)
 			{
+				boost::mutex::scoped_lock lock1(parser_state_map_mutex_);
+				boost::mutex::scoped_lock lock2(parser_temp_str_map_mutex_);
+
 				parser_state_map_.erase(connection_);
 				parser_temp_str_map_.erase(connection_);
 			}

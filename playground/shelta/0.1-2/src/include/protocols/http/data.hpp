@@ -62,6 +62,11 @@ namespace findik
 				void add_blank_header();
 
 				/*!
+				Set is_stream_ variable to true.
+				*/
+				void mark_as_stream();
+
+				/*!
 				Returns last added header. This method returns a non constant value. This method
 				should be used by only parsers.
 				\returns last inserted header.
@@ -80,6 +85,12 @@ namespace findik
 				*/
 				unsigned int content_length();
 
+				/*!
+				Overrides abstract_data::content_size() because of streaming operation handle requirement.
+				\return recived byte count of content
+				*/
+				std::size_t content_size();
+
 			protected:
 
 				/*!
@@ -97,6 +108,34 @@ namespace findik
 				This variable will be used as cache.
 				*/
 				unsigned int content_length_;
+
+				/*!
+				Whether headers are written into stream.
+				This will be used in into_stream method for stream data.
+				\returns whether headers are written into stream.
+				*/
+				bool are_headers_written();
+
+				/*!
+				Whether headers are written into stream.
+				*/
+				bool are_headers_written_;
+
+				/*!
+				Sets are_headers_written_ to true.
+				*/
+				void mark_headers_written();
+
+				/*!
+				Clears content_ vector.
+				*/
+				void clear_content();
+
+				/*!
+				Content size.
+				Only used in streaming operation.
+				*/
+				std::size_t stream_content_size_;
 
 			};
 			

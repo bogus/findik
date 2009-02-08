@@ -28,8 +28,18 @@ namespace findik
 		namespace http
 		{
 			data::data() :
-				content_length_(0)
-			{}
+				content_length_(0),
+				stream_content_size_(0),
+				are_headers_written_(false)
+			{
+				is_stream_ = false;
+				is_expecting_eof_ = false;
+			}
+
+			void data::mark_as_stream()
+			{
+				is_stream_ = true;
+			}
 
 			void data::add_blank_header()
 			{
@@ -55,6 +65,29 @@ namespace findik
 							boost::lexical_cast< unsigned int >(h.value);
 
 				return content_length_;
+			}
+
+			bool data::are_headers_written()
+			{
+				return are_headers_written_;
+			}
+
+			void data::mark_headers_written()
+			{
+				are_headers_written_ = true;
+			}
+
+			void data::clear_content()
+			{
+				content_.clear();
+			}
+
+			std::size_t data::content_size()
+			{
+				if (is_stream())
+					return stream_content_size_ + content().size();
+				else
+					return content().size();
 			}
 
 		}

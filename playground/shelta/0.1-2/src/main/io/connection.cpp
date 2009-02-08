@@ -40,7 +40,8 @@ namespace findik
 			strand_(FI_SERVICES->io_srv()),
 			is_keepalive_(boost::indeterminate),
 			remote_port_(0),
-			remote_hostname_("")
+			remote_hostname_(""),
+			is_streaming_(false)
 		{}
 
 		connection::~connection()
@@ -163,6 +164,21 @@ namespace findik
 		abstract_data_ptr connection::current_data()
 		{
 			return new_data_;
+		}
+
+		void connection::mark_as_streaming()
+		{
+			is_streaming_ = true;
+		}
+
+		void connection::mark_as_not_streaming()
+		{
+			is_streaming_ = false;
+		}
+
+		bool connection::is_streaming()
+		{
+			return is_streaming_;
 		}
 
 		void connection::update_current_data(abstract_data_ptr data_)
@@ -305,7 +321,9 @@ namespace findik
 			//TODO: call logger
 			if (err)
 			{
-				if (err == boost::asio::error::eof && current_data().get() != 0)
+				if ( err == boost::asio::error::eof && 
+					current_data().get() != 0 &&
+					current_data()->is_expecting_eof() )
 				{
 					parser_result = true;
 				}
@@ -335,8 +353,17 @@ namespace findik
 
                                 bool filter_result;
                                 findik::filter::filter_reason_ptr filter_reason;
-                                boost::tie(filter_result, filter_reason) =
-                                        FI_SERVICES->filter_srv().filter(shared_from_this());
+
+				if (current_data()->is_stream())
+				{
+					filter_result = true; // TODO: stream filter
+					mark_as_not_streaming(); // if parser had returned true, all response should have been completed. No need for re-read_remote.
+				}
+				else
+				{
+	                                boost::tie(filter_result, filter_reason) =
+        	                                FI_SERVICES->filter_srv().filter(shared_from_this());
+				}
 
                                 if (filter_result) // not denied
                                 {
@@ -365,7 +392,16 @@ namespace findik
                         }
                         else // more data required
                         {
-                                register_for_remote_read();
+				if (current_data()->is_stream())
+				{
+					mark_as_streaming();
+					current_data()->into_buffer(local_write_buffer_);
+					register_for_local_write();
+				}
+				else
+				{
+	                                register_for_remote_read();
+				}
                         }
 		}
 
@@ -376,7 +412,12 @@ namespace findik
 			if (err)
 				return;
 
-			if (!is_keepalive()) {
+			if (is_streaming())
+			{
+				register_for_remote_read();
+			}
+			else if (!is_keepalive()) 
+			{
 				LOG4CXX_DEBUG(debug_logger, "Shutting down local socket.");
 				shutdown_socket(local_socket_);
 			} 

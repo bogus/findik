@@ -79,7 +79,9 @@ namespace findik
 				request_stream << "\r\n";
 
 				if (has_content())
-					request_stream.write(&(content()[0]), content_size());
+					request_stream.write(&(content()[0]), content().size());
+
+				clear_content();
 			}
 
 			const std::string & request::request_uri()

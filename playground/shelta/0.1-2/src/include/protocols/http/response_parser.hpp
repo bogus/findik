@@ -31,8 +31,10 @@
 #include <map>
 #include <string>
 
-#define FI_TMPSTR_OF(conn) parser_temp_str_map_[conn]
-#define FI_TMPINT_OF(conn) parser_temp_int_map_[conn]
+#define FI_TMPSTR_OF(conn) boost::mutex::scoped_lock parser_temp_str_map_lock(parser_temp_str_map_mutex_);parser_temp_str_map_[conn]
+#define FIR_TMPSTR_OF(conn) parser_temp_str_map_[conn]
+#define FI_TMPINT_OF(conn) boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);parser_temp_int_map_[conn]
+#define FIR_TMPINT_OF(conn) parser_temp_int_map_[conn]
 
 namespace findik
 {
@@ -156,9 +158,19 @@ namespace findik
 				std::map<findik::io::connection_ptr, std::string> parser_temp_str_map_;
 
 				/*!
+				Mutex for threadsafe access to parser_tmp_str_map_
+				*/
+				boost::mutex parser_temp_str_map_mutex_;
+
+				/*!
 				A map to store parser temporary integers per connection.
 				*/
 				std::map<findik::io::connection_ptr, unsigned int> parser_temp_int_map_;
+
+				/*!
+				Mutex for threadsafe access to parser_tmp_int_map_
+				*/
+				boost::mutex parser_temp_int_map_mutex_;
 
 			};
 			

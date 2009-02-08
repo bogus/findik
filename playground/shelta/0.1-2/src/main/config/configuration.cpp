@@ -120,5 +120,12 @@ namespace findik {
 			return ret;
 		}
 
+		unsigned int configuration::returnUInt(std::string setting_path)
+		{
+			unsigned int ret = 0;
+			getConfigValue_UInt(setting_path, ret);
+			return ret;
+		}
+
 	}
 }
