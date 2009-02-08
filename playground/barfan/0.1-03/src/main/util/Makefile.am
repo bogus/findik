@@ -1,7 +1,9 @@
 noinst_LTLIBRARIES		=	libfindik_util.la
 
 libfindik_util_la_SOURCES	= \
-	pcre_parser.cpp
+	pcre_analyzer.cpp \
+	pcre_parser.cpp \
+	tidy_html_parser.cpp
 
 libfindik_util_la_LIBADD	=	@LTLIBOBJS@
 

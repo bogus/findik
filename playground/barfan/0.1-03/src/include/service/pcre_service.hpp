@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 #include "pcre_parser.hpp"
+#include "pcre_analyzer.hpp"
 
 namespace findik
 {
@@ -54,14 +55,14 @@ namespace findik
 
 			/*!
 			*/
-			bool matches_predefined(std::string);
+			std::vector<findik::util::pcre_analyzer> matches_predefined(std::string);
 
 		protected:
 
 			/*!
 			Vector containing predefined regular expressions in database.
 			*/
-			std::vector<findik::util::pcre_parser> re_vector;
+			std::vector<findik::util::pcre_parser *> re_vector;
 
 		};
 	}

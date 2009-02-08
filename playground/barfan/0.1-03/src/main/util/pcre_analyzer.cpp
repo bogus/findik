@@ -16,49 +16,48 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "pcre_parser.hpp"
+#include "pcre_analyzer.hpp"
 
 namespace findik
 {
 	namespace util
 	{
-		pcre_parser::pcre_parser()
+		pcre_analyzer::pcre_analyzer()
 		{
 		}
-		pcre_parser::~pcre_parser()
+		pcre_analyzer::~pcre_analyzer()
 		{
-		}
-		pcre_parser::pcre_parser(int category_id_, std::string & pattern_) 
-		{
-			options_ = new pcrecpp::RE_Options();
-			options_->set_caseless(true);
-			options_->set_extra(true);
-			options_->set_extended(true);
-			options_->set_multiline(true);
-			this->category_id_ = category_id_;
-			this->re_ = new pcrecpp::RE(pattern_, *options_);
-		}
-		pcre_parser::pcre_parser(pcre_parser const &pcre_parser_)
-		{
-
-		}
-		pcrecpp::RE * pcre_parser::get_re()
-		{
-			return this->re_;
-		}
-		void pcre_parser::set_re(pcrecpp::RE * re_)
-		{
-			this->re_ = re_;
-		}	
-		int pcre_parser::get_category_id()
-		{
-			return this->category_id_;
-		}
-		void pcre_parser::set_category_id(int category_id_)
-		{
-			this->category_id_ = category_id_;
 		}
 
+		void pcre_analyzer::set_word(std::string word)
+		{
+			this->word = word;
+                }
+
+		std::string pcre_analyzer::get_word()
+		{
+			return word;
+                }
+
+		void pcre_analyzer::set_count(int count)
+		{
+			this->count = count;
+                }
+
+		int pcre_analyzer::get_count()
+		{
+			return count;
+                }
+
+		void pcre_analyzer::set_catid(int catid)
+		{
+			this->catid = catid;
+                }
+
+		int pcre_analyzer::get_catid()
+		{
+			return catid;
+                }
 	}
 }
 

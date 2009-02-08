@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "service_container.hpp"
 #include "mysqldbmanager.hpp"
+#include "service_container.hpp"
 
 #include <boost/scoped_ptr.hpp>
 #include <cppconn/prepared_statement.h>

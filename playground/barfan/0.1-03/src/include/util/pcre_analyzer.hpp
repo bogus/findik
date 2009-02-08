@@ -16,17 +16,10 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_UTIL_PCRE_PARSER_HPP
-#define FINDIK_UTIL_PCRE_PARSER_HPP
+#ifndef FINDIK_UTIL_PCRE_ANALYZER_HPP
+#define FINDIK_UTIL_PCRE_ANALYZER_HPP
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
-
-#include <pcrecpp.h>
 #include <iostream>
-#include <vector>
-#include <map>
-
 #include <string>
 
 namespace findik
@@ -34,28 +27,28 @@ namespace findik
 	namespace util
 	{
 		/*!
-		PCRE Parser class for regular expression operations.
+		PCRE analyzer class which saves results for regular expression operations.
 		@author Burak OGUZ (barfan)
 		 */
-		class pcre_parser
+		class pcre_analyzer
 		{
 			public:
-				pcre_parser();
-				~pcre_parser();
-				pcre_parser(int category_id_, std::string & pattern_);
-				pcre_parser(pcre_parser const &pcre_parser_);
-				pcrecpp::RE * get_re();
-				void set_re(pcrecpp::RE *re_);
-				int get_category_id();
-				void set_category_id(int category_id_);
+				pcre_analyzer();
+				~pcre_analyzer();
+				
+				void set_word(std::string word);
+				std::string get_word();
+				void set_count(int count);
+				int get_count();
+				void set_catid(int catid);
+				int get_catid();
 
-			private:
-				pcrecpp::RE * re_;
-				int category_id_;
-				pcrecpp::RE_Options *options_;
+			protected:
+				std::string word;
+				int count;
+				int catid;	
 		};
 
-		//void generate_pcre_parser();
 
 	}
 }
