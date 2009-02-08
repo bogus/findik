@@ -5,6 +5,7 @@ libfindik_service_la_SOURCES	= \
 	parser_service.cpp \
 	pcre_service.cpp \
 	reply_service.cpp \
+	magic_num_service.cpp \
 	service_chain_element.cpp \
 	service_container.cpp \
 	session_service.cpp \

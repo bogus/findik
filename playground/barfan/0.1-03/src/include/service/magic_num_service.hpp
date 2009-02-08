@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
+  Copyright (C) 2008 Burak OGUZ (barfan) <findikmail@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,64 +16,57 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_SERVICE_UTIL_SERVICE_HPP
-#define FINDIK_SERVICE_UTIL_SERVICE_HPP
+#ifndef FINDIK_SERVICE_MAGIC_NUM_SERVICE_HPP
+#define FINDIK_SERVICE_MAGIC_NUM_SERVICE_HPP
 
 #include <boost/noncopyable.hpp>
 
-#include "pcre_service.hpp"
-#include "magic_num_service.hpp"
+#include <string>
+#include <vector>
+#include <magic.h>
 
 namespace findik
 {
 	namespace service
 	{
 		/*!
-		Container to manage various utilities. 
+		Container to manage magic number opertaions. 
                 \extends boost::noncopyable this class has designed to be not copyable.
+		@author Burak OGUZ (barfan)
 		*/
-		class util_service :
+		class magic_num_service :
                         private boost::noncopyable
 		{
 		public:
 			/*!
 			Default constructor.
 			*/
-			util_service();
+			magic_num_service();
 
 			/*!
 			Destructor.
 			*/
-			~util_service();
+			~magic_num_service();
 
 			/*!
-			Method to access pcre service.
-			\returns pcre_service instance.
-			*/
-			pcre_service & pcre();
-
-			/*!
-                        Method to access magic number service.
-                        \returns magic_number_service instance.
-                        */
-                        magic_num_service & magic_num();
-
-			/*!
-			Method to initialize utilities.
+			Method to initialize regular expressions.
 			*/
 			void start();
+
+			/*!
+			Returns the mime type of the given character vector.
+			
+			\param character vector which mime-type will be found
+			*/
+			std::string get_magic_number(std::vector<char> data, std::string & mime_type);
+			
 
 		protected:
 
 			/*!
-			Pcre service instance.
+			Magic number structure from magic.h
 			*/
-			pcre_service pcre_srv_;
-
-			/*!
-                        Magic number service instance.
-                        */
-                        magic_num_service magic_num_srv_;
+			magic_t magic_mime;
 
 		};
 	}

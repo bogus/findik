@@ -41,10 +41,13 @@ namespace findik
 			{
 				LOG4CXX_DEBUG(debug_logger, "HTML content filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
-					std::cout << &(resp->content_hr())[0] << std::endl;
-				if(resp->content_type() == "text/html") {
+				std::string content_type;
+				FI_SERVICES->util_srv().magic_num().get_magic_number(resp->content_hr(),content_type);
+				if((content_type == "text/html") || (resp->content_type() == "text/html" && content_type.compare(0,10,"text/plain") == 0)) 
+				{
 					findik::util::tidy_html_parser_ptr tdoc(new findik::util::tidy_html_parser());
 					tdoc->parse(resp->content_hr());
+				
 					if(FI_SERVICES->util_srv().pcre().matches_predefined(tdoc->get_clear_text()).size() > 0){
 						LOG4CXX_DEBUG(debug_logger, "HTML content filter failed");
 						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));
@@ -53,8 +56,11 @@ namespace findik
 						LOG4CXX_DEBUG(debug_logger, "HTML content filter passed");
 						return boost::make_tuple(true, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));
 					}
+
 				}
 
+				LOG4CXX_DEBUG(debug_logger, "HTML content filter no HTML content");
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));
 
 			}
 

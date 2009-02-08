@@ -29,6 +29,7 @@ namespace findik {
 		tidy_html_parser::~tidy_html_parser()
 		{
 			tdoc.Release();
+			clear_text.clear();
 		}
 
 		void tidy_html_parser::parse(std::vector<char> content)
