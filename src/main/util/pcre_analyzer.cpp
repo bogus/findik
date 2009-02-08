@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
+  Copyright (C) 2008 Burak OGUZ (barfan) <findikmail@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -14,54 +14,50 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+ */
 
-#include "abstract_data.hpp"
+#include "pcre_analyzer.hpp"
 
 namespace findik
 {
-	namespace io
+	namespace util
 	{
-		bool abstract_data::is_stream()
+		pcre_analyzer::pcre_analyzer()
 		{
-			return is_stream_;
+		}
+		pcre_analyzer::~pcre_analyzer()
+		{
 		}
 
-		bool abstract_data::is_local()
+		void pcre_analyzer::set_word(std::string word)
 		{
-			return is_local_;
-		}
+			this->word = word;
+                }
 
-		bool abstract_data::is_remote()
+		std::string pcre_analyzer::get_word()
 		{
-			return ! is_local_;
-		}
+			return word;
+                }
 
-		bool abstract_data::has_content()
+		void pcre_analyzer::set_count(int count)
 		{
-			return ! content_.empty();
-		}
+			this->count = count;
+                }
 
-		void abstract_data::push_to_content(char input)
+		int pcre_analyzer::get_count()
 		{
-			content_.push_back(input);
-		}
+			return count;
+                }
 
-		std::size_t abstract_data::content_size()
+		void pcre_analyzer::set_catid(int catid)
 		{
-			return content_.size();
-		}
+			this->catid = catid;
+                }
 
-		const std::vector<char> & abstract_data::content()
+		int pcre_analyzer::get_catid()
 		{
-			return content_;
-		}
-
-		bool abstract_data::is_expecting_eof()
-		{
-			return is_expecting_eof_;
-		}
-
+			return catid;
+                }
 	}
 }
 

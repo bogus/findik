@@ -99,6 +99,14 @@ namespace findik {
                         */
 			bool returnBool(std::string setting_path);
 
+			/*!
+                         Returns an unsigned integer represented configuration value.
+                         \param setting_path path to configuration setting in the configuration file
+                         \returns value of setting path as unsigned int
+                         \sa getConfigValue_Int()
+                        */
+			unsigned int returnUInt(std::string setting_path);
+
 		protected:
 			/*!
 			Debug logger for server class.

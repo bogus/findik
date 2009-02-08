@@ -68,6 +68,13 @@ namespace findik
 			virtual void into_buffer(boost::asio::streambuf & sbuf) = 0;
 
 			/*!
+			In some protocols, content will be teriminated with socket close. 
+			For this situations connection object should know wheter this is an appropriate behavior.
+			\returns whether data is expecting eof.
+			*/
+			bool is_expecting_eof();
+
+			/*!
 			In some cases, data may not have content, it could contain nothing more than meta data.
 			For situation like this, filters should know whether data has content in order to avoid
 			running unnecessary algorithms.
@@ -109,6 +116,11 @@ namespace findik
 			Content of data.
 			*/
 			std::vector<char> content_;
+
+			/*
+			Whether data expects EOF.
+			*/
+			bool is_expecting_eof_;
 
 		};
 		

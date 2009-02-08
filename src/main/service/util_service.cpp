@@ -16,52 +16,34 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "abstract_data.hpp"
+#include "util_service.hpp"
 
 namespace findik
 {
-	namespace io
+	namespace service
 	{
-		bool abstract_data::is_stream()
+		util_service::util_service()
+		{}
+
+		util_service::~util_service() 
+		{}
+
+		void util_service::start()
 		{
-			return is_stream_;
+			pcre_srv_.start();
+			magic_num_srv_.start();
 		}
 
-		bool abstract_data::is_local()
+		pcre_service & util_service::pcre()
 		{
-			return is_local_;
+			return pcre_srv_;
 		}
 
-		bool abstract_data::is_remote()
-		{
-			return ! is_local_;
-		}
-
-		bool abstract_data::has_content()
-		{
-			return ! content_.empty();
-		}
-
-		void abstract_data::push_to_content(char input)
-		{
-			content_.push_back(input);
-		}
-
-		std::size_t abstract_data::content_size()
-		{
-			return content_.size();
-		}
-
-		const std::vector<char> & abstract_data::content()
-		{
-			return content_;
-		}
-
-		bool abstract_data::is_expecting_eof()
-		{
-			return is_expecting_eof_;
-		}
-
+		magic_num_service & util_service::magic_num()
+                {
+                        return magic_num_srv_;
+                }
+		
 	}
 }
 

@@ -53,6 +53,21 @@ namespace findik
 					char* begin, char* end
 				)
 			{
+				if (connection_->current_data().get() != 0)
+				{
+					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
+					if (resp->is_stream()) {
+							resp->add_to_stream_content_size(end - begin); // this will given chunk length, TODO: reimplement this
+						
+						boost::tribool result = boost::indeterminate;
+						if ( !( resp->content_size() < resp->content_length() ) )
+							result = true;
+
+						return boost::make_tuple(result, end);
+					}
+				}
+
+
 				while (begin != end)
 				{
 					boost::tribool result = consume(connection_, *begin++);
@@ -75,7 +90,7 @@ namespace findik
 
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 
-				switch (FI_STATE_OF(connection_))
+				switch (FIR_STATE_OF(connection_))
 				{
 					case http_version_start:
 						if (input == 'H')
@@ -184,7 +199,7 @@ namespace findik
 						{
 							FI_STATE_OF(connection_) = status_code;
 							FI_TMPSTR_OF(connection_).clear();
-							FI_TMPSTR_OF(connection_).push_back(input);
+							FIR_TMPSTR_OF(connection_).push_back(input);
 							return boost::indeterminate;
 						}
 						else
@@ -193,7 +208,7 @@ namespace findik
 						if (input == ' ')
 						{
 							resp->status_code = (response::status_type) 
-								boost::lexical_cast< unsigned int >(FI_TMPSTR_OF(connection_));
+								boost::lexical_cast< unsigned int >(FIR_TMPSTR_OF(connection_));
 
 							FI_TMPSTR_OF(connection_).clear();
 							FI_STATE_OF(connection_) = status_line_start;
@@ -335,12 +350,14 @@ namespace findik
 					case expecting_newline_3:
 						if (input != '\n')
 							return false;
-						else if ( resp->status_code == 304 || resp->status_code == 204 ||
+
+						if ( resp->status_code == 304 || resp->status_code == 204 ||
 								(resp->status_code > 99 && resp->status_code < 200) )
 						{
 							return true;
 						}
-						else if (resp->is_chunked()) 
+
+						if (resp->is_chunked()) 
 						{
 							FI_STATE_OF(connection_) = chunked_size_start;
 							return boost::indeterminate;
@@ -351,6 +368,10 @@ namespace findik
 							if (resp->content_length() == 0)
 								return true;
 
+							if (resp->content_length() > 
+								FI_SERVICES->config_srv().returnUInt("findik.server.http.max_object_size"))
+								resp->mark_as_stream();
+
 							FI_STATE_OF(connection_) = content;
 
 							return boost::indeterminate;
@@ -358,13 +379,22 @@ namespace findik
 						else
 						{
 							if (resp->content_length() == 0)
-								FI_STATE_OF(connection_) = content_10;
+							{
+								FI_STATE_OF(connection_) = content_eof;
+								resp->wait_for_eof();
+							}
 							else
+							{
+								if (resp->content_length() > 
+									FI_SERVICES->config_srv().returnUInt("findik.server.http.max_object_size"))
+									resp->mark_as_stream();
+
 								FI_STATE_OF(connection_) = content;
+							}
 
 							return boost::indeterminate;
 						}
-					case content_10:
+					case content_eof:
 						resp->push_to_content(input); // not chunked
 
 						return boost::indeterminate;
@@ -380,7 +410,7 @@ namespace findik
 						{
 							FI_STATE_OF(connection_) = chunked_size;
 							FI_TMPSTR_OF(connection_).clear();
-							FI_TMPSTR_OF(connection_).push_back(input);
+							FIR_TMPSTR_OF(connection_).push_back(input);
 							resp->push_to_content(input); // not chunked
 							return boost::indeterminate;
 						}
@@ -402,8 +432,8 @@ namespace findik
 						{
 							resp->push_to_content(input); // not chunked
 							FI_TMPINT_OF(connection_) = 0;
-							FI_TMPINT_OF(connection_) =
-								hex2int(FI_TMPSTR_OF(connection_));
+							FIR_TMPINT_OF(connection_) =
+								hex2int(FIR_TMPSTR_OF(connection_));
 							FI_TMPSTR_OF(connection_).clear();
 							FI_STATE_OF(connection_) = chunked_newline_1;
 							return boost::indeterminate;
@@ -414,7 +444,7 @@ namespace findik
 						if (input == '\n')
 						{
 							resp->push_to_content(input); // not chunked
-							if (FI_TMPINT_OF(connection_) == 0)
+							if (FIR_TMPINT_OF(connection_) == 0)
 								return true;
 							FI_STATE_OF(connection_) = chunked_line;
 							return boost::indeterminate;
@@ -423,9 +453,10 @@ namespace findik
 							return false;
 					case chunked_line:
 						resp->push_chunked_to_content(input); // chunked
-
-						FI_TMPINT_OF(connection_)--;
-						if (FI_TMPINT_OF(connection_) == 0)
+						{
+							FI_TMPINT_OF(connection_)--;
+						}
+						if (FIR_TMPINT_OF(connection_) == 0)
 						{
 							FI_STATE_OF(connection_) = chunked_newline_2;
 						}
@@ -496,6 +527,10 @@ namespace findik
 
 			void response_parser::cleanup(findik::io::connection_ptr connection_)
 			{
+				boost::mutex::scoped_lock lock1(parser_state_map_mutex_);
+				boost::mutex::scoped_lock lock2(parser_temp_str_map_mutex_);
+				boost::mutex::scoped_lock lock3(parser_temp_int_map_mutex_);
+
 				parser_state_map_.erase(connection_);
 				parser_temp_str_map_.erase(connection_);
 				parser_temp_int_map_.erase(connection_);
