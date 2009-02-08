@@ -53,6 +53,21 @@ namespace findik
 					char* begin, char* end
 				)
 			{
+				if (connection_->current_data().get() != 0)
+				{
+					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
+					if (resp->is_stream()) {
+							resp->add_to_stream_content_size(end - begin); // this will given chunk length, TODO: reimplement this
+						
+						boost::tribool result = boost::indeterminate;
+						if ( !( resp->content_size() < resp->content_length() ) )
+							result = true;
+
+						return boost::make_tuple(result, end);
+					}
+				}
+
+
 				while (begin != end)
 				{
 					boost::tribool result = consume(connection_, *begin++);
@@ -365,7 +380,7 @@ namespace findik
 						{
 							if (resp->content_length() == 0)
 							{
-								FI_STATE_OF(connection_) = content_10;
+								FI_STATE_OF(connection_) = content_eof;
 								resp->wait_for_eof();
 							}
 							else
@@ -379,7 +394,7 @@ namespace findik
 
 							return boost::indeterminate;
 						}
-					case content_10:
+					case content_eof:
 						resp->push_to_content(input); // not chunked
 
 						return boost::indeterminate;

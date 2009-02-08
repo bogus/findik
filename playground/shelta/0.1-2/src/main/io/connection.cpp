@@ -107,6 +107,15 @@ namespace findik
 					boost::asio::placeholders::error)));
 		}
 
+		void connection::register_for_local_write(char * data_, std::size_t size_)
+		{
+			LOG4CXX_DEBUG(debug_logger, "Registering connection for local write.");
+			boost::asio::async_write(local_socket_, boost::asio::buffer(data_, size_),
+				strand_.wrap(
+					boost::bind(&connection::handle_write_local, shared_from_this(),
+					boost::asio::placeholders::error)));
+		}
+
 		void connection::register_for_remote_write()
 		{
 			LOG4CXX_DEBUG(debug_logger, "Registering connection for remote write.");
@@ -351,33 +360,32 @@ namespace findik
 					shutdown_socket(remote_socket_);
 				}
 
-                                bool filter_result;
-                                findik::filter::filter_reason_ptr filter_reason;
-
 				if (current_data()->is_stream())
 				{
-					filter_result = true; // TODO: stream filter
 					mark_as_not_streaming(); // if parser had returned true, all response should have been completed. No need for re-read_remote.
+					register_for_local_write(remote_read_buffer_.data(), bytes_transferred);
 				}
 				else
 				{
+					bool filter_result;
+					findik::filter::filter_reason_ptr filter_reason;
 	                                boost::tie(filter_result, filter_reason) =
         	                                FI_SERVICES->filter_srv().filter(shared_from_this());
-				}
 
-                                if (filter_result) // not denied
-                                {
-					LOG4CXX_DEBUG(debug_logger, "Accepted remote data.");
-					current_data()->into_buffer(local_write_buffer_);
-					register_for_local_write();
-                                }
-                                else // denied
-                                {
-					LOG4CXX_DEBUG(debug_logger, "Data from remote had been rejected.");
-					FI_SERVICES->reply_srv().reply(local_write_buffer_,
-							proto(), filter_reason);
-					register_for_local_write();
-                                }
+					if (filter_result) // not denied
+					{
+						LOG4CXX_DEBUG(debug_logger, "Accepted remote data.");
+						current_data()->into_buffer(local_write_buffer_);
+						register_for_local_write();
+					}
+					else // denied
+					{
+						LOG4CXX_DEBUG(debug_logger, "Data from remote had been rejected.");
+						FI_SERVICES->reply_srv().reply(local_write_buffer_,
+								proto(), filter_reason);
+						register_for_local_write();
+					}
+				}
                         }
                         else if (!parser_result) // bad response
                         {
@@ -395,8 +403,7 @@ namespace findik
 				if (current_data()->is_stream())
 				{
 					mark_as_streaming();
-					current_data()->into_buffer(local_write_buffer_);
-					register_for_local_write();
+					register_for_local_write(remote_read_buffer_.data(), bytes_transferred);
 				}
 				else
 				{
@@ -416,15 +423,15 @@ namespace findik
 			{
 				register_for_remote_read();
 			}
-			else if (!is_keepalive()) 
-			{
-				LOG4CXX_DEBUG(debug_logger, "Shutting down local socket.");
-				shutdown_socket(local_socket_);
-			} 
-			else
+			else if (is_keepalive()) 
 			{
 				push_current_data_to_queue();
 				register_for_local_read();
+			} 
+			else
+			{
+				LOG4CXX_DEBUG(debug_logger, "Shutting down local socket.");
+				shutdown_socket(local_socket_);
 			}
 		}
 	}

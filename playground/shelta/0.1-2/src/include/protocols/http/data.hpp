@@ -87,9 +87,15 @@ namespace findik
 
 				/*!
 				Overrides abstract_data::content_size() because of streaming operation handle requirement.
-				\return recived byte count of content
+				\returns recived byte count of content
 				*/
 				std::size_t content_size();
+
+				/*!
+				Increments stream_content_size_ variable
+				\param size_ increment amount
+				*/
+				void add_to_stream_content_size(std::size_t size_);
 
 			protected:
 
@@ -108,23 +114,6 @@ namespace findik
 				This variable will be used as cache.
 				*/
 				unsigned int content_length_;
-
-				/*!
-				Whether headers are written into stream.
-				This will be used in into_stream method for stream data.
-				\returns whether headers are written into stream.
-				*/
-				bool are_headers_written();
-
-				/*!
-				Whether headers are written into stream.
-				*/
-				bool are_headers_written_;
-
-				/*!
-				Sets are_headers_written_ to true.
-				*/
-				void mark_headers_written();
 
 				/*!
 				Clears content_ vector.

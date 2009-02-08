@@ -29,8 +29,7 @@ namespace findik
 		{
 			data::data() :
 				content_length_(0),
-				stream_content_size_(0),
-				are_headers_written_(false)
+				stream_content_size_(0)
 			{
 				is_stream_ = false;
 				is_expecting_eof_ = false;
@@ -67,16 +66,6 @@ namespace findik
 				return content_length_;
 			}
 
-			bool data::are_headers_written()
-			{
-				return are_headers_written_;
-			}
-
-			void data::mark_headers_written()
-			{
-				are_headers_written_ = true;
-			}
-
 			void data::clear_content()
 			{
 				content_.clear();
@@ -85,9 +74,14 @@ namespace findik
 			std::size_t data::content_size()
 			{
 				if (is_stream())
-					return stream_content_size_ + content().size();
+					return stream_content_size_;
 				else
-					return content().size();
+					return abstract_data::content_size();
+			}
+
+			void data::add_to_stream_content_size(std::size_t size_)
+			{
+				stream_content_size_ += size_;
 			}
 
 		}

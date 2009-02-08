@@ -256,6 +256,13 @@ namespace findik
 			void register_for_local_write();
 
 			/*!
+			Register to ASIO service to write specified data to local socket.
+			\param data_ fron iterator of data.
+			\param size_ number of bytes to write
+			*/
+			void register_for_local_write(char * data_, std::size_t size_);
+
+			/*!
 			Register to ASIO service to connect an endpoint.
 			\param endpoint endpoint to connect.
 			*/

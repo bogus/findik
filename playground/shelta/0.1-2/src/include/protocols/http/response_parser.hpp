@@ -135,7 +135,7 @@ namespace findik
 					expecting_newline_2 = 501,
 					expecting_newline_3 = 502,
 					content = 600,
-					content_10 = 610,
+					content_eof = 610,
 					chunked_size_start = 700,
 					chunked_size = 701,
 					chunked_newline_1 = 750,

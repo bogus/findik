@@ -115,28 +115,18 @@ namespace findik
 			{
 				std::ostream response_stream(&sbuf);
 
-				if ( ! ( is_stream() && are_headers_written() ) ) 
-				{
-					response_stream << "HTTP/" << http_version_major << "."
-						<< http_version_minor << " " << status_code << " "
-						<< status_line << "\r\n";
+				response_stream << "HTTP/" << http_version_major << "."
+					<< http_version_minor << " " << status_code << " "
+					<< status_line << "\r\n";
 
-					BOOST_FOREACH( header h, get_headers() )
-						response_stream << h.name << ": " << h.value << "\r\n";
+				BOOST_FOREACH( header h, get_headers() )
+					response_stream << h.name << ": " << h.value << "\r\n";
 
-					response_stream << "\r\n";
-
-					if (is_stream())
-						mark_headers_written();
-				}
+				response_stream << "\r\n";
 
 				if (has_content())
 					response_stream.write(&(content()[0]), content().size());
 
-				if (is_stream())
-					stream_content_size_ += content().size();
-
-				// if (is_stream())	
 				clear_content();
 			}
 
