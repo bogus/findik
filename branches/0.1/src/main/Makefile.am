@@ -27,6 +27,7 @@ LIBS = \
 	-lconfig++ \
 	-lz \
 	-ltidy \
+	-lmagic \
 	-lpcrecpp \
 	-lmysqlcppconn
 
