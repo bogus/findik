@@ -56,6 +56,11 @@ namespace findik
 		{
 			return content_;
 		}
+		
+		void abstract_data::set_content(std::vector<char> new_content)
+		{
+			content_ = new_content;
+		}
 
 		bool abstract_data::is_expecting_eof()
 		{

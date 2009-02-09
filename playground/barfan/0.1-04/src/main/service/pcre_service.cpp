@@ -43,8 +43,6 @@ namespace findik
 
 		std::vector<findik::util::pcre_analyzer> pcre_service::matches_predefined(std::string data)
 		{
-			bool isOk = true;
-			
 			pcrecpp::StringPiece *input = new pcrecpp::StringPiece(data);
 			std::string match;
 			std::vector<findik::util::pcre_analyzer> results;
@@ -71,7 +69,49 @@ namespace findik
 			delete input;
 			
 			return results;
+		}
 
+		std::vector<findik::util::pcre_analyzer> pcre_service::matches_custom(std::string pattern, std::string data)
+		{	
+			pcrecpp::StringPiece *input = new pcrecpp::StringPiece(data);
+			std::string match;
+			std::vector<findik::util::pcre_analyzer> results;
+			findik::util::pcre_parser_ptr pcre(new findik::util::pcre_parser(0, pattern));
+			int j = 0;
+	
+			while(pcre->get_re()->FindAndConsume(input,&match)) {
+				std::transform(match.begin(), match.end(), match.begin(), tolower);
+				for(j = 0; j < results.size(); j++) {
+					if(results[j].get_word() == match) {
+						results[j].set_count(results[j].get_count()+1);
+						break;
+					}
+				}
+				if(j == results.size()) {
+					findik::util::pcre_analyzer analyzer;
+					analyzer.set_word(match);
+					analyzer.set_count(1);
+					analyzer.set_catid(pcre->get_category_id());
+					results.push_back(analyzer);
+				}
+			}	
+		}
+
+		std::string pcre_service::global_replace(std::string pattern, std::string replace, std::string data)
+		{
+                        findik::util::pcre_parser_ptr pcre(new findik::util::pcre_parser(0, pattern));
+			pcrecpp::StringPiece replace_piece = pcrecpp::StringPiece(replace);
+			std::string input(data.c_str(), data.length());
+
+			// int i = pcre->get_re()->GlobalReplace(replace_piece, &input);
+			int i = pcrecpp::RE(pattern).GlobalReplace(replace_piece,&input);
+
+			std::cout << "*********************** " << i << std::endl;
+
+			if(i > 0)
+				return input;	
+			else
+				return data;
 		}
 
 	}

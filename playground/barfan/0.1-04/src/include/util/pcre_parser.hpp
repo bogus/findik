@@ -37,7 +37,7 @@ namespace findik
 		PCRE Parser class for regular expression operations.
 		@author Burak OGUZ (barfan)
 		 */
-		class pcre_parser
+		class pcre_parser : public boost::enable_shared_from_this<pcre_parser>
 		{
 			public:
 				pcre_parser();
@@ -55,7 +55,7 @@ namespace findik
 				pcrecpp::RE_Options *options_;
 		};
 
-		//void generate_pcre_parser();
+		typedef boost::shared_ptr<pcre_parser> pcre_parser_ptr;	
 
 	}
 }

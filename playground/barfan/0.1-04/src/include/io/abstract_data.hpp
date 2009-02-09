@@ -100,6 +100,12 @@ namespace findik
 			*/
 			const std::vector<char> & content();
 
+			/*!
+                        Sets content_
+                        \param new content value vector
+                        */
+			void set_content(std::vector<char> new_content);
+
 		protected:
 			
 			/*!

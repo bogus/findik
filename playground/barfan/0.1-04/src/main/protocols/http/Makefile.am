@@ -5,6 +5,7 @@ libfindik_http_la_SOURCES	= \
 	domain_filter.cpp \
 	domain_re_filter.cpp \
 	html_content_filter.cpp \
+	html_tag_filter.cpp \
 	request.cpp \
 	request_parser.cpp \
 	response.cpp \
