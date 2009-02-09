@@ -55,8 +55,7 @@ namespace findik
 				pcrecpp::RE_Options *options_;
 		};
 
-		//void generate_pcre_parser();
-
+		typedef boost::shared_ptr<pcre_parser> pcre_parser_ptr;	
 	}
 }
 

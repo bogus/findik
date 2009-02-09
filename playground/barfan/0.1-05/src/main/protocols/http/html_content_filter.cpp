@@ -26,7 +26,7 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr html_content_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.html_content_filter"));	
-			
+			int  html_content_filter::filter_code = 501;	
 			// constructor definition of filter service registration inner class
 			html_content_filter::initializer::initializer()
                         {
@@ -45,18 +45,14 @@ namespace findik
 				FI_SERVICES->util_srv().magic_num().get_magic_number(resp->content_hr(),content_type);
 				if((content_type == "text/html") || (resp->content_type() == "text/html" && content_type.compare(0,10,"text/plain") == 0)) 
 				{
-					findik::util::tidy_html_parser_ptr tdoc(new findik::util::tidy_html_parser());
-					tdoc->parse(resp->content_hr());
-				
-					if(FI_SERVICES->util_srv().pcre().matches_predefined(tdoc->get_clear_text()).size() > 0){
+					if(FI_SERVICES->util_srv().pcre().matches_predefined(&(resp->content_hr())[0]).size() > 0){
 						LOG4CXX_DEBUG(debug_logger, "HTML content filter failed");
-						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));
+						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Content blocked for URL : NaN"));						
 					}
 					else {
 						LOG4CXX_DEBUG(debug_logger, "HTML content filter passed");
-						return boost::make_tuple(true, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));
 					}
-
+					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0,""));
 				}
 
 				LOG4CXX_DEBUG(debug_logger, "HTML content filter no HTML content");

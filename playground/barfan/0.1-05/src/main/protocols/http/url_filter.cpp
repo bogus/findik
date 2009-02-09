@@ -26,7 +26,7 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr url_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.url_filter"));	
-			
+			int url_filter::filter_code = 404;
 			// constructor definition of filter service registration inner class
 			url_filter::initializer::initializer()
                         {
@@ -47,13 +47,13 @@ namespace findik
 				// check whether hostname exists in domain blacklist
 				if(!FI_SERVICES->db_srv().urlQuery(req->request_uri())){
 					LOG4CXX_DEBUG(debug_logger, "URL filter failed for " + url);
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));	
+					 return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"URL blocked : " + url));
 				} 
 				else {
 					LOG4CXX_DEBUG(debug_logger, "URL filter passed for " + url);
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));	
 				}
-				
+			
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0,""));	
 			}
 
                         bool url_filter::is_applicable(findik::io::connection_ptr connection_)
