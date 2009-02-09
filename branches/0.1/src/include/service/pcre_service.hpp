@@ -54,8 +54,20 @@ namespace findik
 			void start();
 
 			/*!
+			Searches the given string for regular expressions saved in db.
 			*/
 			std::vector<findik::util::pcre_analyzer> matches_predefined(std::string);
+
+			/*!
+			Searches the given string for regular expressions saved in db.
+			*/
+			std::vector<findik::util::pcre_analyzer> matches_custom(std::string pattern, std::string data);
+
+			/*!
+			Searches the given string for regular expressions saved in db.
+			*/
+			void global_replace(std::string pattern, std::string replace, std::string & data);
+
 
 		protected:
 

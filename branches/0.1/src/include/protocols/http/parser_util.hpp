@@ -82,6 +82,20 @@ namespace findik
 			}
 
 			/*!
+			Check if all characters of string is figit.
+
+			\param c string to be checked
+			\return true if given string is all consisted of digits.
+			*/
+			static bool is_digit(const std::string & str_)
+			{
+				for (int i = 0; i < str_.length(); i++)
+					if (!is_digit(str_[i]))
+						return false;
+				return true;
+			}
+
+			/*!
 			Check if a byte is a hex digit.
 
 			\param c byte to be checked
