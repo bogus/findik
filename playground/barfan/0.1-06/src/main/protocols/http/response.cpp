@@ -87,6 +87,14 @@ namespace findik
 				return content_charset_;
 			}
 
+			const std::string & response::magic_mime_type()
+			{
+				if (magic_mime_type_.empty()){
+					FI_SERVICES->util_srv().magic_num().get_magic_number(content_hr(),magic_mime_type_);
+				}
+				return magic_mime_type_;
+			}
+
 			response::content_encoding_type response::content_encoding()
 			{
 				if (content_encoding_ == indeterminate) {

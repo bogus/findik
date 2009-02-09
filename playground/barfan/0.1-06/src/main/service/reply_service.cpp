@@ -67,6 +67,7 @@ namespace findik
 
 			FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_str_);	
 			FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", reason->reason_str() , reply_str_);
+			reply_str_ = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n "+ reply_str_;
 			os << reply_str_;
 		}
 	}
