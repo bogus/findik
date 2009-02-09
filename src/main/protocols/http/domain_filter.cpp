@@ -26,7 +26,7 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr domain_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.domain_filter"));	
-			
+			int domain_filter::filter_code = 401;
 			// constructor definition of filter service registration inner class
 			domain_filter::initializer::initializer()
                         {
@@ -54,13 +54,13 @@ namespace findik
 				// check whether hostname exists in domain blacklist
 				if(!FI_SERVICES->db_srv().domainQuery(hostname)){
 					LOG4CXX_DEBUG(debug_logger, "Domain name filter failed for domain " + hostname);
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));	
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Domain blocked : " + hostname));	
 				} 
 				else {
 					LOG4CXX_DEBUG(debug_logger, "Domain name filter passed for domain " + hostname);
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));	
 				}
 				
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0,""));	
 			}
 
                         bool domain_filter::is_applicable(findik::io::connection_ptr connection_)

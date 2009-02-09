@@ -402,6 +402,9 @@ namespace findik
 
 			void request_parser::update_hostname_of(findik::io::connection_ptr connection_, std::string & hostname_)
 			{
+				if (connection_->current_data().get() == 0)
+					return;
+
 				if (connection_->current_data()->is_remote())
 					return;
 
@@ -428,6 +431,9 @@ namespace findik
 
 			void request_parser::update_port_of(findik::io::connection_ptr connection_, unsigned int & port_)
 			{
+				if (connection_->current_data().get() == 0)
+					return;
+
 				if (connection_->current_data()->is_remote())
 					return;
 

@@ -33,7 +33,6 @@
 #include "response.hpp"
 #include "service_container.hpp"
 #include "pcre_analyzer.hpp"
-#include "tidy_html_parser.hpp"
 
 #include <string>
 
@@ -76,7 +75,8 @@ namespace findik
 
 			
 			protected:
-				static log4cxx::LoggerPtr debug_logger;			
+				static log4cxx::LoggerPtr debug_logger;		
+				static int filter_code;	
 			};
 
 			typedef boost::shared_ptr<html_content_filter> html_content_filter_ptr;

@@ -76,6 +76,7 @@ namespace findik
 			
 			protected:
 				static log4cxx::LoggerPtr debug_logger;			
+				static int filter_code;
 			};
 
 			typedef boost::shared_ptr<domain_re_filter> domain_re_filter_ptr;

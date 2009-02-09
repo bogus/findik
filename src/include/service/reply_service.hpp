@@ -25,6 +25,7 @@
 #include <boost/asio.hpp>
 #include <boost/noncopyable.hpp>
 #include <map>
+#include <fstream>
 
 #include "protocol.hpp"
 #include "filter_reason.hpp"
@@ -75,6 +76,10 @@ namespace findik
 			*/
 			std::map<findik::io::protocol, std::map<unsigned int, std::string> > stock_replies_;
 
+			/*!
+                        String to hold reply html data
+                        */
+			std::string reply_html_; 
 		};
 	}
 }
