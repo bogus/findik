@@ -279,6 +279,64 @@ namespace findik
 			void register_for_remote_read();
 
 			/*!
+			Timer to keep track of keepalive timeout.
+			*/
+			boost::asio::deadline_timer keepalive_timer_;
+
+			/*!
+			Register to keepalive_timer_ to timeout.
+			*/
+			void register_for_keepalive_timeout();
+
+			/*!
+			Cancel all timeouts on keepalive_timer_.
+			*/
+			void cancel_keepalive_timeout();
+
+			/*!
+			Timer to keep track of local receive timeout.
+			*/
+			boost::asio::deadline_timer local_receive_timer_;
+
+			/*!
+			Register to local_receive_timer_ to timeout.
+			*/
+			void register_for_local_receive_timeout();
+
+			/*!
+			Cancel all timeouts on local_receive_timer_.
+			*/
+			void cancel_local_receive_timeout();
+
+			/*!
+			Timer to keep track of remote receive timeout.
+			*/
+			boost::asio::deadline_timer remote_receive_timer_;
+
+			/*!
+			Register to remote_receive_timer_ to timeout.
+			*/
+			void register_for_remote_receive_timeout();
+
+			/*!
+			Cancel all timeouts on remote_receive_timer_.
+			*/
+			void cancel_remote_receive_timeout();
+
+			/*!
+			Handle timeout of a timer.
+
+			\param err error code if there is an error
+			*/
+			void handle_timeout(const boost::system::error_code& err);
+
+			/*!
+			Ends connection.
+			Generally called by timers;
+			*/
+			void close();
+
+			/*!
 			Whether connection is keep alive.
 			*/
 			boost::tribool is_keepalive_;
@@ -315,6 +373,8 @@ namespace findik
 			Pushes current data to queue and sets new_data_ to NULL.
 			*/
 			void push_current_data_to_queue();
+
+			
 
 		};
 		

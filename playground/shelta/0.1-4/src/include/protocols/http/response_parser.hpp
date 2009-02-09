@@ -95,6 +95,14 @@ namespace findik
 				void update_is_keepalive_of(findik::io::connection_ptr connection_, boost::tribool & is_keepalive_);
 
 				/*!
+				Updates keepalive_timeout_ variable given.
+				\param connection_ to inspect.
+				\param keepalive_timeout_ to update.
+				*/
+				void update_keepalive_timeout_of(findik::io::connection_ptr connection_, 
+						unsigned int & keepalive_timeout_);
+
+				/*!
 				Remove connection object from registers.
 				\param connection_ connection to remove
 				*/

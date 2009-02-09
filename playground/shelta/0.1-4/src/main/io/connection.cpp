@@ -21,6 +21,8 @@
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include <string>
 
 #include "service_container.hpp"
@@ -41,7 +43,10 @@ namespace findik
 			is_keepalive_(boost::indeterminate),
 			remote_port_(0),
 			remote_hostname_(""),
-			is_streaming_(false)
+			is_streaming_(false),
+			local_receive_timer_(FI_SERVICES->io_srv()),
+			remote_receive_timer_(FI_SERVICES->io_srv()),
+			keepalive_timer_(FI_SERVICES->io_srv())
 		{}
 
 		connection::~connection()
@@ -61,13 +66,28 @@ namespace findik
 
 		void connection::shutdown_socket(boost::asio::ip::tcp::socket & socket)
 		{
-			boost::system::error_code ignored_ec;
-			socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+			if (socket.is_open())
+			{
+				socket.cancel();
+
+				boost::system::error_code ignored_ec;
+				socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+			}
 		}
 
 		void connection::register_for_local_read()
 		{
 			LOG4CXX_DEBUG(debug_logger, "Registering connection for local read.");
+
+			if (is_keepalive())
+			{
+				register_for_keepalive_timeout();
+			}
+			else
+			{
+				register_for_local_receive_timeout();
+			}
+
 			local_socket_.async_read_some(boost::asio::buffer(local_read_buffer_),
 				strand_.wrap(
 					boost::bind(&connection::handle_read_local, shared_from_this(),
@@ -78,6 +98,9 @@ namespace findik
 		void connection::register_for_remote_read()
 		{
 			LOG4CXX_DEBUG(debug_logger, "Registering connection for remote read.");
+
+			register_for_remote_receive_timeout();
+
 			remote_socket_.async_read_some(boost::asio::buffer(remote_read_buffer_),
 				strand_.wrap(
 					boost::bind(&connection::handle_read_remote, shared_from_this(),
@@ -134,11 +157,79 @@ namespace findik
 					boost::asio::placeholders::error, ++endpoint_iterator)));
 		}
 
+		void connection::register_for_keepalive_timeout()
+		{
+			unsigned int timeout;
+			if (FI_SERVICES->config_srv().returnBool("findik.server.http.run_with_squid"))
+			{
+				timeout = 60;
+				FI_SERVICES->config_srv().getConfigValue_UInt("findik.connection.http.squid_keepalive_timeout", timeout);
+			}
+			else
+			{
+				timeout = 60;
+				FI_SERVICES->parser_srv().update_keepalive_timeout_of(shared_from_this(), timeout);
+			}
+
+			keepalive_timer_.expires_from_now(boost::posix_time::seconds(timeout));
+			keepalive_timer_.async_wait(boost::bind(&connection::handle_timeout, shared_from_this(),
+					boost::asio::placeholders::error));
+		}
+
+		void connection::cancel_keepalive_timeout()
+		{
+			keepalive_timer_.cancel();
+		}
+
+		void connection::register_for_local_receive_timeout()
+		{
+			unsigned int timeout = 15;
+			FI_SERVICES->config_srv().getConfigValue_UInt("findik.connection.http.local_receive_timeout", timeout);
+
+			local_receive_timer_.expires_from_now(boost::posix_time::seconds(timeout));
+			local_receive_timer_.async_wait(boost::bind(&connection::handle_timeout, shared_from_this(),
+					boost::asio::placeholders::error));
+		}
+
+		void connection::cancel_local_receive_timeout()
+		{
+			local_receive_timer_.cancel();
+		}
+
+		void connection::register_for_remote_receive_timeout()
+		{
+			unsigned int timeout = 60;
+			FI_SERVICES->config_srv().getConfigValue_UInt("findik.connection.http.remote_receive_timeout", timeout);
+
+			remote_receive_timer_.expires_from_now(boost::posix_time::seconds(timeout));
+			remote_receive_timer_.async_wait(boost::bind(&connection::handle_timeout, shared_from_this(),
+					boost::asio::placeholders::error));
+		}
+
+		void connection::cancel_remote_receive_timeout()
+		{
+			remote_receive_timer_.cancel();
+		}
+
+		void connection::handle_timeout(const boost::system::error_code& err)
+		{
+			if (err != boost::asio::error::operation_aborted)
+			{
+				close();
+			}
+		}
 
 		void connection::start_processing()
 		{
 			prepare_socket(local_socket_);
 			register_for_local_read();
+		}
+
+		void connection::close()
+		{
+			LOG4CXX_DEBUG(debug_logger, "Closing connection.");
+			shutdown_socket(local_socket_);
+			shutdown_socket(remote_socket_);
 		}
 
                 bool connection::is_keepalive()
@@ -223,6 +314,15 @@ namespace findik
 			// TODO: call logger
 			if (err)
 				return;
+
+			if (is_keepalive())
+			{
+				cancel_keepalive_timeout();
+			}
+			else
+			{
+				cancel_local_receive_timeout();
+			}
 
 			// parsing data.
 			boost::tribool parser_result;
@@ -325,22 +425,19 @@ namespace findik
 		void connection::handle_read_remote(const boost::system::error_code& err,
 			std::size_t bytes_transferred)
 		{
+			//TODO: call logger
+			if (err && err != boost::asio::error::eof)
+				return;
+
+			cancel_remote_receive_timeout();
+
                         boost::tribool parser_result;
 
-			//TODO: call logger
-			if (err)
+			if ( err == boost::asio::error::eof && 
+				current_data().get() != 0 &&
+				current_data()->is_expecting_eof() )
 			{
-				if ( err == boost::asio::error::eof && 
-					current_data().get() != 0 &&
-					current_data()->is_expecting_eof() )
-				{
-					parser_result = true;
-				}
-				else
-				{
-					return;
-				}
-					//TODO: call logger
+				parser_result = true;
 			}
 			else 
 			{

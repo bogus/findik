@@ -85,6 +85,12 @@ namespace findik
 			remote_parser_map_[connection_->proto()]->update_is_keepalive_of(connection_, is_keepalive_);
 		}
 
+		void parser_service::update_keepalive_timeout_of(findik::io::connection_ptr connection_, 
+				unsigned int & keepalive_timeout_)
+		{
+			remote_parser_map_[connection_->proto()]->update_keepalive_timeout_of(connection_, keepalive_timeout_);
+		}
+
 		void parser_service::cleanup(findik::io::connection_ptr connection_)
 		{
 			local_parser_map_[connection_->proto()]->cleanup(connection_);
