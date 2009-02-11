@@ -26,13 +26,13 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr html_content_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.html_content_filter"));	
-			int  html_content_filter::filter_code = 501;	
+			int  html_content_filter::filter_code = 502;	
 			// constructor definition of filter service registration inner class
 			html_content_filter::initializer::initializer()
                         {
                                 html_content_filter_ptr dfp(new html_content_filter());
 
-                                FI_SERVICES->filter_srv().register_filter(dfp);
+                                FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
                         }
 
                         html_content_filter::initializer html_content_filter::initializer::instance;
@@ -42,21 +42,20 @@ namespace findik
 				LOG4CXX_DEBUG(debug_logger, "HTML content filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 				std::string content_type;
-				FI_SERVICES->util_srv().magic_num().get_magic_number(resp->content_hr(),content_type);
-				if((content_type == "text/html") || (resp->content_type() == "text/html" && content_type.compare(0,10,"text/plain") == 0)) 
+				if((resp->magic_mime_type() == "text/html") || (resp->content_type() == "text/html" && resp->magic_mime_type().compare(0,10,"text/plain") == 0)) 
 				{
 					if(FI_SERVICES->util_srv().pcre().matches_predefined(&(resp->content_hr())[0]).size() > 0){
 						LOG4CXX_DEBUG(debug_logger, "HTML content filter failed");
-						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Content blocked for URL : NaN"));						
+						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Content blocked for URL : NaN", response::forbidden, true, findik::io::http));						
 					}
 					else {
 						LOG4CXX_DEBUG(debug_logger, "HTML content filter passed");
 					}
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0,""));
+					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 				}
 
 				LOG4CXX_DEBUG(debug_logger, "HTML content filter no HTML content");
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(FC_BAD_LOCAL,"hede"));
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 
 			}
 

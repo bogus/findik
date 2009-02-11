@@ -66,10 +66,10 @@ int main(int argc, char* argv[])
 		//findik::filter::generate_response_filter_factory_map();
 
 		findik::logging::log_initializer log_init;
-		log_init.load_conf("/etc/findik_log.conf");
+		log_init.load_conf("/etc/findik/findik_log.conf");
 		
 		//First accesto FI_SERVICES must be under log init.
-		if (! FI_SERVICES->config_srv().check())
+		if (! FI_SERVICES->check_config())
 			exit(1);
 
 		FI_SERVICES->start();

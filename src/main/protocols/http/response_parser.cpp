@@ -369,7 +369,7 @@ namespace findik
 								return true;
 
 							if (resp->content_length() > 
-								FI_SERVICES->config_srv().returnUInt("findik.server.http.max_object_size"))
+								FI_CONFIG.server_http_max_object_size())
 								resp->mark_as_stream();
 
 							FI_STATE_OF(connection_) = content;
@@ -386,7 +386,7 @@ namespace findik
 							else
 							{
 								if (resp->content_length() > 
-									FI_SERVICES->config_srv().returnUInt("findik.server.http.max_object_size"))
+									FI_CONFIG.server_http_max_object_size())
 									resp->mark_as_stream();
 
 								FI_STATE_OF(connection_) = content;
@@ -531,43 +531,50 @@ namespace findik
 			void response_parser::update_keepalive_timeout_of(findik::io::connection_ptr connection_, 
 					unsigned int & keepalive_timeout_)
 			{
-				if (connection_->current_data().get() == 0)
-					return;
+				if (FI_CONFIG.server_http_run_with_squid())
+				{
+					keepalive_timeout_ = FI_CONFIG.server_http_squid_keepalive_timeout();
+				}
+				else
+				{
+					if (connection_->current_data().get() == 0)
+						return;
 
-				if (connection_->current_data()->is_local())
-					return;
+					if (connection_->current_data()->is_local())
+						return;
 
-				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
+					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 
-				BOOST_FOREACH( header h, resp->get_headers() )
-					if (h.name == "Keep-Alive" || h.name == "keep-alive")
-					{
-						if (is_digit(h.value))
+					BOOST_FOREACH( header h, resp->get_headers() )
+						if (h.name == "Keep-Alive" || h.name == "keep-alive")
 						{
-							keepalive_timeout_ = boost::lexical_cast<unsigned int>(h.value);
-						}
-						else
-						{
-							size_t found_t = h.value.find("timeout=");
-
-							if (found_t != std::string::npos)
+							if (is_digit(h.value))
 							{
-								size_t found_s = h.value.find_first_of(' ', found_t);
-								if (found_s == std::string::npos)
+								keepalive_timeout_ = boost::lexical_cast<unsigned int>(h.value);
+							}
+							else
+							{
+								size_t found_t = h.value.find("timeout=");
+
+								if (found_t != std::string::npos)
 								{
-									keepalive_timeout_ = boost::lexical_cast<unsigned int>(
-											h.value.substr(found_t + 8, found_s)
-										);
-								}
-								else
-								{
-									keepalive_timeout_ = boost::lexical_cast<unsigned int>(
-											h.value.substr(found_t + 8)
-										);
+									size_t found_s = h.value.find_first_of(' ', found_t);
+									if (found_s == std::string::npos)
+									{
+										keepalive_timeout_ = boost::lexical_cast<unsigned int>(
+												h.value.substr(found_t + 8, found_s)
+											);
+									}
+									else
+									{
+										keepalive_timeout_ = boost::lexical_cast<unsigned int>(
+												h.value.substr(found_t + 8)
+											);
+									}
 								}
 							}
 						}
-					}
+				}
 			}
 
 			void response_parser::cleanup(findik::io::connection_ptr connection_)

@@ -118,7 +118,7 @@ namespace findik
 		}
 
 		template <class T>
-		void dbconnection<T>::set_object(unsigned int key, void *object)
+		void dbconnection<T>::set_object(unsigned int key, void * object)
 		{
 			dbc_objects[key] = object;
 		}

@@ -14,7 +14,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "configuration.hpp"
+#include "configuration_initializer.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
@@ -25,16 +25,16 @@
 namespace findik {
 	namespace config {
 
-                log4cxx::LoggerPtr configuration::debug_logger(log4cxx::Logger::getLogger("findik.config.configuration"));
+                log4cxx::LoggerPtr configuration_initializer::debug_logger(log4cxx::Logger::getLogger("findik.config.configuration_initializer"));
 
-		configuration::configuration(void)
+		configuration_initializer::configuration_initializer(void)
 		{
 			try 
 			{
 #if defined(_WIN32)
 				config_.readFile("c:/findik.cfg");
 #else
-				config_.readFile("/etc/findik.cfg");
+				config_.readFile("/etc/findik/findik.cfg");
 #endif
 			} 
 			catch(libconfig::FileIOException & e) 
@@ -47,13 +47,13 @@ namespace findik {
 			}
 		}
 
-		configuration::~configuration(void)
+		configuration_initializer::~configuration_initializer(void)
 		{
 		}
 
-		bool configuration::check()
+		bool configuration_initializer::check()
 		{
-			if (FI_SERVICES->config_srv().returnBool("findik.server.http.run_with_squid"))
+			if (returnBool("findik.server.http.run_with_squid"))
 			{
 				std::string hostname_;
 				std::string port_;
@@ -93,34 +93,34 @@ namespace findik {
 			return true;
 		}
 
-		bool configuration::getConfigValue_String(std::string setting_path, std::string & value)
+		bool configuration_initializer::getConfigValue_String(std::string setting_path, std::string & value)
 		{
 			return config_.lookupValue(setting_path,value);
 		}
 
-		bool configuration::getConfigValue_UInt(std::string setting_path, unsigned int & value)
+		bool configuration_initializer::getConfigValue_UInt(std::string setting_path, unsigned int & value)
 		{
 			return config_.lookupValue(setting_path,value);
 		}
 
-		bool configuration::getConfigValue_Int(std::string setting_path, int & value)
+		bool configuration_initializer::getConfigValue_Int(std::string setting_path, int & value)
 		{
 			return config_.lookupValue(setting_path,value);
 		}
 
-		bool configuration::getConfigValue_Bool(std::string setting_path, bool & value)
+		bool configuration_initializer::getConfigValue_Bool(std::string setting_path, bool & value)
 		{
 			return config_.lookupValue(setting_path,value);
 		}
 
-		bool configuration::returnBool(std::string setting_path)
+		bool configuration_initializer::returnBool(std::string setting_path)
 		{
 			bool ret = false;
 			getConfigValue_Bool(setting_path, ret);
 			return ret;
 		}
 
-		unsigned int configuration::returnUInt(std::string setting_path)
+		unsigned int configuration_initializer::returnUInt(std::string setting_path)
 		{
 			unsigned int ret = 0;
 			getConfigValue_UInt(setting_path, ret);

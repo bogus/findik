@@ -29,6 +29,7 @@
 
 #include "protocol.hpp"
 #include "filter_reason.hpp"
+#include "authentication_result.hpp"
 
 namespace findik
 {
@@ -59,7 +60,18 @@ namespace findik
 			\param proto protocol of reply.
 			\param reason deny reason of a filter.
 			*/
-			void reply(boost::asio::streambuf & sbuf, findik::io::protocol proto, findik::filter::filter_reason_ptr reason);
+			void reply(boost::asio::streambuf & sbuf, findik::io::protocol proto, 
+				findik::filter::filter_reason_ptr reason);
+
+			/*!
+			Crafts request reply into given stream buffer.
+
+			\param sbuf buffer to populate reply into. 
+			\param proto protocol of reply.
+			\param reason result of an authenticator.
+			*/
+			void reply(boost::asio::streambuf & sbuf, findik::io::protocol proto,
+				 findik::authenticator::authentication_result_ptr result);
 
 			/*!
 			Crafts request reply into given stream buffer.

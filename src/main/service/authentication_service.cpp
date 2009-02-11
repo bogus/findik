@@ -16,7 +16,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "filter_service.hpp"
+#include "authentication_service.hpp"
 
 #include <boost/tuple/tuple.hpp>
 
@@ -24,37 +24,37 @@ namespace findik
 {
 	namespace service
 	{
-		filter_service::filter_service()
+		authentication_service::authentication_service()
 		{}
 
-		filter_service::~filter_service()
+		authentication_service::~authentication_service()
 		{}
 
-		void filter_service::register_filter(int code, findik::filter::abstract_filter_ptr filter_)
+		void authentication_service::register_authenticator(findik::authenticator::abstract_authenticator_ptr authenticator_)
 		{
-			filter_list_.insert(std::pair<int, findik::filter::abstract_filter_ptr>(code, filter_));
+			authenticator_list_.push_back(authenticator_);
 		}
 
-		boost::tuple<bool, findik::filter::filter_reason_ptr> 
-			filter_service::filter(findik::io::connection_ptr connection_)
+		boost::tuple<bool, findik::authenticator::authentication_result_ptr> 
+			authentication_service::authenticate(findik::io::connection_ptr connection_)
 		{
-			std::map<int,findik::filter::abstract_filter_ptr>::iterator it;
+			std::list<findik::authenticator::abstract_authenticator_ptr>::iterator it;
 
-			for ( it=filter_list_.begin();
-				it != filter_list_.end(); it++ )
+			for ( it=authenticator_list_.begin();
+				it != authenticator_list_.end(); it++ )
 
-				if ( it->second->is_applicable(connection_) )
+				if ( (*it)->proto() == connection_->proto() )
 				{
-					boost::tuple<bool, findik::filter::filter_reason_ptr> result = 
-						it->second->filter(connection_);
+					boost::tuple<bool, findik::authenticator::authentication_result_ptr> result = 
+						(*it)->authenticate(connection_);
 					
 					if (!boost::get<0>(result))
 						return result;
 				}
 
 			//TODO: may be return score for greylisting
-			findik::filter::filter_reason_ptr frp;
-			return boost::make_tuple(true, frp);
+			findik::authenticator::authentication_result_ptr arp;
+			return boost::make_tuple(true, arp);
 		}
 	}
 }
