@@ -16,48 +16,48 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_FILTER_ABSTRACT_FILTER_HPP
-#define FINDIK_FILTER_ABSTRACT_FILTER_HPP
+#ifndef FINDIK_AUTHENTICATOR_ABSTRACT_AUTHENTICATOR_HPP
+#define FINDIK_AUTHENTICATOR_ABSTRACT_AUTHENTICATOR_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "filter_reason.hpp"
+#include "authenticator_reason.hpp"
 #include "service_chain_element.hpp"
 #include "connection.hpp"
 #include "log.hpp"
 
 namespace findik
 {
-	namespace filter
+	namespace authenticator
 	{
 		/*!
-		Abstract filter object to inherit in order to implement filters for findik.
-		\extends boost::enable_shared_from_this<abstract_filter> to use boost shared pointers.
+		Abstract authenticator object to inherit in order to implement authenticators for findik.
+		\extends boost::enable_shared_from_this<abstract_authenticator> to use boost shared pointers.
 		\extends findik::service::service_chain_element to be used in service chains.
 		@author H. Kerem Cevahir (shelta)
 		*/
-		class abstract_filter :
-			public boost::enable_shared_from_this<abstract_filter>,
+		class abstract_authenticator :
+			public boost::enable_shared_from_this<abstract_authenticator>,
 			public findik::service::service_chain_element
 		{
 		public:
                         /*!
-                        Examines new_data of connection by using filters in filter_list_.
-			If method returns true for decision, service will execute other filters too,
+                        Examines new_data of connection by using authenticators in authenticator_list_.
+			If method returns true for decision, service will execute other authenticators too,
 			otherwise it will stop execution and return false with reason of this operation.
                         \param connection_ connection contains new data to be inspected.
-                        \returns a tuple containing whether content should be filter or not and reason of this decision.
+                        \returns a tuple containing whether content should be authenticated or not and the authentication object.
                         */
-                        virtual boost::tuple<bool, filter_reason_ptr> 
-				filter(findik::io::connection_ptr connection_) = 0;
+                        virtual boost::tuple<bool, authentication_result_ptr> 
+				authenticate(findik::io::connection_ptr connection_) = 0;
 
 			/*!
 			Filter should return whether current data of connection applicable for self or not.
-			For example a filter designed to analysis content is not applicable for dat objects without content or
-			a filter designed for local data is not applicable for remote data.
+			For example a authenticator designed to analysis content is not applicable for dat objects without content or
+			a authenticator designed for local data is not applicable for remote data.
 			\param connection_ to test applicability
-			\return whether filter is applicable
+			\return whether authenticator is applicable
 			*/
 			virtual bool is_applicable(findik::io::connection_ptr connection_) = 0;
 
@@ -65,7 +65,7 @@ namespace findik
 
 		};
 		
-		typedef boost::shared_ptr<abstract_filter> abstract_filter_ptr;
+		typedef boost::shared_ptr<abstract_authenticator> abstract_authenticator_ptr;
 	}
 }
 
