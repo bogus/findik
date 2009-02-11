@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_PROTOCOLS_HTTP_DOMAIN_RE_FILTER_HPP
-#define FINDIK_PROTOCOLS_HTTP_DOMAIN_RE_FILTER_HPP
+#ifndef FINDIK_PROTOCOLS_HTTP_HTML_CONTENT_FILTER_HPP
+#define FINDIK_PROTOCOLS_HTTP_HTML_CONTENT_FILTER_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -30,7 +30,6 @@
 
 #include "abstract_filter.hpp"
 #include "reply_service.hpp"
-#include "request.hpp"
 #include "response.hpp"
 #include "service_container.hpp"
 #include "pcre_analyzer.hpp"
@@ -45,13 +44,13 @@ namespace findik
 		{
 			
 			/*!
-                        URL based regular expression filter for HTTP protocol.
+                        HTML content filter for HTTP protocol.
                         \extends boost::enable_shared_from_this<data> to use boost shared pointers.
                         \extends findik::filter::abstract_filter because this is a filter for FINDIK HTTP subsystem.
                         @author Burak OGUZ (barfan)
                         */
-			class url_re_filter:
-				public boost::enable_shared_from_this<url_re_filter>,
+			class content_mime_filter:
+				public boost::enable_shared_from_this<content_mime_filter>,
                                 public findik::filter::abstract_filter
                         {
 			
@@ -64,7 +63,7 @@ namespace findik
                                 protected:
                                         /*!
                                         Default constructor.
-                                        Construction of this object will register a url_re_filter instance to filter_service.
+                                        Construction of this object will register a content_mime_filter instance to filter_service.
                                         */
                                         initializer();
 
@@ -80,7 +79,7 @@ namespace findik
 				static int filter_code;	
 			};
 
-			typedef boost::shared_ptr<url_re_filter> url_re_filter_ptr;
+			typedef boost::shared_ptr<content_mime_filter> content_mime_filter_ptr;
 
 		}
 	}

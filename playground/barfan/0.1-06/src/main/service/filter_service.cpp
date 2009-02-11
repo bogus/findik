@@ -30,23 +30,23 @@ namespace findik
 		filter_service::~filter_service()
 		{}
 
-		void filter_service::register_filter(findik::filter::abstract_filter_ptr filter_)
+		void filter_service::register_filter(int code, findik::filter::abstract_filter_ptr filter_)
 		{
-			filter_list_.push_back(filter_);
+			filter_list_.insert(std::pair<int, findik::filter::abstract_filter_ptr>(code, filter_));
 		}
 
 		boost::tuple<bool, findik::filter::filter_reason_ptr> 
 			filter_service::filter(findik::io::connection_ptr connection_)
 		{
-			std::list<findik::filter::abstract_filter_ptr>::iterator it;
+			std::map<int,findik::filter::abstract_filter_ptr>::iterator it;
 
 			for ( it=filter_list_.begin();
 				it != filter_list_.end(); it++ )
 
-				if ( (*it)->is_applicable(connection_) )
+				if ( it->second->is_applicable(connection_) )
 				{
 					boost::tuple<bool, findik::filter::filter_reason_ptr> result = 
-						(*it)->filter(connection_);
+						it->second->filter(connection_);
 					
 					if (!boost::get<0>(result))
 						return result;

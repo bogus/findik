@@ -20,7 +20,7 @@
 #include "service_container.hpp"
 
 #include <boost/scoped_ptr.hpp>
-#include <cppconn/prepared_statement.h>
+#include <vector>
 
 namespace findik 
 {
@@ -38,8 +38,6 @@ namespace findik
 				return;
 			is_connected = false;
 
-			driver = get_driver_instance();
-
 			FI_SERVICES->config_srv().getConfigValue_String("findik.db.host", host);
 			FI_SERVICES->config_srv().getConfigValue_String("findik.db.username", username);
 			FI_SERVICES->config_srv().getConfigValue_String("findik.db.password", password);
@@ -52,33 +50,34 @@ namespace findik
 		mysqldbmanager::~mysqldbmanager() 
 		{
 			for (size_t i = 0; i < pool_size_; ++i)
-				if (!((dbconnection<sql::Connection>::pointer)pool_[i])->connection()->isClosed())
-					((dbconnection<sql::Connection>::pointer)pool_[i])->connection()->close();
+				((dbconnection<mysqlpp::Connection>::pointer)pool_[i])->connection()->disconnect();
 		}
 
 		mysqldbmanager::mysql_dbconnection_ptr mysqldbmanager::create_connection_object()
 		{
 			try {
-				sql::Connection * myconn_ = driver->connect(host, username, password);
-				myconn_->setSchema(db);
+				mysqlpp::Connection * myconn_ = new mysqlpp::Connection(db.c_str(), host.c_str(), username.c_str(), password.c_str());
 
-				mysql_dbconnection_ptr dbconnection__(
-					new mysql_dbconnection(myconn_));
+				mysql_dbconnection_ptr dbconnection__(new mysql_dbconnection(myconn_));
 
-				dbconnection__->set_object(domain_query,
-					myconn_->prepareStatement("SELECT domain from blacklist_domain where domain=?"));
+				mysqlpp::Query * domain_q = new mysqlpp::Query(myconn_->query("SELECT domain from blacklist_domain where domain = %0q"));
+			        domain_q->parse();
+				mysqlpp::Query * url_q = new mysqlpp::Query(myconn_->query("SELECT url from blacklist_url where url = %0q"));
+			        url_q->parse();
+				mysqlpp::Query * pcre_q = new mysqlpp::Query(myconn_->query("SELECT content,catid from blacklist_content"));
+			        pcre_q->parse();
 
-				dbconnection__->set_object(url_query,
-					myconn_->prepareStatement("SELECT url from blacklist_url where url=?"));
+				dbconnection__->set_object(domain_query, domain_q);
 
-				dbconnection__->set_object(pcre_query,
-					myconn_->prepareStatement("SELECT content,catid from blacklist_content"));
+				dbconnection__->set_object(url_query, url_q);
+
+				dbconnection__->set_object(pcre_query, pcre_q);
 				
 				return dbconnection__;
 			}
-			catch (sql::SQLException &e)
+			catch (const mysqlpp::Exception& e)
 			{
-				LOG4CXX_ERROR(debug_logger, "SQL Error: " << e.getSQLState());
+				LOG4CXX_ERROR(debug_logger, "SQL Error: " );
 				LOG4CXX_ERROR(logging::log_initializer::user_logger,
 					"Unable to connect MySQL on host: " << host << " with user: " << username);
 			}
@@ -87,66 +86,87 @@ namespace findik
 		bool mysqldbmanager::domainQuery(std::string hostname) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
-			sql::PreparedStatement * ps_ = (sql::PreparedStatement *) dbconnection_->get_object(domain_query);
 
 			try {
-				ps_->setString(1,hostname);
-				boost::scoped_ptr< sql::ResultSet > res(ps_->executeQuery());
+				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))->store(hostname);
+				
+				if(res.num_rows() > 0)					
+					return false;
 
 				dbconnection_->unlock();
 
-				if(res->rowsCount() > 0)
-					return false;
-
-			} catch (sql::SQLException &e) {
+			} catch (const mysqlpp::BadQuery& e) {
 				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
 				return false;
 			}
+			catch (const mysqlpp::BadConversion& e) {
+				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+				return false;
+			}
+			catch (const mysqlpp::Exception& e) {
+				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+				return false;
+			}
+
 			return true;
 		}
 
-		bool mysqldbmanager::urlQuery(std::string url) {
+		bool mysqldbmanager::urlQuery(std::string url) 
+		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
-			sql::PreparedStatement * ps_ = (sql::PreparedStatement *) dbconnection_->get_object(url_query);
-
+			
 			try {
-				ps_->setString(1,url);
-				boost::scoped_ptr< sql::ResultSet > res(ps_->executeQuery());
+                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(url_query))->store(url);
 
-				dbconnection_->unlock();
+                                if(res.num_rows() > 0)
+                                        return false;
 
-				if(res->rowsCount() > 0)
-					return false;
+                                dbconnection_->unlock();
 
-			} catch (sql::SQLException &e) {
-				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-				return false;
-			}
-			return true;
+                        } catch (const mysqlpp::BadQuery& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+                        catch (const mysqlpp::BadConversion& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+                        catch (const mysqlpp::Exception& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+
+                        return true;
 		}
 
 		bool mysqldbmanager::pcreQuery(std::map<int,std::string> &pcre_map) 
 		{
 
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
-                        sql::PreparedStatement * ps_ = (sql::PreparedStatement *) dbconnection_->get_object(pcre_query);
 
-                        try {
-                                boost::scoped_ptr< sql::ResultSet > res(ps_->executeQuery());
+			try {
+				mysqlpp::StoreQueryResult res1 = ((mysqlpp::Query *)dbconnection_->get_object(pcre_query))->store();
 
-                                dbconnection_->unlock();
+				dbconnection_->unlock();
+				
+				for (int i = 0 ; i < res1.size() ; i++) {
+ 					pcre_map.insert(std::pair<int,std::string>(1,res1[i][0].c_str())); 
+				}
 
-				while (res->next())
-                                {
-                                          pcre_map.insert(std::pair<int,std::string>(res->getInt("catid"),res->getString("content")));
-                                }
-
-                        } catch (sql::SQLException &e) {
+			}  catch (const mysqlpp::BadQuery& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
                                 return false;
                         }
-	
-                        return true;
-                }
+                        catch (const mysqlpp::BadConversion& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+                        catch (const mysqlpp::Exception& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+
+			return true;
+		}
 	}
 }

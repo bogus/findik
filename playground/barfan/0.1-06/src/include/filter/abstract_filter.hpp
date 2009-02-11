@@ -26,6 +26,7 @@
 #include "service_chain_element.hpp"
 #include "connection.hpp"
 #include "log.hpp"
+#include "protocol.hpp"
 
 namespace findik
 {

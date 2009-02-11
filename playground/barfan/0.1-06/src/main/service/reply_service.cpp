@@ -19,6 +19,8 @@
 #include "reply_service.hpp"
 #include "service_container.hpp"
 #include <time.h>
+#include <iostream>
+#include <sstream>
 
 namespace findik
 {
@@ -60,15 +62,35 @@ namespace findik
 		{
 			// TODO: reply generator chain .
 			std::ostream os(&sbuf);
-			// os << stock_replies_[proto][reason->code()];
-			std::string reply_str_(reply_html_);
-			time_t rawtime;
-			time(&rawtime);
+			std::string resp;
 
-			FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_str_);	
-			FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", reason->reason_str() , reply_str_);
-			reply_str_ = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n "+ reply_str_;
-			os << reply_str_;
+			if(reason->protocol() == findik::io::http)
+			{
+				std::ostringstream stm;
+				std::string reply_str_(reply_html_);
+				time_t rawtime;
+				time(&rawtime);
+
+				resp = "HTTP/1.1 ";
+				if(reason->return_code() == 403) {
+					resp = resp + "403 Forbidden\r\n"; 
+				} else {
+					resp = resp + "404 Not Found\r\n"; 
+				}
+
+				if(reason->close_connection()) {
+					FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_str_);	
+					FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", reason->reason_str() , reply_str_);
+					stm << reply_str_.length();
+					resp = resp + "Content-Type : text/html \r\n";				
+					resp = resp + "Connection : close\r\n\r\n";
+					resp = resp + reply_str_;	
+				} else {
+					resp = resp + "Content-Length : 0\r\n\r\n";	
+				}
+			}
+
+			os << resp;
 		}
 	}
 }

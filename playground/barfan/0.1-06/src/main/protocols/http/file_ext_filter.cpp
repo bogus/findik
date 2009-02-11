@@ -16,7 +16,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "domain_filter.hpp"
+#include "file_ext_filter.hpp"
 
 namespace findik
 {
@@ -25,45 +25,41 @@ namespace findik
 		namespace http
 		{
 			// initialization of logger
-			log4cxx::LoggerPtr domain_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.domain_filter"));	
-			int domain_filter::filter_code = 401;
+			log4cxx::LoggerPtr file_ext_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.file_ext_filter"));	
+			int file_ext_filter::filter_code = 405;
 			// constructor definition of filter service registration inner class
-			domain_filter::initializer::initializer()
+			file_ext_filter::initializer::initializer()
                         {
-                                domain_filter_ptr dfp(new domain_filter());
+                                file_ext_filter_ptr dfp(new file_ext_filter());
 
-                                FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
+                                // FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
                         }
 
-                        domain_filter::initializer domain_filter::initializer::instance;
+                        file_ext_filter::initializer file_ext_filter::initializer::instance;
 
-			boost::tuple<bool, findik::filter::filter_reason_ptr> domain_filter::filter(findik::io::connection_ptr connection_) 
+			boost::tuple<bool, findik::filter::filter_reason_ptr> file_ext_filter::filter(findik::io::connection_ptr connection_) 
 			{
-				LOG4CXX_DEBUG(debug_logger, "Domain name filter entered"); // log for filter entrance
+				LOG4CXX_DEBUG(debug_logger, "URL file extension filter entered"); // log for filter entrance
 				
 				// get request object from current data
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
-				std::string hostname;
-				
-				// get hostname from request header
-				BOOST_FOREACH( header h, req->get_headers() ) {
-					if (h.name == "Host")
-						hostname = h.value;
-				}
-				
+				std::string url = req->request_uri();	
+
+				std::string banned_ext = ".swf";
+
 				// check whether hostname exists in domain blacklist
-				if(!FI_SERVICES->db_srv().domainQuery(hostname)){
-					LOG4CXX_DEBUG(debug_logger, "Domain name filter failed for domain " + hostname);
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Domain blocked : " + hostname, response::forbidden, true, findik::io::http));	
+				if(url.compare(url.length()-4,4,banned_ext) == 0){
+					LOG4CXX_DEBUG(debug_logger, "URL file extension filter failed for " + url + " for extension " + banned_ext);
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"File blocked : " + url, response::forbidden, false, findik::io::http));
 				} 
 				else {
-					LOG4CXX_DEBUG(debug_logger, "Domain name filter passed for domain " + hostname);
+					LOG4CXX_DEBUG(debug_logger, "URL file extension filter passed for " + url);
 				}
-				
+			
 				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));	
 			}
 
-                        bool domain_filter::is_applicable(findik::io::connection_ptr connection_)
+                        bool file_ext_filter::is_applicable(findik::io::connection_ptr connection_)
 			{
 				// set this filter to be used in request only
 				return connection_->proto() == findik::io::http && connection_->current_data()->is_local();	

@@ -1,9 +1,11 @@
 noinst_LTLIBRARIES		=	libfindik_http.la
 
 libfindik_http_la_SOURCES	= \
+	content_mime_filter.cpp \
 	data.cpp \
 	domain_filter.cpp \
 	domain_re_filter.cpp \
+	file_ext_filter.cpp \
 	html_content_filter.cpp \
 	request.cpp \
 	request_parser.cpp \
@@ -23,5 +25,6 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/persistency \
 	-I@top_srcdir@/src/include/protocols/http \
 	-I@top_srcdir@/src/include/service \
-	-I@top_srcdir@/src/include/util 
+	-I@top_srcdir@/src/include/util \
+	-I/usr/include/mysql
 

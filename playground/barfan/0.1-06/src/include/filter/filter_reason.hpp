@@ -52,12 +52,14 @@ namespace findik
 			Factory method.
 			\param code code of reason.
 			\param reason_str detail of reason.
+			\param return_code response return code
+			\param close_connection CONNECTION : close flag for response
 			\returns a new filter reason instance
 			*/
 			static boost::shared_ptr<filter_reason> create_reason(
-					unsigned int code, const std::string & reason_str)
+					unsigned int code, const std::string & reason_str, unsigned int return_code, bool close_connection, unsigned int protocol)
 			{
-				boost::shared_ptr<filter_reason> p(new filter_reason(code, reason_str));
+				boost::shared_ptr<filter_reason> p(new filter_reason(code, reason_str, return_code, close_connection, protocol));
 				return p;
 			}
 
@@ -77,6 +79,24 @@ namespace findik
 			\returns reason code
 			*/
 			unsigned int code();
+			
+			/*!
+			Code of HTTP return. 
+			\returns HTTP response return code
+			*/
+			unsigned int return_code();
+
+			/*!
+                        Close connection parameter if this reply should close connection or not. 
+                        \returns close connection parameter
+                        */
+                        bool close_connection();
+
+			/*!
+                        Protocol which reason produced
+                        \returns HTTP response return code
+                        */
+                        unsigned int protocol();
 
 		protected:
 			/*!
@@ -87,17 +107,32 @@ namespace findik
 			/*!
 			Constructor.
 			*/
-			filter_reason(unsigned int code, const std::string & reason_str);
+			filter_reason(unsigned int code, const std::string & reason_str, unsigned int return_code, bool close_connection, unsigned int protocol);
 
 			/*!
 			Reason code.
 			*/
 			unsigned int code_;
+			
+			/*!
+			HTTP return code.
+			*/
+			unsigned int return_code_;
+
+			/*!
+                        Connection close parameter for response header
+                        */
+                        bool close_connection_;
 
 			/*!
 			Reason detail in a string.
 			*/
 			std::string reason_str_;
+
+			/*!
+			Protocol
+			*/
+			unsigned int protocol_;
 		};
 		
 		typedef boost::shared_ptr<filter_reason> filter_reason_ptr;

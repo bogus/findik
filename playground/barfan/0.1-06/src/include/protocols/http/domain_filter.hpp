@@ -31,6 +31,7 @@
 #include "abstract_filter.hpp"
 #include "reply_service.hpp"
 #include "request.hpp"
+#include "response.hpp"
 #include "service_container.hpp"
 
 #include <string>

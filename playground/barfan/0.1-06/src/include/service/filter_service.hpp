@@ -22,7 +22,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/noncopyable.hpp>
 
-#include <list>
+#include <map>
 
 #include "connection.hpp"
 #include "abstract_filter.hpp"
@@ -54,7 +54,7 @@ namespace findik
 			Registers a filter for filter service in order to filter with that.
 			\param filter_ filter to register
 			*/
-			void register_filter(findik::filter::abstract_filter_ptr filter_);
+			void register_filter(int code, findik::filter::abstract_filter_ptr filter_);
 
 			/*!
 			Examines new_data of connection by using filters in filter_list_.
@@ -69,7 +69,7 @@ namespace findik
 			List to store filters in an order. When filter operation has been requested
 			filters in this list will be started to be executed in order.
 			*/
-			std::list<findik::filter::abstract_filter_ptr> filter_list_;
+			std::map<int,findik::filter::abstract_filter_ptr> filter_list_;
 		};
 	}
 }

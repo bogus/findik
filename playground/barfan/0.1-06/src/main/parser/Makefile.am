@@ -13,5 +13,6 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/parser \
 	-I@top_srcdir@/src/include/persistency \
 	-I@top_srcdir@/src/include/service \
-	-I@top_srcdir@/src/include/util
+	-I@top_srcdir@/src/include/util \
+	-I/usr/include/mysql
 
