@@ -18,7 +18,6 @@
 #define FINDIK_PERSISTENCY_MYSQLDBMANAGER_HPP
 
 #include "pooled_dbmanager.hpp"
-#include "configuration.hpp"
 #include "log.hpp"
 
 #include <mysql_connection.h>

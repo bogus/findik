@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_CONFIG_CONFIGURATION_HPP
-#define FINDIK_CONFIG_CONFIGURATION_HPP
+#ifndef FINDIK_CONFIG_CONFIGURATION_INITIALIZER_HPP
+#define FINDIK_CONFIG_CONFIGURATION_INITIALIZER_HPP
 
 #include <boost/noncopyable.hpp>
 
@@ -29,13 +29,12 @@
 namespace findik {
 	namespace config {
 
-/*!
- This class represents the configuration manager utility for findik.
+		/*!
+		 This class represents the configuration manager utility for findik.
 
- @author Burak Oguz
-*/
-
-		class configuration :
+		 @author Burak Oguz
+		*/
+		class configuration_initializer :
                         private boost::noncopyable
 		{
 		public:
@@ -43,8 +42,8 @@ namespace findik {
 			 Constructor for configuration class. Reads the configuration from /etc/findik.cfg for linux
 			 and reads configuration from c:/findik.cfg for Windows.
 			*/
-			configuration(void);
-			~configuration(void);
+			configuration_initializer(void);
+			~configuration_initializer(void);
 
 			/*!
 			Checks wheter config values are valid.

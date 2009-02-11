@@ -61,7 +61,7 @@ namespace findik
 
 				request_stream	<< " ";
 
-				if (FI_SERVICES->config_srv().returnBool("findik.server.http.run_with_squid"))
+				if (FI_CONFIG.server_http_run_with_squid())
 				{
 					request_stream << request_uri();
 				}

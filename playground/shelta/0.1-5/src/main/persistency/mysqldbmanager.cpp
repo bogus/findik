@@ -40,11 +40,11 @@ namespace findik
 
 			driver = get_driver_instance();
 
-			FI_SERVICES->config_srv().getConfigValue_String("findik.db.host", host);
-			FI_SERVICES->config_srv().getConfigValue_String("findik.db.username", username);
-			FI_SERVICES->config_srv().getConfigValue_String("findik.db.password", password);
-			FI_SERVICES->config_srv().getConfigValue_String("findik.db.db", db);
-			FI_SERVICES->config_srv().getConfigValue_UInt("findik.db.pool_size", pool_size_);
+			host = FI_CONFIG.db_mysql_host();
+			username = FI_CONFIG.db_mysql_username();
+			password = FI_CONFIG.db_mysql_password();
+			db = FI_CONFIG.db_mysql_database();
+			pool_size_ = FI_CONFIG.db_pool_size();
 
 			prepare_pool();
 		}

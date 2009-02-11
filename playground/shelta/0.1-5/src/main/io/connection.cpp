@@ -159,17 +159,9 @@ namespace findik
 
 		void connection::register_for_keepalive_timeout()
 		{
-			unsigned int timeout;
-			if (FI_SERVICES->config_srv().returnBool("findik.server.http.run_with_squid"))
-			{
-				timeout = 60;
-				FI_SERVICES->config_srv().getConfigValue_UInt("findik.connection.http.squid_keepalive_timeout", timeout);
-			}
-			else
-			{
-				timeout = 60;
-				FI_SERVICES->parser_srv().update_keepalive_timeout_of(shared_from_this(), timeout);
-			}
+			unsigned int timeout = 60;
+
+			FI_SERVICES->parser_srv().update_keepalive_timeout_of(shared_from_this(), timeout);
 
 			keepalive_timer_.expires_from_now(boost::posix_time::seconds(timeout));
 			keepalive_timer_.async_wait(boost::bind(&connection::handle_timeout, shared_from_this(),
@@ -183,10 +175,7 @@ namespace findik
 
 		void connection::register_for_local_receive_timeout()
 		{
-			unsigned int timeout = 15;
-			FI_SERVICES->config_srv().getConfigValue_UInt("findik.connection.http.local_receive_timeout", timeout);
-
-			local_receive_timer_.expires_from_now(boost::posix_time::seconds(timeout));
+			local_receive_timer_.expires_from_now(boost::posix_time::seconds(FI_CONFIG.server_local_receive_timeout()));
 			local_receive_timer_.async_wait(boost::bind(&connection::handle_timeout, shared_from_this(),
 					boost::asio::placeholders::error));
 		}
@@ -198,10 +187,7 @@ namespace findik
 
 		void connection::register_for_remote_receive_timeout()
 		{
-			unsigned int timeout = 60;
-			FI_SERVICES->config_srv().getConfigValue_UInt("findik.connection.http.remote_receive_timeout", timeout);
-
-			remote_receive_timer_.expires_from_now(boost::posix_time::seconds(timeout));
+			remote_receive_timer_.expires_from_now(boost::posix_time::seconds(FI_CONFIG.server_remote_receive_timeout()));
 			remote_receive_timer_.async_wait(boost::bind(&connection::handle_timeout, shared_from_this(),
 					boost::asio::placeholders::error));
 		}
@@ -291,10 +277,7 @@ namespace findik
 			data_queue_.push_front(new_data_);
 			new_data_.reset( (abstract_data *) 0 );
 
-			int size = 8;
-			FI_SERVICES->config_srv().getConfigValue_Int("findik.connection.queue_size", size);
-
-			if (data_queue_.size() > size)
+			if (data_queue_.size() > FI_CONFIG.connection_queue_size())
 				data_queue_.pop_back();
 		}
 

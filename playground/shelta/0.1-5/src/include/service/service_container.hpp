@@ -20,6 +20,7 @@
 #define FINDIK_SERVICE_SERVICE_CONTAINER_HPP
 
 #define FI_SERVICES findik::service::service_container::instance()
+#define FI_CONFIG findik::service::service_container::instance()->config()
 
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -32,7 +33,8 @@
 #include "parser_service.hpp"
 #include "reply_service.hpp"
 #include "util_service.hpp"
-#include "configuration.hpp"
+#include "configuration_initializer.hpp"
+#include "configuration_object.hpp"
 #include "mysqldbmanager.hpp"
 
 namespace findik
@@ -72,6 +74,12 @@ namespace findik
 			void start();
 
 			/*!
+			Method to check configuration.
+			\returns true if configuration is valid.
+			*/
+			bool check_config();
+
+			/*!
 			Boost ASIO IO Service.
 			\returns IO Service.
 			*/
@@ -102,10 +110,10 @@ namespace findik
 			filter_service & filter_srv();
 
 			/*!
-			Configuration service instance. To read options from config file.
-			\returns config service instance.
+			Configuration instance. To read options from config file.
+			\returns config instance.
 			*/
-			findik::config::configuration & config_srv();
+			findik::config::configuration_object & config();
 
 			/*!
 			Reply service instance. To generate replies for local.
@@ -163,9 +171,14 @@ namespace findik
 			boost::asio::ip::tcp::resolver resolver_srv_;
 
 			/*!
-			Configuration service instance. To read options from config file.
+			Configuration service instance. To populate configuration object .
 			*/
-			findik::config::configuration config_srv_;
+			findik::config::configuration_initializer config_srv_;
+
+			/*!
+			Configuration object instance. To read configuration.
+			*/
+			findik::config::configuration_object config_;
 
 			/*!
 			Util service instance. To access utilities.
