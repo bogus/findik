@@ -28,6 +28,7 @@
 
 #include <boost/asio.hpp>
 
+#include "authentication_service.hpp"
 #include "session_service.hpp"
 #include "filter_service.hpp"
 #include "parser_service.hpp"
@@ -92,6 +93,12 @@ namespace findik
 			boost::asio::ip::tcp::resolver & resolver_srv();
 
 			/*!
+			Authentication service instance.
+			\returns authentication service instance.
+			*/
+			authentication_service & authentication_srv();
+
+			/*!
 			Session service instance.
 			\returns session service instance.
 			*/
@@ -144,6 +151,11 @@ namespace findik
 			Default constructor.
 			*/
 			service_container();
+
+			/*!
+			Authentication service instance.
+			*/
+			authentication_service authentication_srv_;
 
 			/*!
 			Session service instance.

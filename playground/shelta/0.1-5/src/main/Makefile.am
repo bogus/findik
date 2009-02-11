@@ -1,10 +1,11 @@
-SUBDIRS = config filter logging io parser persistency protocols service util
+SUBDIRS = authenticator config filter logging io parser persistency protocols service util
 
 lib_LTLIBRARIES		=	libfindik.la
 
 libfindik_la_SOURCES	=
 libfindik_la_LDFLAGS	=	-no-undefined -version-info 0:0:0
 libfindik_la_LIBADD	= \
+	authenticator/libfindik_authenticator.la \
 	config/libfindik_config.la \
 	filter/libfindik_filter.la \
 	logging/libfindik_logging.la \
@@ -32,6 +33,7 @@ LIBS = \
 	-lmysqlcppconn
 
 INCLUDES 			= \
+	-I@top_srcdir@/src/include/authenticator \
 	-I@top_srcdir@/src/include/config \
 	-I@top_srcdir@/src/include/filter \
 	-I@top_srcdir@/src/include/io \

@@ -16,30 +16,30 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "filter_reason.hpp"
+#include "authentication_result.hpp"
 
 namespace findik
 {
-	namespace filter
+	namespace authenticator
 	{
-		filter_reason::filter_reason(unsigned int code) :
+		authentication_result::authentication_result(unsigned int code) :
 			code_(code)
 		{}
 
-		filter_reason::filter_reason(unsigned int code, const std::string & reason_str) :
+		authentication_result::authentication_result(unsigned int code, const std::string & result_str) :
 			code_(code),
-			reason_str_(reason_str)
+			result_str_(result_str)
 		{}
 
-		filter_reason::~filter_reason()
+		authentication_result::~authentication_result()
 		{}
 
-		const std::string & filter_reason::reason_str()
+		const std::string & authentication_result::result_str()
 		{
-			return reason_str_;
+			return result_str_;
 		}
 
-		unsigned int filter_reason::code()
+		unsigned int authentication_result::code()
 		{
 			return code_;
 		}

@@ -27,6 +27,7 @@
 
 #include "service_container.hpp"
 #include "filter_reason.hpp"
+#include "authentication_result.hpp"
 #include "reply_service.hpp"
 
 namespace findik
@@ -317,31 +318,50 @@ namespace findik
 			if (parser_result) // successfully parsed
 			{
 				LOG4CXX_DEBUG(debug_logger, "Handling local read: data successfully parsed.");
-				bool filter_result;
-				findik::filter::filter_reason_ptr filter_reason;
-				boost::tie(filter_result, filter_reason) =
-					FI_SERVICES->filter_srv().filter(shared_from_this());
-				
-				if (filter_result) // not denied
-				{
-					LOG4CXX_DEBUG(debug_logger, "Accepted local data.");
 
-					if (is_keepalive())
+				bool is_authenticated;
+				findik::authenticator::authentication_result_ptr authentication_result;
+				boost::tie(is_authenticated, authentication_result) =
+					FI_SERVICES->authentication_srv().authenticate(shared_from_this());
+				
+				if (is_authenticated) // authenticated
+				{
+					// TODO: save creditentials.
+
+					bool filter_result;
+					findik::filter::filter_reason_ptr filter_reason;
+					boost::tie(filter_result, filter_reason) =
+						FI_SERVICES->filter_srv().filter(shared_from_this());
+					
+					if (filter_result) // not denied
 					{
-						current_data()->into_buffer(remote_write_buffer_);
-						register_for_remote_write();
+						LOG4CXX_DEBUG(debug_logger, "Accepted local data.");
+
+						if (is_keepalive())
+						{
+							current_data()->into_buffer(remote_write_buffer_);
+							register_for_remote_write();
+						}
+						else
+						{
+							register_for_resolve(remote_hostname(), remote_port());
+						}
 					}
-					else
+					else // denied
 					{
-						register_for_resolve(remote_hostname(), remote_port());
+						LOG4CXX_DEBUG(debug_logger, "Data from local had been rejected.");
+
+						FI_SERVICES->reply_srv().reply(local_write_buffer_,
+								proto(), filter_reason);
+						register_for_local_write();
 					}
 				}
-				else // denied
+				else // not authenticated
 				{
-					LOG4CXX_DEBUG(debug_logger, "Data from local had been rejected.");
+					LOG4CXX_DEBUG(debug_logger, "Local connection is not authenticated.");
 
 					FI_SERVICES->reply_srv().reply(local_write_buffer_,
-							proto(), filter_reason);
+							proto(), authentication_result);
 					register_for_local_write();
 				}
 			}

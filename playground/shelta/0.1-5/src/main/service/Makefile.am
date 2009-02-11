@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES		=	libfindik_service.la
 
 libfindik_service_la_SOURCES	= \
+	authentication_service.cpp \
 	filter_service.cpp \
 	parser_service.cpp \
 	pcre_service.cpp \
@@ -14,6 +15,7 @@ libfindik_service_la_SOURCES	= \
 libfindik_service_la_LIBADD	=	@LTLIBOBJS@
 
 INCLUDES 			= \
+	-I@top_srcdir@/src/include/authenticator \
 	-I@top_srcdir@/src/include/config \
 	-I@top_srcdir@/src/include/filter \
 	-I@top_srcdir@/src/include/io \

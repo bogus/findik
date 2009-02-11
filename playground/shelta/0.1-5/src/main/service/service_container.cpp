@@ -55,6 +55,11 @@ namespace findik
 			return resolver_srv_;
 		}
 
+		authentication_service & service_container::authentication_srv()
+		{
+			return authentication_srv_;
+		}
+
 		session_service & service_container::session_srv()
 		{
 			return session_srv_;

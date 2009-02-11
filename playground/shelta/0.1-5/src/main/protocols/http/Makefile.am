@@ -15,6 +15,7 @@ libfindik_http_la_SOURCES	= \
 libfindik_http_la_LIBADD	=	@LTLIBOBJS@
 
 INCLUDES 			= \
+	-I@top_srcdir@/src/include/authenticator \
 	-I@top_srcdir@/src/include/config \
 	-I@top_srcdir@/src/include/filter \
 	-I@top_srcdir@/src/include/io \

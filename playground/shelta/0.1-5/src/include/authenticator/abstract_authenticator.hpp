@@ -22,10 +22,12 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "authenticator_reason.hpp"
+#include "authentication_result.hpp"
 #include "service_chain_element.hpp"
 #include "connection.hpp"
 #include "log.hpp"
+
+#include "protocol.hpp"
 
 namespace findik
 {
@@ -53,13 +55,11 @@ namespace findik
 				authenticate(findik::io::connection_ptr connection_) = 0;
 
 			/*!
-			Filter should return whether current data of connection applicable for self or not.
-			For example a authenticator designed to analysis content is not applicable for dat objects without content or
-			a authenticator designed for local data is not applicable for remote data.
-			\param connection_ to test applicability
-			\return whether authenticator is applicable
+			Authentication service will match authenticators with connections according to their protocols. 
+			To determine protocol of authenticator, authentication service will use this method.
+			\returns protocol of this authenticator.
 			*/
-			virtual bool is_applicable(findik::io::connection_ptr connection_) = 0;
+			virtual findik::io::protocol proto() = 0;
 
 		protected:
 

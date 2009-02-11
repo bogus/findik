@@ -69,6 +69,21 @@ namespace findik
 			FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", reason->reason_str() , reply_str_);
 			os << reply_str_;
 		}
+
+		void reply_service::reply(boost::asio::streambuf & sbuf,
+				findik::io::protocol proto, findik::authenticator::authentication_result_ptr result)
+		{
+			// TODO: reply generator chain .
+			std::ostream os(&sbuf);
+			// os << stock_replies_[proto][reason->code()];
+			std::string reply_str_(reply_html_);
+			time_t rawtime;
+			time(&rawtime);
+
+			FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_str_);	
+			FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", result->result_str() , reply_str_);
+			os << reply_str_;
+		}
 	}
 }
 
