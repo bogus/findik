@@ -32,7 +32,7 @@ namespace findik
                         {
                                 url_re_filter_ptr dfp(new url_re_filter());
 
-                                FI_SERVICES->filter_srv().register_filter(dfp);
+                                FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
                         }
 
                         url_re_filter::initializer url_re_filter::initializer::instance;
@@ -48,12 +48,12 @@ namespace findik
 				// check whether hostname exists in domain blacklist
 				if(FI_SERVICES->util_srv().pcre().matches_predefined(url).size() > 0){
 					LOG4CXX_DEBUG(debug_logger, "URL regular expression filter failed for " + url);
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"URL blocked : " + url));
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"URL blocked : " + url,response::forbidden, true, findik::io::http));
 				} 
 				else {
 					LOG4CXX_DEBUG(debug_logger, "URL regular expression filter passed for domain " + url);
 				}
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0,""));
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 			}
 
                         bool url_re_filter::is_applicable(findik::io::connection_ptr connection_)

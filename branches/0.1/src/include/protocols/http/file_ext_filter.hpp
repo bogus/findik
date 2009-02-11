@@ -16,24 +16,23 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_PROTOCOLS_HTTP_DOMAIN_RE_FILTER_HPP
-#define FINDIK_PROTOCOLS_HTTP_DOMAIN_RE_FILTER_HPP
+#ifndef FINDIK_PROTOCOLS_HTTP_FILE_EXT_FILTER_HPP
+#define FINDIK_PROTOCOLS_HTTP_FILE_EXT_FILTER_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
-
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple.hpp>
+
+#include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 #include "abstract_filter.hpp"
 #include "reply_service.hpp"
 #include "request.hpp"
 #include "response.hpp"
 #include "service_container.hpp"
-#include "pcre_analyzer.hpp"
 
 #include <string>
 
@@ -45,13 +44,13 @@ namespace findik
 		{
 			
 			/*!
-                        URL based regular expression filter for HTTP protocol.
+                        URL based request filter for HTTP protocol.
                         \extends boost::enable_shared_from_this<data> to use boost shared pointers.
                         \extends findik::filter::abstract_filter because this is a filter for FINDIK HTTP subsystem.
                         @author Burak OGUZ (barfan)
                         */
-			class url_re_filter:
-				public boost::enable_shared_from_this<url_re_filter>,
+			class file_ext_filter:
+				public boost::enable_shared_from_this<file_ext_filter>,
                                 public findik::filter::abstract_filter
                         {
 			
@@ -64,7 +63,7 @@ namespace findik
                                 protected:
                                         /*!
                                         Default constructor.
-                                        Construction of this object will register a url_re_filter instance to filter_service.
+                                        Construction of this object will register a file_ext_filter instance to filter_service.
                                         */
                                         initializer();
 
@@ -76,15 +75,14 @@ namespace findik
 
 			
 			protected:
-				static log4cxx::LoggerPtr debug_logger;		
-				static int filter_code;	
+				static log4cxx::LoggerPtr debug_logger;			
+				static int filter_code;
 			};
 
-			typedef boost::shared_ptr<url_re_filter> url_re_filter_ptr;
+			typedef boost::shared_ptr<file_ext_filter> file_ext_filter_ptr;
 
 		}
 	}
 }
 
 #endif
-

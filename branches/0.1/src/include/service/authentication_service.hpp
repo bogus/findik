@@ -16,60 +16,60 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_SERVICE_FILTER_SERVICE_HPP
-#define FINDIK_SERVICE_FILTER_SERVICE_HPP
+#ifndef FINDIK_SERVICE_AUTHENTICATOR_SERVICE_HPP
+#define FINDIK_SERVICE_AUTHENTICATOR_SERVICE_HPP
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/noncopyable.hpp>
 
-#include <map>
+#include <list>
 
 #include "connection.hpp"
-#include "abstract_filter.hpp"
-#include "filter_reason.hpp"
+#include "abstract_authenticator.hpp"
+#include "authentication_result.hpp"
 
 namespace findik
 {
 	namespace service
 	{
 		/*!
-		Manageble container for filters. 
+		Manageble container for authenticators. 
                 \extends boost::noncopyable this class has designed to be not copyable.
 		*/
-		class filter_service :
+		class authentication_service :
                         private boost::noncopyable
 		{
 		public:
 			/*!
 			Default constructor.
 			*/
-			filter_service();
+			authentication_service();
 
 			/*!
 			Destructor.
 			*/
-			~filter_service();
+			~authentication_service();
 
 			/*!
-			Registers a filter for filter service in order to filter with that.
-			\param filter_ filter to register
+			Registers a authenticator for authentication service in order to authenticate with that.
+			\param authenticator_ authenticator to register
 			*/
-			void register_filter(int code, findik::filter::abstract_filter_ptr filter_);
+			void register_authenticator(findik::authenticator::abstract_authenticator_ptr authenticator_);
 
 			/*!
-			Examines new_data of connection by using filters in filter_list_.
-			\param connection_ connection contains new data to be inspected.
-			\returns a tuple containing whether content should be filter or not and reason of this decision.
+			Examines connection by using authenticators in authenticator_list_.
+			\param connection_ connection to be inspected.
+			\returns a tuple containing whether connection should be authenticated or not and authentication result.
 			*/
-			boost::tuple<bool, findik::filter::filter_reason_ptr> 
-				filter(findik::io::connection_ptr connection_);
+			boost::tuple<bool, findik::authenticator::authentication_result_ptr> 
+				authenticate(findik::io::connection_ptr connection_);
 
 		protected:
 			/*!
-			List to store filters in an order. When filter operation has been requested
-			filters in this list will be started to be executed in order.
+			List to store authenticators in an order. When authenticate operation has been requested
+			authenticators in this list will be started to be executed in order.
 			*/
-			std::map<int,findik::filter::abstract_filter_ptr> filter_list_;
+			std::list<findik::authenticator::abstract_authenticator_ptr> authenticator_list_;
 		};
 	}
 }

@@ -1,11 +1,9 @@
-noinst_LTLIBRARIES		=	libfindik_util.la
+noinst_LTLIBRARIES			=	libfindik_authenticator.la
 
-libfindik_util_la_SOURCES	= \
-	pcre_analyzer.cpp \
-	pcre_parser.cpp \
-	tidy_html_parser.cpp
+libfindik_authenticator_la_SOURCES	= \
+	authentication_result.cpp
 
-libfindik_util_la_LIBADD	=	@LTLIBOBJS@
+libfindik_authenticator_la_LIBADD	=	@LTLIBOBJS@
 
 INCLUDES 			= \
 	-I@top_srcdir@/src/include/authenticator \
@@ -16,6 +14,5 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/parser \
 	-I@top_srcdir@/src/include/persistency \
 	-I@top_srcdir@/src/include/service \
-	-I@top_srcdir@/src/include/util \
-	-I/usr/include/mysql
+	-I@top_srcdir@/src/include/util
 

@@ -25,7 +25,8 @@ namespace findik
 	namespace service
 	{
 		service_container::service_container() :
-			resolver_srv_(io_srv_)
+			resolver_srv_(io_srv_),
+			config_(config_srv_)
 		{}
 
 		service_container_ptr service_container::instance_;
@@ -39,6 +40,11 @@ namespace findik
 			util_srv_.start();
 		}
 
+		bool service_container::check_config()
+		{
+			return config_srv_.check();
+		}
+
 		boost::asio::io_service & service_container::io_srv()
 		{
 			return io_srv_;
@@ -47,6 +53,11 @@ namespace findik
 		boost::asio::ip::tcp::resolver & service_container::resolver_srv()
 		{
 			return resolver_srv_;
+		}
+
+		authentication_service & service_container::authentication_srv()
+		{
+			return authentication_srv_;
 		}
 
 		session_service & service_container::session_srv()
@@ -64,9 +75,9 @@ namespace findik
 			return filter_srv_;
 		}
 
-		findik::config::configuration & service_container::config_srv()
+		findik::config::configuration_object & service_container::config()
 		{
-			return config_srv_;
+			return config_;
 		}
 
 		util_service & service_container::util_srv()

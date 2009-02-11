@@ -170,6 +170,12 @@ namespace findik
 				content_encoding_type content_encoding();
 
 				/*!
+				Gets magic number based mime type of the data
+                                \return value of magic mime type value
+                                */
+				const std::string & magic_mime_type();
+
+				/*!
 				Detects whether response is chunked and whether response is deflated, then processes raw
 				content and generates new data into a new vector.
 				\returns human readable content.
@@ -202,6 +208,12 @@ namespace findik
 				Type of response content.
 				*/
 				std::string content_type_;
+
+				/*!
+                                Magic number based mime type of response content.
+                                */
+                                std::string magic_mime_type_;
+
 
 				/*!
 				Charset of response content.

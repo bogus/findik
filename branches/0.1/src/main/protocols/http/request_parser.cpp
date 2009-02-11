@@ -408,9 +408,9 @@ namespace findik
 				if (connection_->current_data()->is_remote())
 					return;
 
-				if (FI_SERVICES->config_srv().returnBool("findik.server.http.run_with_squid"))
+				if (FI_CONFIG.server_http_run_with_squid())
 				{
-					FI_SERVICES->config_srv().getConfigValue_String("findik.server.http.squid_host", hostname_);
+					hostname_ = FI_CONFIG.server_http_squid_host();
 				}
 				else
 				{
@@ -437,9 +437,9 @@ namespace findik
 				if (connection_->current_data()->is_remote())
 					return;
 
-				if (FI_SERVICES->config_srv().returnBool("findik.server.http.run_with_squid"))
+				if (FI_CONFIG.server_http_run_with_squid())
 				{
-					FI_SERVICES->config_srv().getConfigValue_UInt("findik.server.http.squid_port", port_);
+					port_ = FI_CONFIG.server_http_squid_port();
 				}
 				else
 				{
