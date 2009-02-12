@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_PROTOCOLS_HTTP_CONTENT_MIME_FILTER_HPP
-#define FINDIK_PROTOCOLS_HTTP_CONTENT_MIME_FILTER_HPP
+#ifndef FINDIK_PROTOCOLS_HTTP_CLAMD_AV_FILTER_HPP
+#define FINDIK_PROTOCOLS_HTTP_CLAMD_AV_FILTER_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -27,14 +27,17 @@
 
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/asio.hpp>
+
+#include <iostream>
+#include <istream>
+#include <ostream>
+#include <string>
 
 #include "abstract_filter.hpp"
 #include "reply_service.hpp"
 #include "response.hpp"
 #include "service_container.hpp"
-#include "pcre_analyzer.hpp"
-
-#include <string>
 
 namespace findik
 {
@@ -49,8 +52,8 @@ namespace findik
                         \extends findik::filter::abstract_filter because this is a filter for FINDIK HTTP subsystem.
                         @author Burak OGUZ (barfan)
                         */
-			class content_mime_filter:
-				public boost::enable_shared_from_this<content_mime_filter>,
+			class clamd_av_filter:
+				public boost::enable_shared_from_this<clamd_av_filter>,
                                 public findik::filter::abstract_filter
                         {
 			
@@ -63,7 +66,7 @@ namespace findik
                                 protected:
                                         /*!
                                         Default constructor.
-                                        Construction of this object will register a content_mime_filter instance to filter_service.
+                                        Construction of this object will register a clamd_av_filter instance to filter_service.
                                         */
                                         initializer();
 
@@ -79,7 +82,7 @@ namespace findik
 				static int filter_code;	
 			};
 
-			typedef boost::shared_ptr<content_mime_filter> content_mime_filter_ptr;
+			typedef boost::shared_ptr<clamd_av_filter> clamd_av_filter_ptr;
 
 		}
 	}

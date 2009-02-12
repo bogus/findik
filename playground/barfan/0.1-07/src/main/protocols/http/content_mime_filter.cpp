@@ -32,7 +32,7 @@ namespace findik
                         {
                                 content_mime_filter_ptr dfp(new content_mime_filter());
 
-                                // FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
+                                FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
                         }
 
                         content_mime_filter::initializer content_mime_filter::initializer::instance;
@@ -42,7 +42,7 @@ namespace findik
 				LOG4CXX_DEBUG(debug_logger, "Content mime-type filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 				std::string content_type;
-				if(resp->magic_mime_type() == "image/jpeg") 
+				if(!FI_SERVICES->db_srv().mimeTypeQuery(resp->magic_mime_type())) 
 				{
 					LOG4CXX_DEBUG(debug_logger, "Content mime-type filter failed" + resp->magic_mime_type());
 					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Content blocked for mime-type : " + resp->magic_mime_type(), response::forbidden, false, findik::io::http));						

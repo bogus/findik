@@ -32,7 +32,7 @@ namespace findik
                         {
                                 file_ext_filter_ptr dfp(new file_ext_filter());
 
-                                // FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
+                                FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
                         }
 
                         file_ext_filter::initializer file_ext_filter::initializer::instance;
@@ -45,11 +45,18 @@ namespace findik
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 				std::string url = req->request_uri();	
 
-				std::string banned_ext = ".swf";
+				if(url.find_first_of('?') != std::string::npos) {
+					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
+				}
 
-				// check whether hostname exists in domain blacklist
-				if(url.compare(url.length()-4,4,banned_ext) == 0){
-					LOG4CXX_DEBUG(debug_logger, "URL file extension filter failed for " + url + " for extension " + banned_ext);
+				int pos = url.find_last_of('.');
+				int pos2 = url.find_last_of('/');
+
+				if((pos != std::string::npos) && (pos2 != std::string::npos) && (pos < pos2))
+					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
+				
+				if((pos != std::string::npos) && !FI_SERVICES->db_srv().fileExtQuery(url.substr(pos+1))){
+					LOG4CXX_DEBUG(debug_logger, "URL file extension filter failed for " + url + " for extension " + url.substr(pos+1));
 					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"File blocked : " + url, response::forbidden, false, findik::io::http));
 				} 
 				else {

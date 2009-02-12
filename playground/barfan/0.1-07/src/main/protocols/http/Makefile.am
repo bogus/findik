@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES		=	libfindik_http.la
 
 libfindik_http_la_SOURCES	= \
+	clamd_av_filter.cpp \
 	content_mime_filter.cpp \
 	data.cpp \
 	domain_filter.cpp \
