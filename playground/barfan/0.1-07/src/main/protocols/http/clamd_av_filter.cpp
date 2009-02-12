@@ -85,74 +85,67 @@ namespace findik
 			{
 				LOG4CXX_DEBUG(debug_logger, "Clamd AV filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
-				try
-				{
-					boost::asio::ip::tcp::resolver::query query("localhost", "3310");
-					boost::asio::ip::tcp::resolver::iterator endpoint_iterator = FI_SERVICES->resolver_srv().resolve(query);
-					boost::asio::ip::tcp::resolver::iterator end;
-
-					// Try each endpoint until we successfully establish a connection.
-					boost::asio::ip::tcp::socket socket(FI_SERVICES->io_srv());
-					boost::system::error_code error = boost::asio::error::host_not_found;
-					while (error && endpoint_iterator != end)
+				if(resp->content().size() > 0) {
+					try
 					{
+						// Prepare first socket
+						boost::asio::ip::tcp::resolver::query query("localhost", "3310");
+						boost::asio::ip::tcp::resolver::iterator endpoint_iterator = FI_SERVICES->resolver_srv().resolve(query);
+						boost::asio::ip::tcp::resolver::iterator end;
+						boost::asio::ip::tcp::socket socket(FI_SERVICES->io_srv());
+						boost::system::error_code error = boost::asio::error::host_not_found;
+						while (error && endpoint_iterator != end)
+						{
+							socket.close();
+							socket.connect(*endpoint_iterator++, error);
+						}
+						if (error)
+							throw boost::system::system_error(error);
+
+						boost::asio::write(socket, boost::asio::buffer("STREAM\r\n", 8));
+
+						boost::asio::streambuf response;
+						boost::asio::read_until(socket, response, "\n");
+						std::istream response_stream(&response);
+						std::string port_str;
+						std::getline(response_stream, port_str);
+						//std::cout << "***************" << std::endl << port_str << std::endl << "***************" << std::endl;
+
+						// ---------------------------------
+						// Prepare second socket
+						boost::asio::ip::tcp::resolver::query query2("localhost", port_str.substr(5));
+						boost::asio::ip::tcp::resolver::iterator endpoint_iterator2 = FI_SERVICES->resolver_srv().resolve(query2);
+						boost::asio::ip::tcp::resolver::iterator end2;
+						boost::asio::ip::tcp::socket socket2(FI_SERVICES->io_srv());
+						boost::system::error_code error2 = boost::asio::error::host_not_found;
+						while (error2 && endpoint_iterator2 != end)
+						{
+							socket2.close();
+							socket2.connect(*endpoint_iterator2++, error2);
+						}
+						if (error)
+							throw boost::system::system_error(error2);
+
+						boost::asio::write(socket2, boost::asio::buffer(&(resp->content())[0], resp->content().size()));
+						boost::asio::write(socket2, boost::asio::buffer("\r\n", 2));
+
+						socket2.close();
+						// ---------------------------------
+
+						boost::asio::read_until(socket, response, "\0");
+						std::string av_result;
+						std::getline(response_stream, av_result);
+						// std::cout << "***************" << std::endl << av_result << std::endl << "***************" << std::endl;
+
 						socket.close();
-						socket.connect(*endpoint_iterator++, error);
 					}
-					if (error)
-						throw boost::system::system_error(error);
-					
-					boost::asio::socket_base::bytes_readable command(true);
-					socket.io_control(command);
-
-					boost::asio::write(socket, boost::asio::buffer("STREAM\r\n", 8));
-
-					char reply[32];
-					std::size_t reply_length = boost::asio::read(socket, boost::asio::buffer(reply, 9));
-					std::string received_data(reply, reply_length);
-						
-
-					// ---------------------------------
-					boost::asio::ip::tcp::resolver::query query2("localhost", received_data.substr(5));
-					boost::asio::ip::tcp::resolver::iterator endpoint_iterator2 = FI_SERVICES->resolver_srv().resolve(query2);
-					boost::asio::ip::tcp::resolver::iterator end2;
-
-                                        boost::asio::ip::tcp::socket socket2(FI_SERVICES->io_srv());
-                                        boost::system::error_code error2 = boost::asio::error::host_not_found;
-                                        while (error2 && endpoint_iterator2 != end)
-                                        {
-                                                socket2.close();
-                                                socket2.connect(*endpoint_iterator2++, error2);
-                                        }
-                                        if (error)
-                                                throw boost::system::system_error(error2);
-					                                        
-					/*
-                                        transmit_stream2 << &(resp->content())[0];
-                                        transmit_stream2 << "\r\n";
-					*/
-                                        boost::asio::write(socket2, boost::asio::buffer(&(resp->content())[0], resp->content().size()));
-                                        boost::asio::write(socket2, boost::asio::buffer("\r\n", 2));
-
-					socket2.close();
-					// ---------------------------------
-
-                                        boost::asio::streambuf receive2;
-                                        boost::asio::read_until(socket, receive2, "\0");
-                                        std::istream receive_stream2(&receive2);
-                                        std::string received_data2;
-                                        receive_stream2 >> received_data2;
-                                        std::string received_data3;
-                                        receive_stream2 >> received_data3;
-					std::cout << "***************" << std::endl << received_data2 << ":" << received_data3 << std::endl << "***************" << std::endl;
-					
-					socket.close();
+					catch (std::exception& e)
+					{
+						std::cout << "Exception: " << e.what() << "\n";
+					}
 				}
-				catch (std::exception& e)
-				{
-					std::cout << "Exception: " << e.what() << "\n";
-				}
-
+				
+				LOG4CXX_DEBUG(debug_logger, "Clamd AV filter entered"); // log for filter entrance
 				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 			}
 
