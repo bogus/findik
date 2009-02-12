@@ -38,8 +38,6 @@ namespace findik
 
 		connection::connection( protocol proto ) :
 			proto_(proto),
-			local_socket_(FI_SERVICES->io_srv()),
-			remote_socket_(FI_SERVICES->io_srv()),
 			strand_(FI_SERVICES->io_srv()),
 			is_keepalive_(boost::indeterminate),
 			remote_port_(0),
@@ -48,9 +46,6 @@ namespace findik
 			local_receive_timer_(FI_SERVICES->io_srv()),
 			remote_receive_timer_(FI_SERVICES->io_srv()),
 			keepalive_timer_(FI_SERVICES->io_srv())
-		{}
-
-		connection::~connection()
 		{}
 
 		void connection::prepare_socket(boost::asio::ip::tcp::socket & socket)
@@ -89,11 +84,7 @@ namespace findik
 				register_for_local_receive_timeout();
 			}
 
-			local_socket_.async_read_some(boost::asio::buffer(local_read_buffer_),
-				strand_.wrap(
-					boost::bind(&connection::handle_read_local, shared_from_this(),
-						boost::asio::placeholders::error,
-						boost::asio::placeholders::bytes_transferred)));
+			register_for_local_read_io();
 		}
 
 		void connection::register_for_remote_read()
@@ -102,11 +93,7 @@ namespace findik
 
 			register_for_remote_receive_timeout();
 
-			remote_socket_.async_read_some(boost::asio::buffer(remote_read_buffer_),
-				strand_.wrap(
-					boost::bind(&connection::handle_read_remote, shared_from_this(),
-						boost::asio::placeholders::error,
-						boost::asio::placeholders::bytes_transferred)));
+			register_for_remote_read_io();
 		}
 
 		void connection::register_for_resolve(const std::string & hostname, unsigned int port)
@@ -125,35 +112,26 @@ namespace findik
 		void connection::register_for_local_write()
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Registering connection for local write.");
-			boost::asio::async_write(local_socket_, local_write_buffer_,
-				strand_.wrap(
-					boost::bind(&connection::handle_write_local, shared_from_this(),
-					boost::asio::placeholders::error)));
+			register_for_local_write_io();
 		}
 
 		void connection::register_for_local_write(char * data_, std::size_t size_)
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Registering connection for local write.");
-			boost::asio::async_write(local_socket_, boost::asio::buffer(data_, size_),
-				strand_.wrap(
-					boost::bind(&connection::handle_write_local, shared_from_this(),
-					boost::asio::placeholders::error)));
+			register_for_local_write_io(data_, size_);
 		}
 
 		void connection::register_for_remote_write()
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Registering connection for remote write.");
-			boost::asio::async_write(remote_socket_, remote_write_buffer_,
-				strand_.wrap(
-					boost::bind(&connection::handle_write_remote, shared_from_this(),
-					boost::asio::placeholders::error)));
+			register_for_remote_write_io();
 		}
 
 		void connection::register_for_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
 		{
 			LOG4CXX_DEBUG(debug_logger, "Registering connection for remote connect.");
 			boost::asio::ip::tcp::endpoint endpoint = *endpoint_iterator;
-			remote_socket_.async_connect(endpoint,
+			remote_socket().async_connect(endpoint,
 				strand_.wrap(boost::bind(&connection::handle_connect_remote, shared_from_this(),
 					boost::asio::placeholders::error, ++endpoint_iterator)));
 		}
@@ -208,15 +186,14 @@ namespace findik
 
 		void connection::start_processing()
 		{
-			prepare_socket(local_socket_);
-			register_for_local_read();
+			start_local();
 		}
 
 		void connection::close()
 		{
 			LOG4CXX_DEBUG(debug_logger, "Closing connection.");
-			shutdown_socket(local_socket_);
-			shutdown_socket(remote_socket_);
+			shutdown_local();
+			shutdown_remote();
 		}
 
                 bool connection::is_keepalive()
@@ -285,11 +262,6 @@ namespace findik
 		const std::deque<abstract_data_ptr> & connection::data_queue()
 		{
 			return data_queue_;
-		}
-
-		boost::asio::ip::tcp::socket & connection::local_socket()
-		{
-			return local_socket_;
 		}
 
 		void connection::handle_read_local(const boost::system::error_code& err,
@@ -396,15 +368,14 @@ namespace findik
 			if (!err) // connected
 			{
 				//LOG4CXX_DEBUG(debug_logger, "Handling remote connect: successfully connected.");
-				prepare_socket(remote_socket_);
-				current_data()->into_buffer(remote_write_buffer_);
-				register_for_remote_write();
+				prepare_socket(remote_socket());
+				start_remote();
 			}
 			// not connected, but iterator has more elements
 			else if (endpoint_iterator != boost::asio::ip::tcp::resolver::iterator()) 
 			{
 				LOG4CXX_DEBUG(debug_logger, "Handling remote connect: trying next endpoint.");
-				remote_socket_.close();
+				remote_socket().close();
 				register_for_connect(endpoint_iterator);
 			}
 			else // can not connect
@@ -457,7 +428,7 @@ namespace findik
 
 				if (!is_keepalive()) {
 					LOG4CXX_DEBUG(debug_logger, "Shutting down remote socket.");
-					shutdown_socket(remote_socket_);
+					shutdown_remote();
 				}
 
 				if (current_data()->is_stream())
@@ -492,7 +463,7 @@ namespace findik
 				LOG4CXX_ERROR(debug_logger, "Handling remote read: data can not be parsed.");
 
 				if (!is_keepalive())
-                                        shutdown_socket(remote_socket_);
+                                        shutdown_remote();
 
 				FI_SERVICES->reply_srv().reply(local_write_buffer_,
 						proto(), FC_BAD_REMOTE);
@@ -531,7 +502,7 @@ namespace findik
 			else
 			{
 				LOG4CXX_DEBUG(debug_logger, "Shutting down local socket.");
-				shutdown_socket(local_socket_);
+				shutdown_local();
 			}
 		}
 	}

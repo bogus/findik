@@ -25,6 +25,8 @@
 
 #include "service_container.hpp"
 
+#include "plain_connection.hpp"
+
 namespace findik
 {
 	namespace io
@@ -57,7 +59,7 @@ namespace findik
 		void server::create_new_connection_and_register()
 		{
 			LOG4CXX_DEBUG(debug_logger, "Creating a new connection object and registering for next accept");
-			new_connection_.reset(new connection(protocol_));
+			new_connection_.reset(new plain_connection(protocol_));
 			new_connection_->local_socket();
 			acceptor_.async_accept(new_connection_->local_socket(),
 					boost::bind(&server::handle_accept, this,
