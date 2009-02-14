@@ -109,7 +109,7 @@ namespace findik
 						std::istream response_stream(&response);
 						std::string port_str;
 						std::getline(response_stream, port_str);
-						//std::cout << "***************" << std::endl << port_str << std::endl << "***************" << std::endl;
+						std::cout << "***************" << std::endl << port_str << std::endl << "***************" << std::endl;
 
 						// ---------------------------------
 						// Prepare second socket
@@ -135,7 +135,7 @@ namespace findik
 						boost::asio::read_until(socket, response, "\0");
 						std::string av_result;
 						std::getline(response_stream, av_result);
-						// std::cout << "***************" << std::endl << av_result << std::endl << "***************" << std::endl;
+						std::cout << "***************" << std::endl << av_result << std::endl << "***************" << std::endl;
 
 						socket.close();
 					}
@@ -145,7 +145,7 @@ namespace findik
 					}
 				}
 				
-				LOG4CXX_DEBUG(debug_logger, "Clamd AV filter entered"); // log for filter entrance
+				LOG4CXX_DEBUG(debug_logger, "Clamd AV filter exited"); // log for filter entrance
 				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 			}
 

@@ -100,9 +100,10 @@ namespace findik
 			try {
 				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))->store(hostname);
 				
-				if(res.num_rows() > 0)					
+				if(res.num_rows() > 0)
 					return false;
 
+				res.clear();
 				dbconnection_->unlock();
 
 			} catch (const mysqlpp::BadQuery& e) {
@@ -130,7 +131,8 @@ namespace findik
 
                                 if(res.num_rows() > 0)
                                         return false;
-
+				
+				res.clear();
                                 dbconnection_->unlock();
 
                         } catch (const mysqlpp::BadQuery& e) {
@@ -156,12 +158,11 @@ namespace findik
 
 			try {
 				mysqlpp::StoreQueryResult res1 = ((mysqlpp::Query *)dbconnection_->get_object(pcre_query))->store();
-
-				dbconnection_->unlock();
-				
 				for (int i = 0 ; i < res1.size() ; i++) {
  					pcre_map.insert(std::pair<int,std::string>(1,res1[i][0].c_str())); 
 				}
+				res1.clear();
+				dbconnection_->unlock();
 
 			}  catch (const mysqlpp::BadQuery& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
@@ -189,6 +190,7 @@ namespace findik
                                 if(res.num_rows() > 0)
                                         return false;
 
+				res.clear();
                                 dbconnection_->unlock();
 
                         } catch (const mysqlpp::BadQuery& e) {
@@ -217,6 +219,7 @@ namespace findik
                                 if(res.num_rows() > 0)
                                         return false;
 
+				res.clear();
                                 dbconnection_->unlock();
 
                         } catch (const mysqlpp::BadQuery& e) {
