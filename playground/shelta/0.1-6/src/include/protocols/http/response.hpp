@@ -51,7 +51,7 @@ namespace findik
 				/*!
 				Default constructor.
 				*/
-				response();
+				response(bool is_https = false);
 
 				/*!
 				Default destructor.

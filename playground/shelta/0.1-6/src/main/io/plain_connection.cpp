@@ -31,7 +31,9 @@ namespace findik
 			connection(proto),
 			local_socket_(FI_SERVICES->io_srv()),
 			remote_socket_(FI_SERVICES->io_srv())
-		{}
+		{
+			is_secure_ = false;
+		}
 
 		plain_connection::~plain_connection()
 		{}
@@ -50,7 +52,8 @@ namespace findik
 		{
 			local_socket_.async_read_some(boost::asio::buffer(local_read_buffer_),
 				strand_.wrap(
-					boost::bind(&plain_connection::handle_read_local, shared_from_this(),
+					boost::bind(&connection::handle_read_local,
+						shared_from_this(),
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred)));
 		}
@@ -59,7 +62,8 @@ namespace findik
 		{
 			remote_socket_.async_read_some(boost::asio::buffer(remote_read_buffer_),
 				strand_.wrap(
-					boost::bind(&plain_connection::handle_read_remote, shared_from_this(),
+					boost::bind(&connection::handle_read_remote,
+						shared_from_this(),
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred)));
 		}
@@ -68,24 +72,27 @@ namespace findik
 		{
 			boost::asio::async_write(local_socket_, local_write_buffer_,
 				strand_.wrap(
-					boost::bind(&plain_connection::handle_write_local, shared_from_this(),
-					boost::asio::placeholders::error)));
+					boost::bind(&connection::handle_write_local,
+						shared_from_this(),
+						boost::asio::placeholders::error)));
 		}
 
 		void plain_connection::register_for_local_write_io(char * data_, std::size_t size_)
 		{
 			boost::asio::async_write(local_socket_, boost::asio::buffer(data_, size_),
 				strand_.wrap(
-					boost::bind(&plain_connection::handle_write_local, shared_from_this(),
-					boost::asio::placeholders::error)));
+					boost::bind(&connection::handle_write_local,
+						shared_from_this(),
+						boost::asio::placeholders::error)));
 		}
 
 		void plain_connection::register_for_remote_write_io()
 		{
 			boost::asio::async_write(remote_socket_, remote_write_buffer_,
 				strand_.wrap(
-					boost::bind(&plain_connection::handle_write_remote, shared_from_this(),
-					boost::asio::placeholders::error)));
+					boost::bind(&connection::handle_write_remote,
+						shared_from_this(),
+						boost::asio::placeholders::error)));
 		}
 
 		void plain_connection::start_local()
@@ -100,16 +107,31 @@ namespace findik
 			register_for_remote_write();
 		}
 
-		boost::asio::ip::tcp::socket & plain_connection::local_socket()
+		boost::asio::ip::tcp::socket::lowest_layer_type & plain_connection::local_socket()
 		{
-			return local_socket_;
+			return local_socket_.lowest_layer();
 		}
 
-		boost::asio::ip::tcp::socket & plain_connection::remote_socket()
+		boost::asio::ip::tcp::socket::lowest_layer_type & plain_connection::remote_socket()
 		{
-			return remote_socket_;
+			return remote_socket_.lowest_layer();
 		}
 
+		void plain_connection::handle_handshake_local(const boost::system::error_code& err)
+		{
+		}
+
+		void plain_connection::handle_handshake_remote(const boost::system::error_code& err)
+		{
+		}
+
+		void plain_connection::handle_shutdown_local(const boost::system::error_code& err)
+		{
+		}
+
+		void plain_connection::handle_shutdown_remote(const boost::system::error_code& err)
+		{
+		}
 	}
 }
 

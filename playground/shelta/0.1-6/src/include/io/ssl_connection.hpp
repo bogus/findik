@@ -16,10 +16,12 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_IO_PLAIN_CONNECTION_HPP
-#define FINDIK_IO_PLAIN_CONNECTION_HPP
+#ifndef FINDIK_IO_SSL_CONNECTION_HPP
+#define FINDIK_IO_SSL_CONNECTION_HPP
 
 #include <boost/noncopyable.hpp>
+
+#include <boost/asio/ssl.hpp>
 
 #include "connection.hpp"
 
@@ -28,12 +30,12 @@ namespace findik
 	namespace io
 	{
 		/*!
-		Plain connection class for handling data connections and proxying data transmission between them.
+		SSL connection class for handling ssl layer connections and proxying data transmission between them.
 		\extends boost::noncopyable because of containing i/o members, copying this class is not safe.
 		\extends findik::io::connection 
 		@author H. Kerem Cevahir (shelta)
 		*/
-		class plain_connection :
+		class ssl_connection :
 			private boost::noncopyable,
 			public connection
 		{
@@ -42,12 +44,12 @@ namespace findik
 			Constructor.
 			\param proto protocol of connection.
 			*/
-			explicit plain_connection( protocol proto );
+			explicit ssl_connection( protocol proto );
 
 			/*!
 			Destructor.
 			*/
-			~plain_connection();
+			~ssl_connection();
 
 			/*!
 			Socket for the local connection.
@@ -62,14 +64,14 @@ namespace findik
                         static log4cxx::LoggerPtr debug_logger;
 
 			/*!
-			Socket for the local connection.
+			SSL socket for the local connection.
 			*/
-			boost::asio::ip::tcp::socket local_socket_;
+			boost::asio::ssl::stream<boost::asio::ip::tcp::socket> local_ssl_socket_;
 
 			/*!
-			Socket for the remote connection.
+			SSL socket for the remote connection.
 			*/
-			boost::asio::ip::tcp::socket remote_socket_;
+			boost::asio::ssl::stream<boost::asio::ip::tcp::socket> remote_ssl_socket_;
 
 			/*!
 			Socket for the remote connection.
@@ -132,25 +134,25 @@ namespace findik
 			void start_local();
 
 			/*!
-			Must implement. N/A for plain connection. Empty method.
+			Handle completion of a local ssl handshake.
 			\param err error code if there is an error
 			*/
 			void handle_handshake_local(const boost::system::error_code& err);
 
 			/*!
-			Must implement. N/A for plain connection. Empty method.
+			Handle completion of a remote ssl handshake.
 			\param err error code if there is an error
 			*/
 			void handle_handshake_remote(const boost::system::error_code& err);
 
 			/*!
-			Must implement. N/A for plain connection. Empty method.
+			Handle completion of a local ssl shutdown.
 			\param err error code if there is an error
 			*/
 			void handle_shutdown_local(const boost::system::error_code& err);
 
 			/*!
-			Must implement. N/A for plain connection. Empty method.
+			Handle completion of a remote ssl shutdown.
 			\param err error code if there is an error
 			*/
 			void handle_shutdown_remote(const boost::system::error_code& err);

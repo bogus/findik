@@ -83,7 +83,7 @@ namespace findik
 			Socket for the local connection.
 			\returns local socket
 			*/
-			virtual boost::asio::ip::tcp::socket & local_socket() = 0;
+			virtual boost::asio::ip::tcp::socket::lowest_layer_type & local_socket() = 0;
 
 			/*!
 			Remote hostname.
@@ -108,6 +108,69 @@ namespace findik
 			\returns data queue of connection.
 			*/
 			const std::deque<abstract_data_ptr> & data_queue();
+
+			/*!
+			Handle completion of a local handshake.
+			\param err error code if there is an error
+			*/
+			virtual void handle_handshake_local(const boost::system::error_code& err) = 0;
+
+			/*!
+			Handle completion of a remote handshake.
+			\param err error code if there is an error
+			*/
+			virtual void handle_handshake_remote(const boost::system::error_code& err) = 0;
+
+			/*!
+			Handle completion of a local shutdown.
+			\param err error code if there is an error
+			*/
+			virtual void handle_shutdown_local(const boost::system::error_code& err) = 0;
+
+			/*!
+			Handle completion of a remote shutdown.
+			\param err error code if there is an error
+			*/
+			virtual void handle_shutdown_remote(const boost::system::error_code& err) = 0;
+
+			/*!
+			Handle completion of a local read operation.
+
+			\param e error code if there is an error
+			\param bytes_transferred number of transferred bytes
+			*/
+			void handle_read_local(const boost::system::error_code& err,
+				std::size_t bytes_transferred);
+
+			/*!
+			Handle completion of a remote write operation.
+			
+			\param e error code if there is an error
+			*/
+			void handle_write_remote(const boost::system::error_code& err);
+
+			/*!
+			Handle completion of a remote write operation.
+
+			\param err error code if there is an error
+			\param bytes_transferred number of transferred bytes
+			*/
+			void handle_read_remote(const boost::system::error_code& err,
+				std::size_t bytes_transferred);
+
+			/*!
+			Handle completion of a local write operation.
+
+			\param err error code if there is an error
+			*/
+			void handle_write_local(const boost::system::error_code& err);
+
+			/*!
+			Whether connection is secure.
+			
+			\return whether connection is secure.
+			*/
+			bool is_secure();
 
 		protected:
 			/*!
@@ -156,38 +219,6 @@ namespace findik
 			virtual void start_local() = 0;
 
 			/*!
-			Handle completion of a local read operation.
-
-			\param e error code if there is an error
-			\param bytes_transferred number of transferred bytes
-			*/
-			void handle_read_local(const boost::system::error_code& err,
-				std::size_t bytes_transferred);
-
-			/*!
-			Handle completion of a remote write operation.
-			
-			\param e error code if there is an error
-			*/
-			void handle_write_remote(const boost::system::error_code& err);
-
-			/*!
-			Handle completion of a remote write operation.
-
-			\param err error code if there is an error
-			\param bytes_transferred number of transferred bytes
-			*/
-			void handle_read_remote(const boost::system::error_code& err,
-				std::size_t bytes_transferred);
-
-			/*!
-			Handle completion of a local write operation.
-
-			\param err error code if there is an error
-			*/
-			void handle_write_local(const boost::system::error_code& err);
-
-			/*!
 			Previously recieved datas. With a max size.
 			*/
 			std::deque<abstract_data_ptr> data_queue_;
@@ -202,7 +233,7 @@ namespace findik
 			This methods set some socket options: NIO, TCP_NO_DELAY, NO_LINGER.
 			\param socket ASIO socket to set options.
 			*/
-			void prepare_socket(boost::asio::ip::tcp::socket & socket);
+			void prepare_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket);
 
 			/*!
 			Local read buffer.
@@ -281,7 +312,7 @@ namespace findik
 			Socket for the remote connection.
 			\returns remote socket
 			*/
-			virtual boost::asio::ip::tcp::socket & remote_socket() = 0;
+			virtual boost::asio::ip::tcp::socket::lowest_layer_type & remote_socket() = 0;
 
 			/*!
 			Register to ASIO service to connect an endpoint.
@@ -410,14 +441,17 @@ namespace findik
 			Shutdown TCP socket.  
 			\param socket to shutdown.
 			*/
-			void shutdown_socket(boost::asio::ip::tcp::socket & socket);
+			void shutdown_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket);
 
 			/*!
 			Pushes current data to queue and sets new_data_ to NULL.
 			*/
 			void push_current_data_to_queue();
 
-			
+			/*!
+			Whether connection is secure.
+			*/
+			bool is_secure_;
 
 		};
 		

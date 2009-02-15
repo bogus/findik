@@ -48,7 +48,7 @@ namespace findik
 			keepalive_timer_(FI_SERVICES->io_srv())
 		{}
 
-		void connection::prepare_socket(boost::asio::ip::tcp::socket & socket)
+		void connection::prepare_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket)
 		{
 		        boost::asio::socket_base::non_blocking_io command(true);
 			socket.io_control(command);
@@ -60,7 +60,7 @@ namespace findik
 			socket.set_option(linger_option);
 		}
 
-		void connection::shutdown_socket(boost::asio::ip::tcp::socket & socket)
+		void connection::shutdown_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket)
 		{
 			if (socket.is_open())
 			{
@@ -202,6 +202,11 @@ namespace findik
 			FI_SERVICES->parser_srv().update_is_keepalive_of(shared_from_this(), is_keepalive_);
 
 			return is_keepalive_;
+		}
+
+                bool connection::is_secure()
+		{
+			return is_secure_;
 		}
 
 		unsigned int connection::remote_port()
@@ -380,7 +385,8 @@ namespace findik
 			}
 			else // can not connect
 			{
-				//TODO: call logger
+				LOG4CXX_ERROR(debug_logger, "On remote connect: " + err.message() + " -> " +
+						 remote_hostname_);
 				return;
 			}
 		}
@@ -471,7 +477,7 @@ namespace findik
                         }
                         else // more data required
                         {
-				if (current_data()->is_stream())
+				if ( current_data().get() != 0 && current_data()->is_stream())
 				{
 					mark_as_streaming();
 					register_for_local_write(remote_read_buffer_.data(), bytes_transferred);

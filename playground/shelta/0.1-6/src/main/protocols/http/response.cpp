@@ -30,12 +30,13 @@ namespace findik
 	{
 		namespace http
 		{
-			response::response() :
+			response::response(bool is_https) :
 				content_encoding_(indeterminate),
 				is_chunked_(boost::indeterminate)
 			{
 				content_length_ = 0;
 				is_local_ = false;
+				is_https_ = is_https;
 			}
 
 			response::~response()

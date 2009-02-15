@@ -25,6 +25,8 @@ namespace findik
 	namespace service
 	{
 		service_container::service_container() :
+			local_ssl_context_(io_srv_, boost::asio::ssl::context::sslv23_server),
+			remote_ssl_context_(io_srv_, boost::asio::ssl::context::sslv23_client),
 			resolver_srv_(io_srv_),
 			config_(config_srv_)
 		{}
@@ -34,15 +36,41 @@ namespace findik
 		service_container::~service_container() 
 		{}
 
+		void service_container::initialize_ssl_context()
+		{
+			local_ssl_context_.set_options(
+					boost::asio::ssl::context::default_workarounds
+					| boost::asio::ssl::context::default_workarounds);
+
+			local_ssl_context_.use_certificate_chain_file("/etc/findik/ssl/public.pem");
+			local_ssl_context_.use_private_key_file("/etc/findik/ssl/private.pem", boost::asio::ssl::context::pem);
+			local_ssl_context_.use_tmp_dh_file("/etc/findik/ssl/dh.pem");
+
+//			remote_ssl_context_.set_verify_mode(boost::asio::ssl::context::verify_none);
+			remote_ssl_context_.set_verify_mode(boost::asio::ssl::context::verify_peer);
+			remote_ssl_context_.load_verify_file("/etc/findik/ssl/ca.pem");
+		}
+
 		void service_container::start()
 		{
 			db_srv_.connect();
 			util_srv_.start();
+			initialize_ssl_context();
 		}
 
 		bool service_container::check_config()
 		{
 			return config_srv_.check();
+		}
+
+		boost::asio::ssl::context & service_container::local_ssl_context()
+		{
+			return local_ssl_context_;
+		}
+
+		boost::asio::ssl::context & service_container::remote_ssl_context()
+		{
+			return remote_ssl_context_;
 		}
 
 		boost::asio::io_service & service_container::io_srv()

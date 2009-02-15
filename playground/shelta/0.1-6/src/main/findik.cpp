@@ -34,17 +34,6 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		// Check command line arguments.
-		if (argc != 4 && argc != 1)
-		{
-			std::cerr << "Usage: findik <address> <port> <threads>\n";
-			std::cerr << "  For IPv4, try:\n";
-			std::cerr << "	findik 0.0.0.0 80 1\n";
-			std::cerr << "  For IPv6, try:\n";
-			std::cerr << "	findik 0::0 80 1\n";
-			return 1;
-		}
-
 		// Block all signals for background thread.
 		sigset_t new_mask;
 		sigfillset(&new_mask);
@@ -54,13 +43,9 @@ int main(int argc, char* argv[])
 		// Run server in background thread.
 		std::string address("0.0.0.0");
 		unsigned int port = 8080;
+		unsigned int ssl_port = 8443;
 		std::size_t num_threads(100);
 
-		if (argc == 4) {
-			address = argv[1];
-			port = boost::lexical_cast<unsigned int>(argv[2]);
-			num_threads = boost::lexical_cast<std::size_t>(argv[3]);
-		}
 		// Initialize request filter
 		//findik::filter::generate_request_filter_factory_map();
 		//findik::filter::generate_response_filter_factory_map();
@@ -76,6 +61,7 @@ int main(int argc, char* argv[])
 
 		// Initialise server.
 		findik::io::server s(findik::io::http, address, port);
+		findik::io::server s2(findik::io::http, address, ssl_port, true);
 
 		// LOG4CXX_INFO(findik::log_initializer::user_logger,"findik started to listen " + address + ":" + port);
 

@@ -84,7 +84,7 @@ namespace findik
 				if (connection_->current_data().get() == 0)
 				{
 					FI_STATE_OF(connection_) = http_version_start;
-					response_ptr p(new response());
+					response_ptr p(new response(connection_->is_secure()));
 					connection_->update_current_data(p);
 				}
 
@@ -531,7 +531,7 @@ namespace findik
 			void response_parser::update_keepalive_timeout_of(findik::io::connection_ptr connection_, 
 					unsigned int & keepalive_timeout_)
 			{
-				if (FI_CONFIG.server_http_run_with_squid())
+				if ( !connection_->is_secure() && FI_CONFIG.server_http_run_with_squid() )
 				{
 					keepalive_timeout_ = FI_CONFIG.server_http_squid_keepalive_timeout();
 				}
