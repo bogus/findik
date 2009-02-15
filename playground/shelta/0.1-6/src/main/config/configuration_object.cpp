@@ -37,7 +37,11 @@ namespace findik
 			db_mysql_password_(""),
 			db_pool_size_(32),
 			io_number_of_threads_(50),
-			reply_reply_file_("/etc/findik/index.html")
+			reply_reply_file_("/etc/findik/index.html"),
+			ssl_local_private_key_("/etc/findik/ssl/private.pem"),
+			ssl_local_certificate_("/etc/findik/ssl/public.pem"),
+			ssl_local_dh_parameters_("/etc/findik/ssl/dh.pem"),
+			ssl_remote_ca_("/etc/findik/ssl/ca.pem")
 		{
 			config_.getConfigValue_Bool("findik.server.http.run_with_squid", server_http_run_with_squid_);
 			config_.getConfigValue_String("findik.server.http.squid_host", server_http_squid_host_);
@@ -53,6 +57,10 @@ namespace findik
 			config_.getConfigValue_UInt("findik.db.pool_size", db_pool_size_);
 			config_.getConfigValue_UInt("findik.io.number_of_threads", io_number_of_threads_);
 			config_.getConfigValue_String("findik.reply.reply_file", reply_reply_file_);
+			config_.getConfigValue_String("findik.ssl.local.private_key", ssl_local_private_key_);
+			config_.getConfigValue_String("findik.ssl.local.certificate", ssl_local_certificate_);
+			config_.getConfigValue_String("findik.ssl.local.dh_parameters", ssl_local_dh_parameters_);
+			config_.getConfigValue_String("findik.ssl.remote.ca", ssl_remote_ca_);
 		}
 
 		configuration_object::~configuration_object()
@@ -133,6 +141,27 @@ namespace findik
 		{
 			return reply_reply_file_;
 		}
+
+		const std::string & configuration_object::ssl_local_private_key()
+		{
+			return ssl_local_private_key_;
+		}
+
+		const std::string & configuration_object::ssl_local_certificate()
+		{
+			return ssl_local_certificate_;
+		}
+
+		const std::string & configuration_object::ssl_local_dh_parameters()
+		{
+			return ssl_local_dh_parameters_;
+		}
+
+		const std::string & configuration_object::ssl_remote_ca()
+		{
+			return ssl_remote_ca_;
+		}
+
 	}
 }
 

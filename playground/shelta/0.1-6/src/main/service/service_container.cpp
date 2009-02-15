@@ -42,13 +42,13 @@ namespace findik
 					boost::asio::ssl::context::default_workarounds
 					| boost::asio::ssl::context::default_workarounds);
 
-			local_ssl_context_.use_certificate_chain_file("/etc/findik/ssl/public.pem");
-			local_ssl_context_.use_private_key_file("/etc/findik/ssl/private.pem", boost::asio::ssl::context::pem);
-			local_ssl_context_.use_tmp_dh_file("/etc/findik/ssl/dh.pem");
+			local_ssl_context_.use_certificate_chain_file(FI_CONFIG.ssl_local_certificate());
+			local_ssl_context_.use_private_key_file(FI_CONFIG.ssl_local_private_key(), boost::asio::ssl::context::pem);
+			local_ssl_context_.use_tmp_dh_file(FI_CONFIG.ssl_local_dh_parameters());
 
 //			remote_ssl_context_.set_verify_mode(boost::asio::ssl::context::verify_none);
 			remote_ssl_context_.set_verify_mode(boost::asio::ssl::context::verify_peer);
-			remote_ssl_context_.load_verify_file("/etc/findik/ssl/ca.pem");
+			remote_ssl_context_.load_verify_file(FI_CONFIG.ssl_remote_ca());
 		}
 
 		void service_container::start()

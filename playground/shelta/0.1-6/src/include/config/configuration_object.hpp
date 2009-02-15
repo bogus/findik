@@ -74,7 +74,15 @@ namespace findik
 			unsigned int io_number_of_threads();
 
 			const std::string & reply_reply_file();
-	
+
+			const std::string & ssl_local_private_key();
+
+			const std::string & ssl_local_certificate();
+
+			const std::string & ssl_local_dh_parameters();
+
+			const std::string & ssl_remote_ca();
+
 		protected:
 
 			bool server_http_run_with_squid_;
@@ -107,6 +115,13 @@ namespace findik
 
 			std::string reply_reply_file_;
 
+			std::string ssl_local_private_key_;
+
+			std::string ssl_local_certificate_;
+
+			std::string ssl_local_dh_parameters_;
+
+			std::string ssl_remote_ca_;
 		};
 	}
 }
