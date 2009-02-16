@@ -24,6 +24,8 @@
 
 #include <deque>
 
+#include <boost/thread/mutex.hpp>
+
 #include "protocol.hpp"
 #include "connection.hpp"
 
@@ -43,7 +45,7 @@ namespace findik
 			/*!
 			Default constructor.
 			*/
-			session();
+			session(findik::io::protocol proto);
 
 			/*!
 			Destructor.
@@ -56,6 +58,18 @@ namespace findik
 			*/
 			protocol proto();
 
+			/*!
+			To store connection in session.	
+			\param connection_
+			*/
+			void add(connection_ptr connection_);
+
+			/*!
+			Queue to store previous connections for this session.
+			\returns connection queue.
+			*/
+			const std::deque<connection_ptr> & connection_queue();
+
 		protected:
 			/*!
 			Protocol of session implementation.
@@ -66,6 +80,11 @@ namespace findik
 			Queue to store previous connections for this session.
 			*/
 			std::deque<connection_ptr> connection_queue_;
+
+			/*!
+			Mutex to use when operating on connection queue.
+			*/
+			boost::mutex connection_queue_mutex_;
 		};
 		
 		typedef boost::shared_ptr<session> session_ptr;

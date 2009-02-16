@@ -83,6 +83,10 @@ namespace findik
 
 			const std::string & ssl_remote_ca();
 
+			unsigned int server_max_session();
+
+			unsigned int server_max_connection_per_session();
+
 		protected:
 
 			bool server_http_run_with_squid_;
@@ -122,6 +126,10 @@ namespace findik
 			std::string ssl_local_dh_parameters_;
 
 			std::string ssl_remote_ca_;
+
+			unsigned int server_max_session_;
+
+			unsigned int server_max_connection_per_session_;
 		};
 	}
 }

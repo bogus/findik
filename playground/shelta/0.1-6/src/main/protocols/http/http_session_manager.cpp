@@ -16,38 +16,30 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "session.hpp"
+#include "http_session_manager.hpp"
+
 #include "services.hpp"
 
 namespace findik
 {
-	namespace io
+	namespace protocols
 	{
-		session::session(protocol proto) :
-			proto_(proto)
-		{}
-
-		session::~session()
-		{}
-
-		protocol session::proto()
+		namespace http
 		{
-			return proto_;
-		}
+			http_session_manager::initializer::initializer()
+			{
+				http_session_manager_ptr p(new http_session_manager());
 
-		void session::add(connection_ptr connection_)
-		{
-			boost::mutex::scoped_lock connection_queue_lock(connection_queue_mutex_);
-			
-			if (connection_queue_.size() == FI_CONFIG.server_max_connection_per_session()) 
-				connection_queue_.pop_back();
+				FI_SERVICES->session_srv().register_session_manager(findik::io::http, p);
+			}
 
-			connection_queue_.push_front(connection_);
-		}
+			http_session_manager::initializer http_session_manager::initializer::instance;
 
-		const std::deque<connection_ptr> & session::connection_queue()
-		{
-			return connection_queue_;
+			bool http_session_manager::is_associated(findik::io::session_ptr session_, findik::io::connection_ptr connection_)
+			{
+				return session_->connection_queue().front()->local_socket().remote_endpoint() ==
+					connection_->local_socket().remote_endpoint();
+			}
 		}
 	}
 }
