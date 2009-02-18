@@ -81,8 +81,8 @@ namespace findik
 			unsigned int code();
 			
 			/*!
-			Code of HTTP return. 
-			\returns HTTP response return code
+			Code of return. 
+			\returns response return code
 			*/
 			unsigned int return_code();
 
@@ -94,7 +94,7 @@ namespace findik
 
 			/*!
                         Protocol which reason produced
-                        \returns HTTP response return code
+                        \returns protocol  
                         */
                         unsigned int protocol();
 
@@ -115,7 +115,7 @@ namespace findik
 			unsigned int code_;
 			
 			/*!
-			HTTP return code.
+			Response code.
 			*/
 			unsigned int return_code_;
 

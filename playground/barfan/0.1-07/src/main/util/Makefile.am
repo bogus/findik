@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES		=	libfindik_util.la
 
 libfindik_util_la_SOURCES	= \
+	base64.cpp \
 	pcre_analyzer.cpp \
 	pcre_parser.cpp \
 	tidy_html_parser.cpp

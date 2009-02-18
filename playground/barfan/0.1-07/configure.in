@@ -78,6 +78,7 @@ AC_CONFIG_FILES([
 	src/main/persistency/Makefile
 	src/main/protocols/Makefile
 	src/main/protocols/http/Makefile
+	src/main/protocols/http/auth_util/Makefile
 	src/main/service/Makefile
 	src/main/util/Makefile
 	src/test/Makefile

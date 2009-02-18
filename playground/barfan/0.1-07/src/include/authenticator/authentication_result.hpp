@@ -54,10 +54,9 @@ namespace findik
 			\param result_str detail of result.
 			\returns a new authenticator result instance
 			*/
-			static boost::shared_ptr<authentication_result> create_result(
-					unsigned int code, const std::string & result_str)
+			static boost::shared_ptr<authentication_result> create_result(unsigned int code, const std::string & result_str, unsigned int return_code, bool close_connection, unsigned int protocol)
 			{
-				boost::shared_ptr<authentication_result> p(new authentication_result(code, result_str));
+				boost::shared_ptr<authentication_result> p(new authentication_result(code, result_str, return_code, close_connection, protocol));
 				return p;
 			}
 
@@ -78,6 +77,25 @@ namespace findik
 			*/
 			unsigned int code();
 
+			/*!
+                        Code of return.
+                        \returns response return code
+                        */
+                        unsigned int return_code();
+
+                        /*!
+                        Close connection parameter if this reply should close connection or not.
+                        \returns close connection parameter
+                        */
+                        bool close_connection();
+
+                        /*!
+                        Protocol which reason produced
+                        \returns response return code
+                        */
+                        unsigned int protocol();
+
+
 		protected:
 			/*!
 			Constructor.
@@ -87,7 +105,7 @@ namespace findik
 			/*!
 			Constructor.
 			*/
-			authentication_result(unsigned int code, const std::string & result_str);
+			authentication_result(unsigned int code, const std::string & result_str, unsigned int return_code, bool close_connection, unsigned int protocol);
 
 			/*!
 			Result code.
@@ -98,6 +116,21 @@ namespace findik
 			Result detail in a string.
 			*/
 			std::string result_str_;
+
+			/*!
+                        Connection close parameter for response header
+                        */
+                        bool close_connection_;
+
+			/*!
+                        Response code.
+                        */
+                        unsigned int return_code_;				
+
+                        /*!
+                        Protocol
+                        */
+                        unsigned int protocol_;
 		};
 		
 		typedef boost::shared_ptr<authentication_result> authentication_result_ptr;
