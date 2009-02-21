@@ -30,56 +30,57 @@ namespace findik
 			int  clamd_av_filter::filter_code = 503;	
 			// constructor definition of filter service registration inner class
 			clamd_av_filter::initializer::initializer()
-                        {
-                                clamd_av_filter_ptr dfp(new clamd_av_filter());
-				
-				try
-                                {
-					boost::asio::io_service io_service;
-    					boost::asio::ip::tcp::resolver resolver(io_service);
-                                        boost::asio::ip::tcp::resolver::query query("localhost", "3310");
-                                        boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-                                        boost::asio::ip::tcp::resolver::iterator end;
-					
-					boost::asio::ip::tcp::socket socket(io_service);
-                                        boost::system::error_code error = boost::asio::error::host_not_found;
-                                        while (error && endpoint_iterator != end)
-                                        {
-                                                socket.close();
-                                                socket.connect(*endpoint_iterator++, error);
-                                        }
-                                        if (error)
-                                                throw boost::system::system_error(error);
-					
-					boost::asio::write(socket, boost::asio::buffer("PING\r\n", 6));
+			{
+				clamd_av_filter_ptr dfp(new clamd_av_filter());
 
-					char reply[4];
-                                        boost::asio::read(socket, boost::asio::buffer(reply, 4));
-					
-                                        std::string received_data(reply);
-                                        // Check that response is OK.
-					socket.close();
+				if(FI_CONFIG.use_clamd())
+				{	
+					try
+					{
+						boost::asio::io_service io_service;
+						boost::asio::ip::tcp::resolver resolver(io_service);
+						boost::asio::ip::tcp::resolver::query query(FI_CONFIG.clamd_host(), FI_CONFIG.clamd_port());
+						boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+						boost::asio::ip::tcp::resolver::iterator end;
 
-					if(received_data == "PONG") {
-						FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
-						std::cout << "Clamd AV filter is running" << std::endl;
-						LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is running");
+						boost::asio::ip::tcp::socket socket(io_service);
+						boost::system::error_code error = boost::asio::error::host_not_found;
+						while (error && endpoint_iterator != end)
+						{
+							socket.close();
+							socket.connect(*endpoint_iterator++, error);
+						}
+						if (error)
+							throw boost::system::system_error(error);
+
+						boost::asio::write(socket, boost::asio::buffer("PING\r\n", 6));
+
+						char reply[4];
+						boost::asio::read(socket, boost::asio::buffer(reply, 4));
+
+						std::string received_data(reply);
+						// Check that response is OK.
+						socket.close();
+
+						if(received_data == "PONG") {
+							FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
+							std::cout << "Clamd AV filter is running" << std::endl;
+							LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is running");
+						}
+						else
+							LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is not running");
+
 					}
-					else
-						LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is not running");
-									
-				}
-				catch (std::exception& e)
-                                {
-                                        LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is not running. Exception: " + (std::string)e.what());
+					catch (std::exception& e)
+					{
+						LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is not running. Exception: " + (std::string)e.what());
+					}
+
 				}
 
-				
-				FI_SERVICES->filter_srv().register_filter(filter_code,dfp);	
-				
-                        }
+			}
 
-                        clamd_av_filter::initializer clamd_av_filter::initializer::instance;
+			clamd_av_filter::initializer clamd_av_filter::initializer::instance;
 
 			boost::tuple<bool, findik::filter::filter_reason_ptr> clamd_av_filter::filter(findik::io::connection_ptr connection_) 
 			{
@@ -89,7 +90,7 @@ namespace findik
 					try
 					{
 						// Prepare first socket
-						boost::asio::ip::tcp::resolver::query query("localhost", "3310");
+						boost::asio::ip::tcp::resolver::query query(FI_CONFIG.clamd_host(), FI_CONFIG.clamd_port());
 						boost::asio::ip::tcp::resolver::iterator endpoint_iterator = FI_SERVICES->resolver_srv().resolve(query);
 						boost::asio::ip::tcp::resolver::iterator end;
 						boost::asio::ip::tcp::socket socket(FI_SERVICES->io_srv());
@@ -109,11 +110,10 @@ namespace findik
 						std::istream response_stream(&response);
 						std::string port_str;
 						std::getline(response_stream, port_str);
-						std::cout << "***************" << std::endl << port_str << std::endl << "***************" << std::endl;
 
 						// ---------------------------------
 						// Prepare second socket
-						boost::asio::ip::tcp::resolver::query query2("localhost", port_str.substr(5));
+						boost::asio::ip::tcp::resolver::query query2(FI_CONFIG.clamd_host(), port_str.substr(5));
 						boost::asio::ip::tcp::resolver::iterator endpoint_iterator2 = FI_SERVICES->resolver_srv().resolve(query2);
 						boost::asio::ip::tcp::resolver::iterator end2;
 						boost::asio::ip::tcp::socket socket2(FI_SERVICES->io_srv());
@@ -135,13 +135,21 @@ namespace findik
 						boost::asio::read_until(socket, response, "\0");
 						std::string av_result;
 						std::getline(response_stream, av_result);
-						std::cout << "***************" << std::endl << av_result << std::endl << "***************" << std::endl;
-
+						// stream: Eicar-Test-Signature FOUND
+						// stream: OK
+						av_result = av_result.substr(8);
+						int pos = av_result.find(" FOUND");
+						if(pos != std::string::npos) 
+						{
+							LOG4CXX_DEBUG(debug_logger, "VIRUS FOUND : " + av_result.substr(0,pos));
+							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Virus Found : " + av_result.substr(0,pos), response::forbidden, true, findik::io::http));		
+						}	
 						socket.close();
 					}
 					catch (std::exception& e)
 					{
 						std::cout << "Exception: " << e.what() << "\n";
+						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(0));
 					}
 				}
 				

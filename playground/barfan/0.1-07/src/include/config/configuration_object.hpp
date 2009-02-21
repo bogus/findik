@@ -74,6 +74,19 @@ namespace findik
 			unsigned int io_number_of_threads();
 
 			const std::string & reply_reply_file();
+
+			bool use_clamd();
+
+                        const std::string & clamd_host();
+
+                        const std::string & clamd_port();
+
+                        bool use_ad_kerbv5_negotiation_auth();
+
+                        const std::string & ad_service_name();
+
+                        const std::string & ad_keytab_file();
+
 	
 		protected:
 
@@ -104,8 +117,21 @@ namespace findik
 			unsigned int db_pool_size_;
 
 			unsigned int io_number_of_threads_;
-
+			
 			std::string reply_reply_file_;
+
+			bool use_clamd_;
+			
+			std::string clamd_host_;
+			
+			std::string clamd_port_;
+			
+			bool use_ad_kerbv5_negotiation_auth_;
+		
+                        std::string ad_service_name_;
+
+                        std::string ad_keytab_file_;
+
 
 		};
 	}
