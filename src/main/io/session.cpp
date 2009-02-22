@@ -17,12 +17,14 @@
 */
 
 #include "session.hpp"
+#include "services.hpp"
 
 namespace findik
 {
 	namespace io
 	{
-		session::session()
+		session::session(protocol proto) :
+			proto_(proto)
 		{}
 
 		session::~session()
@@ -31,6 +33,21 @@ namespace findik
 		protocol session::proto()
 		{
 			return proto_;
+		}
+
+		void session::add(connection_ptr connection_)
+		{
+			boost::mutex::scoped_lock connection_queue_lock(connection_queue_mutex_);
+			
+			if (connection_queue_.size() == FI_CONFIG.server_max_connection_per_session()) 
+				connection_queue_.pop_back();
+
+			connection_queue_.push_front(connection_);
+		}
+
+		const std::deque<connection_ptr> & session::connection_queue()
+		{
+			return connection_queue_;
 		}
 	}
 }

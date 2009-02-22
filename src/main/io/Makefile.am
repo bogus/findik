@@ -3,8 +3,10 @@ noinst_LTLIBRARIES		=	libfindik_io.la
 libfindik_io_la_SOURCES		= \
 	abstract_data.cpp \
 	connection.cpp \
+	plain_connection.cpp \
 	server.cpp \
-	session.cpp
+	session.cpp \
+	ssl_connection.cpp
 
 libfindik_io_la_LIBADD		=	@LTLIBOBJS@
 

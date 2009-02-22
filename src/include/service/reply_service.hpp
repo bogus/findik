@@ -91,7 +91,12 @@ namespace findik
 			/*!
                         String to hold reply html data
                         */
-			std::string reply_html_; 
+			std::string reply_html_;
+
+			/*!
+                        Returns GMT Date format like Wed, 18 Feb 2009 12:34:12 GMT
+                        */
+			std::string generateGMTDate(); 
 		};
 	}
 }

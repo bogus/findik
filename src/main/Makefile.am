@@ -13,6 +13,7 @@ libfindik_la_LIBADD	= \
 	parser/libfindik_parser.la \
 	persistency/libfindik_persistency.la \
 	protocols/http/libfindik_http.la \
+	protocols/http/auth_util/libfindik_http_auth_util.la \
 	service/libfindik_service.la \
 	util/libfindik_util.la
 
@@ -23,6 +24,7 @@ findik_LDADD		=	libfindik.la
 LIBS = \
 	-lboost_thread \
 	-lboost_system \
+	-lgssapi \
 	-lpthread \
 	-llog4cxx \
 	-lconfig++ \

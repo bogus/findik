@@ -45,7 +45,14 @@ namespace findik
 				public findik::protocols::http::data
 			{
 			public:
-				request();
+				/*!
+				Default constructor.
+				*/
+				request(bool is_https = false);
+
+				/*!
+				Default destructor.
+				*/
 				~request();
 
 				/*!

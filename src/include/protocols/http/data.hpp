@@ -57,6 +57,12 @@ namespace findik
 				unsigned int http_version_minor;
 
 				/*!
+				Whether data is HTTPS data. Will be used for request line regeneration.
+				\returns whether data is HTTPS data.
+				*/
+				bool is_https();
+
+				/*!
 				Adds new black header object to end of header array.
 				*/
 				void add_blank_header();
@@ -126,6 +132,10 @@ namespace findik
 				*/
 				std::size_t stream_content_size_;
 
+				/*!
+				Whether data is HTTPS data.
+				*/
+				bool is_https_;
 			};
 			
 			typedef boost::shared_ptr<data> data_ptr;

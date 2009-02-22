@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_PROTOCOLS_HTTP_HTML_CONTENT_FILTER_HPP
-#define FINDIK_PROTOCOLS_HTTP_HTML_CONTENT_FILTER_HPP
+#ifndef FINDIK_PROTOCOLS_HTTP_CONTENT_MIME_FILTER_HPP
+#define FINDIK_PROTOCOLS_HTTP_CONTENT_MIME_FILTER_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>

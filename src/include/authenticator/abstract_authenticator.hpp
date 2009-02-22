@@ -51,8 +51,7 @@ namespace findik
                         \param connection_ connection contains new data to be inspected.
                         \returns a tuple containing whether content should be authenticated or not and the authentication object.
                         */
-                        virtual boost::tuple<bool, authentication_result_ptr> 
-				authenticate(findik::io::connection_ptr connection_) = 0;
+                        virtual boost::tuple<bool, findik::authenticator::authentication_result_ptr> authenticate(findik::io::connection_ptr connection_) = 0;
 
 			/*!
 			Authentication service will match authenticators with connections according to their protocols. 

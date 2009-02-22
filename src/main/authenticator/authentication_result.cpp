@@ -26,9 +26,12 @@ namespace findik
 			code_(code)
 		{}
 
-		authentication_result::authentication_result(unsigned int code, const std::string & result_str) :
+		authentication_result::authentication_result(unsigned int code, const std::string & result_str, unsigned int return_code, bool close_connection, unsigned int protocol) :
 			code_(code),
-			result_str_(result_str)
+			result_str_(result_str),
+			return_code_(return_code),
+                        close_connection_(close_connection_),
+                        protocol_(protocol)
 		{}
 
 		authentication_result::~authentication_result()
@@ -43,6 +46,22 @@ namespace findik
 		{
 			return code_;
 		}
+
+		unsigned int authentication_result::return_code()
+                {
+                        return return_code_;
+                }
+
+                bool authentication_result::close_connection()
+                {
+                        return close_connection_;
+                }
+
+                unsigned int authentication_result::protocol()
+                {
+                        return protocol_;
+                }
+
 	}
 }
 

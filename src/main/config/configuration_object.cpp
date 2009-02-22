@@ -37,7 +37,13 @@ namespace findik
 			db_mysql_password_(""),
 			db_pool_size_(32),
 			io_number_of_threads_(50),
-			reply_reply_file_("/etc/findik/index.html")
+			reply_reply_file_("/etc/findik/index.html"),
+			ssl_local_private_key_("/etc/findik/ssl/private.pem"),
+			ssl_local_certificate_("/etc/findik/ssl/public.pem"),
+			ssl_local_dh_parameters_("/etc/findik/ssl/dh.pem"),
+			ssl_remote_ca_("/etc/findik/ssl/ca.pem"),
+			server_max_session_(32),
+			server_max_connection_per_session_(4)
 		{
 			config_.getConfigValue_Bool("findik.server.http.run_with_squid", server_http_run_with_squid_);
 			config_.getConfigValue_String("findik.server.http.squid_host", server_http_squid_host_);
@@ -53,6 +59,18 @@ namespace findik
 			config_.getConfigValue_UInt("findik.db.pool_size", db_pool_size_);
 			config_.getConfigValue_UInt("findik.io.number_of_threads", io_number_of_threads_);
 			config_.getConfigValue_String("findik.reply.reply_file", reply_reply_file_);
+			config_.getConfigValue_String("findik.ssl.local.private_key", ssl_local_private_key_);
+			config_.getConfigValue_String("findik.ssl.local.certificate", ssl_local_certificate_);
+			config_.getConfigValue_String("findik.ssl.local.dh_parameters", ssl_local_dh_parameters_);
+			config_.getConfigValue_String("findik.ssl.remote.ca", ssl_remote_ca_);
+			config_.getConfigValue_UInt("findik.server.max_session", server_max_session_);
+			config_.getConfigValue_UInt("findik.server.max_connection_per_session", server_max_connection_per_session_);
+			config_.getConfigValue_Bool("findik.filters.http.use_clamd", use_clamd_);
+			config_.getConfigValue_String("findik.filters.http.clamd_host", clamd_host_);
+			config_.getConfigValue_String("findik.filters.http.clamd_port", clamd_port_);
+			config_.getConfigValue_Bool("findik.authentication.http.use_ad_kerbv5_negotiation_auth", use_ad_kerbv5_negotiation_auth_);
+			config_.getConfigValue_String("findik.authentication.http.ad_service_name", ad_service_name_);
+			config_.getConfigValue_String("findik.authentication.http.ad_keytab_file", ad_keytab_file_);
 		}
 
 		configuration_object::~configuration_object()
@@ -132,6 +150,66 @@ namespace findik
 		const std::string & configuration_object::reply_reply_file()
 		{
 			return reply_reply_file_;
+		}
+
+		const std::string & configuration_object::ssl_local_private_key()
+		{
+			return ssl_local_private_key_;
+		}
+
+		const std::string & configuration_object::ssl_local_certificate()
+		{
+			return ssl_local_certificate_;
+		}
+
+		const std::string & configuration_object::ssl_local_dh_parameters()
+		{
+			return ssl_local_dh_parameters_;
+		}
+
+		const std::string & configuration_object::ssl_remote_ca()
+		{
+			return ssl_remote_ca_;
+		}
+
+		unsigned int configuration_object::server_max_session()
+		{
+			return server_max_session_;
+		}
+
+		unsigned int configuration_object::server_max_connection_per_session()
+		{
+			return server_max_connection_per_session_;
+		}
+
+		bool configuration_object::use_clamd()
+		{
+			return use_clamd_;
+		}
+
+		const std::string & configuration_object::clamd_host()
+		{
+			return clamd_host_; 
+		}
+
+		const std::string & configuration_object::clamd_port()
+		{
+			return clamd_port_;
+		}
+
+		bool configuration_object::use_ad_kerbv5_negotiation_auth()
+		{
+			return use_ad_kerbv5_negotiation_auth_;
+		}
+
+		const std::string & configuration_object::ad_service_name()
+		{
+			return ad_service_name_;
+		}
+
+		const std::string & configuration_object::ad_keytab_file()
+		{
+			return ad_keytab_file_;
 		}
 	}
 }

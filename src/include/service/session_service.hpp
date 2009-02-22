@@ -22,7 +22,11 @@
 #include <boost/noncopyable.hpp>
 #include <deque>
 
+#include <boost/thread/mutex.hpp>
+
 #include "session.hpp"
+#include "connection.hpp"
+#include "abstract_session_manager.hpp"
 
 namespace findik
 {
@@ -46,6 +50,21 @@ namespace findik
 			*/
 			~session_service();
 
+			/*!
+			Executes related algoritm for specified connection and associate with a session object.
+			\param connection_ to associate session object. 
+			\returns associated session.
+			*/
+			findik::io::session_ptr get_session(findik::io::connection_ptr connection_);
+
+			/*!
+			Registers a session manager for session service in order to parse specified protocol.
+			\param proto protocol to use session manager
+			\param session_manager to register
+			*/
+			void register_session_manager(findik::io::protocol proto, 
+					findik::parser::abstract_session_manager_ptr session_manager);
+
 		protected:
 			/*!
 			Queue to store previous sessions.
@@ -53,6 +72,17 @@ namespace findik
 			attached to a session.
 			*/
 			std::deque<findik::io::session_ptr> session_queue_;
+
+			/*!
+			Mutex to use when operating on session queue.
+			*/
+			boost::mutex session_queue_mutex_;
+
+			/*!
+			Map to store session managers in an order. When session association operation has been requested
+			appropriate session manager will be fetched from this map.
+			*/
+			std::map<findik::io::protocol, findik::parser::abstract_session_manager_ptr> session_manager_map_;
 
 		};
 	}

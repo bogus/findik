@@ -27,12 +27,13 @@ namespace findik
 	{
 		namespace http
 		{
-			request::request() :
+			request::request(bool is_https) :
 				request_path_(""),
 				request_uri_("")
 			{
 				content_length_ = 0;
 				is_local_ = true;
+				is_https_ = is_https;
 			}
 
 			request::~request()
@@ -61,7 +62,7 @@ namespace findik
 
 				request_stream	<< " ";
 
-				if (FI_CONFIG.server_http_run_with_squid())
+				if ( !is_https() && FI_CONFIG.server_http_run_with_squid() )
 				{
 					request_stream << request_uri();
 				}
@@ -94,9 +95,16 @@ namespace findik
 
 			const std::string & request::request_path()
 			{
+				std::string prefix("");
+
+				if (is_https())
+					prefix.append("https://");
+				else
+					prefix.append("http://");
+
 				if (request_path_ == "") 
 				{
-					if (uri.find("http://") == 0)
+					if (uri.find(prefix) == 0)
 					{
 						request_uri_ = uri;
 						request_path_ = uri.substr( 7 + uri.substr(7).find("/"));
@@ -105,7 +113,7 @@ namespace findik
 					{
 						BOOST_FOREACH( header h, get_headers() )
 							if ( h.name == "Host")
-								request_uri_ = "http://" + h.value + uri;
+								request_uri_ = prefix + h.value + uri;
 						request_path_ = uri;
 					}
 				}
