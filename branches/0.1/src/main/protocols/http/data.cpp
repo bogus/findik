@@ -84,6 +84,11 @@ namespace findik
 				stream_content_size_ += size_;
 			}
 
+			bool data::is_https()
+			{
+				return is_https_;
+			}
+
 		}
 	}
 }

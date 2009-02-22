@@ -94,18 +94,42 @@ namespace findik
 		}
 
 		void reply_service::reply(boost::asio::streambuf & sbuf,
-				findik::io::protocol proto, findik::authenticator::authentication_result_ptr result)
+				findik::io::protocol proto, findik::authenticator::authentication_result_ptr reason)
 		{
 			// TODO: reply generator chain .
 			std::ostream os(&sbuf);
-			// os << stock_replies_[proto][reason->code()];
-			std::string reply_str_(reply_html_);
-			time_t rawtime;
-			time(&rawtime);
+			std::string resp;
 
-			FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_str_);	
-			FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", result->result_str() , reply_str_);
-			os << reply_str_;
+                        if(reason->protocol() == findik::io::http)
+                        {
+                                std::ostringstream stm;
+                                std::string reply_str_(reply_html_);
+                                resp = "HTTP/1.1 ";
+                                if(reason->return_code() == 407) {
+                                        resp = resp + "407 Proxy Authentication Required\r\n";
+					resp = resp + "Proxy-Authenticate: Negotiate\r\n";	
+					resp = resp + "Date: "+generateGMTDate()+"\r\n";	
+					resp = resp + "Content-Length : 0\r\n";	
+					resp = resp + "Proxy-Connection: close  \r\n";	
+                                } else {
+                                        resp = resp + "404 Not Found\r\n";
+                                }
+			}
+
+			os << resp;
+		}
+	
+		std::string reply_service::generateGMTDate()
+		{
+			time_t rawtime;
+			tm * ptm;
+			char buf[80];
+
+			time(&rawtime);
+			ptm = gmtime ( &rawtime );
+
+			strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S GMT", ptm);
+			return std::string(buf);	
 		}
 	}
 }

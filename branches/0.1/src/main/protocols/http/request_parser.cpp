@@ -70,7 +70,7 @@ namespace findik
 				{
 					LOG4CXX_DEBUG(debug_logger, "Creating new state entry for connection.");
 					FI_STATE_OF(connection_) = method_start;
-					request_ptr p(new request());
+					request_ptr p(new request(connection_->is_secure()));
 					connection_->update_current_data(p);
 				}
 
@@ -408,7 +408,7 @@ namespace findik
 				if (connection_->current_data()->is_remote())
 					return;
 
-				if (FI_CONFIG.server_http_run_with_squid())
+				if ( !connection_->is_secure() && FI_CONFIG.server_http_run_with_squid() )
 				{
 					hostname_ = FI_CONFIG.server_http_squid_host();
 				}
@@ -437,7 +437,7 @@ namespace findik
 				if (connection_->current_data()->is_remote())
 					return;
 
-				if (FI_CONFIG.server_http_run_with_squid())
+				if ( !connection_->is_secure() && FI_CONFIG.server_http_run_with_squid() )
 				{
 					port_ = FI_CONFIG.server_http_squid_port();
 				}
@@ -451,11 +451,18 @@ namespace findik
 							std::size_t pos_ = h.value.find_first_of(":");
 
 							if (pos_ == std::string::npos)
-								port_ = 80;
+							{
+								if ( connection_->is_secure() )
+									port_ = 443;
+								else
+									port_ = 80;
+							}
 							else
+							{
 								port_ = boost::lexical_cast< unsigned int >(
 										h.value.substr(pos_)
 									);
+							}
 						}
 				}
 			}

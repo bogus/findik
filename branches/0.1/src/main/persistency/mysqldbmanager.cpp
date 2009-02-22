@@ -66,12 +66,22 @@ namespace findik
 			        url_q->parse();
 				mysqlpp::Query * pcre_q = new mysqlpp::Query(myconn_->query("SELECT content,catid from blacklist_content"));
 			        pcre_q->parse();
+				mysqlpp::Query * file_ext_q = new mysqlpp::Query(myconn_->query("SELECT file_ext from blacklist_mime where file_ext = %0q"));
+			        file_ext_q->parse();
+				mysqlpp::Query * mime_type_q = new mysqlpp::Query(myconn_->query("SELECT mime_type from blacklist_mime where mime_type = %0q"));
+                                mime_type_q->parse();
+
 
 				dbconnection__->set_object(domain_query, domain_q);
 
 				dbconnection__->set_object(url_query, url_q);
 
 				dbconnection__->set_object(pcre_query, pcre_q);
+				
+				dbconnection__->set_object(file_ext_query, file_ext_q);
+				
+				dbconnection__->set_object(mime_type_query, mime_type_q);
+				
 				
 				return dbconnection__;
 			}
@@ -90,9 +100,10 @@ namespace findik
 			try {
 				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))->store(hostname);
 				
-				if(res.num_rows() > 0)					
+				if(res.num_rows() > 0)
 					return false;
 
+				res.clear();
 				dbconnection_->unlock();
 
 			} catch (const mysqlpp::BadQuery& e) {
@@ -120,7 +131,8 @@ namespace findik
 
                                 if(res.num_rows() > 0)
                                         return false;
-
+				
+				res.clear();
                                 dbconnection_->unlock();
 
                         } catch (const mysqlpp::BadQuery& e) {
@@ -146,12 +158,11 @@ namespace findik
 
 			try {
 				mysqlpp::StoreQueryResult res1 = ((mysqlpp::Query *)dbconnection_->get_object(pcre_query))->store();
-
-				dbconnection_->unlock();
-				
 				for (int i = 0 ; i < res1.size() ; i++) {
  					pcre_map.insert(std::pair<int,std::string>(1,res1[i][0].c_str())); 
 				}
+				res1.clear();
+				dbconnection_->unlock();
 
 			}  catch (const mysqlpp::BadQuery& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
@@ -167,6 +178,64 @@ namespace findik
                         }
 
 			return true;
+		}
+		
+		bool mysqldbmanager::fileExtQuery(std::string file_ext) 
+		{
+			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+			
+			try {
+                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(file_ext_query))->store(file_ext);
+
+                                if(res.num_rows() > 0)
+                                        return false;
+
+				res.clear();
+                                dbconnection_->unlock();
+
+                        } catch (const mysqlpp::BadQuery& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+                        catch (const mysqlpp::BadConversion& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+                        catch (const mysqlpp::Exception& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+
+                        return true;
+		}
+		
+		bool mysqldbmanager::mimeTypeQuery(std::string mime_type) 
+		{
+			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+			
+			try {
+                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(mime_type_query))->store(mime_type);
+
+                                if(res.num_rows() > 0)
+                                        return false;
+
+				res.clear();
+                                dbconnection_->unlock();
+
+                        } catch (const mysqlpp::BadQuery& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+                        catch (const mysqlpp::BadConversion& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+                        catch (const mysqlpp::Exception& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
+                                return false;
+                        }
+
+                        return true;
 		}
 	}
 }

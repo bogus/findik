@@ -33,6 +33,7 @@
 
 #include "protocol.hpp"
 #include "abstract_data.hpp"
+#include "authentication_result_container.hpp"
 
 namespace findik
 {
@@ -40,13 +41,13 @@ namespace findik
 	{
 		/*!
 		Generic connection class for handling data connections and proxying data transmission between them.
-		\extends boost::noncopyable because of containing i/o members, copying this class is not safe.
 		\extends boost::enable_shared_from_this<connection> to use boost shared pointers.
+		\extends findik::authenticator::authentication_result_container to be able to store findik authentication result objects.
 		@author H. Kerem Cevahir (shelta)
 		*/
 		class connection :
-			private boost::noncopyable,
-			public boost::enable_shared_from_this<connection>
+			public boost::enable_shared_from_this<connection>,
+			public findik::authenticator::authentication_result_container
 		{
 		public:
 			/*!
@@ -54,11 +55,6 @@ namespace findik
 			\param proto protocol of connection.
 			*/
 			explicit connection( protocol proto );
-
-			/*!
-			Destructor.
-			*/
-			~connection();
 
 			/*!
 			Start processing connection.
@@ -90,7 +86,7 @@ namespace findik
 			Socket for the local connection.
 			\returns local socket
 			*/
-			boost::asio::ip::tcp::socket & local_socket();
+			virtual boost::asio::ip::tcp::socket::lowest_layer_type & local_socket() = 0;
 
 			/*!
 			Remote hostname.
@@ -116,49 +112,29 @@ namespace findik
 			*/
 			const std::deque<abstract_data_ptr> & data_queue();
 
-		protected:
 			/*!
-			Debug logger for server class.
-			*/
-                        static log4cxx::LoggerPtr debug_logger;
-
-			/*!
-			Protocol of this connection.
-			*/
-			protocol proto_;
-
-			/*!
-			Socket for the local connection.
-			*/
-			boost::asio::ip::tcp::socket local_socket_;
-
-			/*!
-			Socket for the remote connection.
-			*/
-			boost::asio::ip::tcp::socket remote_socket_;
-
-			/*!
-			Strand to ensure the connection's handlers are not called concurrently.
-			*/
-			boost::asio::io_service::strand strand_;
-
-			/*!
-			Handle completion of a hostname resolve operation of.
-
+			Handle completion of a local handshake.
 			\param err error code if there is an error
-			\param endpoint_iterator an object to iterate over resolve results.
 			*/
-			void handle_resolve_remote(const boost::system::error_code& err,
-				boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+			virtual void handle_handshake_local(const boost::system::error_code& err) = 0;
 
 			/*!
-			Handle completion of a connect operation to a remote endpoint.
-
+			Handle completion of a remote handshake.
 			\param err error code if there is an error
-			\param endpoint_iterator an object to iterate over resolve results. This will be used when io subsystem cannot connect to current endpoint.
 			*/
-			void handle_connect_remote(const boost::system::error_code& err,
-				boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+			virtual void handle_handshake_remote(const boost::system::error_code& err) = 0;
+
+			/*!
+			Handle completion of a local shutdown.
+			\param err error code if there is an error
+			*/
+			virtual void handle_shutdown_local(const boost::system::error_code& err) = 0;
+
+			/*!
+			Handle completion of a remote shutdown.
+			\param err error code if there is an error
+			*/
+			virtual void handle_shutdown_remote(const boost::system::error_code& err) = 0;
 
 			/*!
 			Handle completion of a local read operation.
@@ -193,6 +169,59 @@ namespace findik
 			void handle_write_local(const boost::system::error_code& err);
 
 			/*!
+			Whether connection is secure.
+			
+			\return whether connection is secure.
+			*/
+			bool is_secure();
+
+		protected:
+			/*!
+			Debug logger for server class.
+			*/
+                        static log4cxx::LoggerPtr debug_logger;
+
+			/*!
+			Protocol of this connection.
+			*/
+			protocol proto_;
+
+			/*!
+			Strand to ensure the connection's handlers are not called concurrently.
+			*/
+			boost::asio::io_service::strand strand_;
+
+			/*!
+			Handle completion of a hostname resolve operation of.
+
+			\param err error code if there is an error
+			\param endpoint_iterator an object to iterate over resolve results.
+			*/
+			void handle_resolve_remote(const boost::system::error_code& err,
+				boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+
+			/*!
+			Handle completion of a connect operation to a remote endpoint.
+
+			\param err error code if there is an error
+			\param endpoint_iterator an object to iterate over resolve results. This will be used when io subsystem cannot connect to current endpoint.
+			*/
+			void handle_connect_remote(const boost::system::error_code& err,
+				boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
+
+			/*!
+			This method forms the bridge between transport layer communication and application layer communication.
+			For remote.
+			*/
+			virtual void start_remote() = 0;
+
+			/*!
+			This method forms the bridge between transport layer communication and application layer communication.
+			For local.
+			*/
+			virtual void start_local() = 0;
+
+			/*!
 			Previously recieved datas. With a max size.
 			*/
 			std::deque<abstract_data_ptr> data_queue_;
@@ -207,7 +236,7 @@ namespace findik
 			This methods set some socket options: NIO, TCP_NO_DELAY, NO_LINGER.
 			\param socket ASIO socket to set options.
 			*/
-			void prepare_socket(boost::asio::ip::tcp::socket & socket);
+			void prepare_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket);
 
 			/*!
 			Local read buffer.
@@ -235,6 +264,12 @@ namespace findik
 			void register_for_local_read();
 
 			/*!
+			Register to ASIO service to read from local socket.
+			Internal IO operations.
+			*/
+			virtual void register_for_local_read_io() = 0;
+
+			/*!
 			Register to ASIO service to resolve a hostname.
 			\param hostname hostname to resolve.
 			*/
@@ -256,11 +291,31 @@ namespace findik
 			void register_for_local_write();
 
 			/*!
+			Register to ASIO service to write local_write_buffer_ to local socket.
+			Internal IO operations.
+			*/
+			virtual void register_for_local_write_io() = 0;
+
+			/*!
 			Register to ASIO service to write specified data to local socket.
 			\param data_ fron iterator of data.
 			\param size_ number of bytes to write
 			*/
 			void register_for_local_write(char * data_, std::size_t size_);
+
+			/*!
+			Register to ASIO service to write specified data to local socket.
+			Internal IO operations.
+			\param data_ fron iterator of data.
+			\param size_ number of bytes to write
+			*/
+			virtual void register_for_local_write_io(char * data_, std::size_t size_) = 0;
+
+			/*!
+			Socket for the remote connection.
+			\returns remote socket
+			*/
+			virtual boost::asio::ip::tcp::socket::lowest_layer_type & remote_socket() = 0;
 
 			/*!
 			Register to ASIO service to connect an endpoint.
@@ -274,9 +329,21 @@ namespace findik
 			void register_for_remote_write();
 
 			/*!
+			Register to ASIO service to write remote_write_buffer_ to remote socket.
+			Internal IO operations.
+			*/
+			virtual void register_for_remote_write_io() = 0;
+
+			/*!
 			Register to ASIO service to read from remote socket.
 			*/
 			void register_for_remote_read();
+
+			/*!
+			Register to ASIO service to read from remote socket.
+			Internal IO operations.
+			*/
+			virtual void register_for_remote_read_io() = 0;
 
 			/*!
 			Timer to keep track of keepalive timeout.
@@ -364,17 +431,30 @@ namespace findik
 			void mark_as_not_streaming();
 
 			/*!
+			Shutdown local communication.  
+			*/
+			virtual void shutdown_local() = 0;
+
+			/*!
+			Shutdown remote communication.  
+			*/
+			virtual void shutdown_remote() = 0;
+
+			/*!
 			Shutdown TCP socket.  
 			\param socket to shutdown.
 			*/
-			void shutdown_socket(boost::asio::ip::tcp::socket & socket);
+			void shutdown_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket);
 
 			/*!
 			Pushes current data to queue and sets new_data_ to NULL.
 			*/
 			void push_current_data_to_queue();
 
-			
+			/*!
+			Whether connection is secure.
+			*/
+			bool is_secure_;
 
 		};
 		

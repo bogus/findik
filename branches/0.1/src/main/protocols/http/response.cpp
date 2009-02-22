@@ -30,12 +30,13 @@ namespace findik
 	{
 		namespace http
 		{
-			response::response() :
+			response::response(bool is_https) :
 				content_encoding_(indeterminate),
 				is_chunked_(boost::indeterminate)
 			{
 				content_length_ = 0;
 				is_local_ = false;
+				is_https_ = is_https;
 			}
 
 			response::~response()
@@ -146,9 +147,11 @@ namespace findik
 					return content_unchunked();
 				case gzip:
 				case deflate:
-					if (content_hr_.empty())
+					if (content_hr_.empty()) {
 						if (findik::util::zlib_inflate(content_unchunked(), content_hr_) != Z_OK)
 							content_hr_.clear();
+						content_hr_.push_back('\0');
+					}
 					return content_hr_;
 				default:
 					return content_unchunked();

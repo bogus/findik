@@ -27,6 +27,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 #include "authentication_service.hpp"
 #include "session_service.hpp"
@@ -75,6 +76,11 @@ namespace findik
 			void start();
 
 			/*!
+			Method to initialize ssl context including loading default certificate authorities and setting default verification policies.
+			*/
+			void initialize_ssl_context();
+
+			/*!
 			Method to check configuration.
 			\returns true if configuration is valid.
 			*/
@@ -85,6 +91,18 @@ namespace findik
 			\returns IO Service.
 			*/
 			boost::asio::io_service & io_srv();
+
+			/*!
+			Boost ASIO SSL Context for local.
+			\returns SSL context.
+			*/
+			boost::asio::ssl::context & local_ssl_context();
+
+			/*!
+			Boost ASIO SSL Context for remote.
+			\returns SSL context.
+			*/
+			boost::asio::ssl::context & remote_ssl_context();
 
 			/*!
 			Boost ASIO TCP IP resolver instance.
@@ -181,6 +199,16 @@ namespace findik
 			Boost ASIO TCP IP resolver instance.
 			*/
 			boost::asio::ip::tcp::resolver resolver_srv_;
+
+			/*!
+			Boost ASIO SSL Context for local.
+			*/
+			boost::asio::ssl::context local_ssl_context_;
+
+			/*!
+			Boost ASIO SSL Context for remote.
+			*/
+			boost::asio::ssl::context remote_ssl_context_;
 
 			/*!
 			Configuration service instance. To populate configuration object .
