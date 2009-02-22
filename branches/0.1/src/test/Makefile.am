@@ -16,7 +16,7 @@ LIBS = \
 	-lz \
 	-ltidy \
 	-lpcrecpp \
-	-lmysqlcppconn
+	-lmysqlpp
 
 INCLUDES = \
 	-I@top_srcdir@/src/main/filter \
