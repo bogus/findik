@@ -16,31 +16,35 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "http_session_manager.hpp"
-
-#include "services.hpp"
+#include "authentication_result_container.hpp"
 
 namespace findik
 {
-	namespace protocols
+	namespace authenticator
 	{
-		namespace http
+		void authentication_result_container::store_authentication(authentication_result_ptr authentication)
 		{
-			http_session_manager::initializer::initializer()
-			{
-				http_session_manager_ptr p(new http_session_manager());
+			boost::mutex::scoped_lock authentication_result_set_mutex_lock(authentication_result_set_mutex_);
 
-				FI_SERVICES->session_srv().register_session_manager(findik::io::http, p);
-			}
-
-			http_session_manager::initializer http_session_manager::initializer::instance;
-
-			bool http_session_manager::is_associated(findik::io::session_ptr session_, findik::io::connection_ptr connection_)
-			{
-				return session_->connection_queue().front()->local_socket().remote_endpoint().address() ==
-					connection_->local_socket().remote_endpoint().address();
-			}
+			authentication_result_set_.insert(authentication);
 		}
+
+		bool authentication_result_container::is_already_authenticated(unsigned int code, std::string result_str)
+		{
+			boost::mutex::scoped_lock authentication_result_set_mutex_lock(authentication_result_set_mutex_);
+
+			std::set<authentication_result_ptr>::iterator it = authentication_result_set_.begin();
+
+			while ( it != authentication_result_set_.end() )
+			{
+				if ( (*it)->code() == code && (*it)->result_str() == result_str )
+					return true;
+				*it++;
+			}
+
+			return false;
+		}
+
 	}
 }
 

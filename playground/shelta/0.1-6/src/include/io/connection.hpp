@@ -33,6 +33,7 @@
 
 #include "protocol.hpp"
 #include "abstract_data.hpp"
+#include "authentication_result_container.hpp"
 
 namespace findik
 {
@@ -41,10 +42,12 @@ namespace findik
 		/*!
 		Generic connection class for handling data connections and proxying data transmission between them.
 		\extends boost::enable_shared_from_this<connection> to use boost shared pointers.
+		\extends findik::authenticator::authentication_result_container to be able to store findik authentication result objects.
 		@author H. Kerem Cevahir (shelta)
 		*/
 		class connection :
-			public boost::enable_shared_from_this<connection>
+			public boost::enable_shared_from_this<connection>,
+			public findik::authenticator::authentication_result_container
 		{
 		public:
 			/*!

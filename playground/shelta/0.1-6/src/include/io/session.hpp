@@ -28,6 +28,7 @@
 
 #include "protocol.hpp"
 #include "connection.hpp"
+#include "authentication_result_container.hpp"
 
 namespace findik
 {
@@ -36,10 +37,12 @@ namespace findik
 		/*!
 		Generic session class in order to store previous connections for one local endpoint.
 		\extends boost::enable_shared_from_this<session> to use boost shared pointers.
+		\extends findik::authenticator::authentication_result_container to be able to store findik authentication result objects.
 		@author H. Kerem Cevahir (shelta)
 		*/
 		class session :
-			public boost::enable_shared_from_this<session>
+			public boost::enable_shared_from_this<session>,
+			public findik::authenticator::authentication_result_container 
 		{
 		public:
 			/*!

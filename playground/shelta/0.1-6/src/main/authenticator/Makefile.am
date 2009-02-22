@@ -1,7 +1,8 @@
 noinst_LTLIBRARIES			=	libfindik_authenticator.la
 
 libfindik_authenticator_la_SOURCES	= \
-	authentication_result.cpp
+	authentication_result.cpp \
+	authentication_result_container.cpp
 
 libfindik_authenticator_la_LIBADD	=	@LTLIBOBJS@
 

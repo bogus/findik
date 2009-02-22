@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_AUTHENTICATOR_AUTHENTICATOR_REASON_HPP
-#define FINDIK_AUTHENTICATOR_AUTHENTICATOR_REASON_HPP
+#ifndef FINDIK_AUTHENTICATOR_AUTHENTICATOR_RESULT_HPP
+#define FINDIK_AUTHENTICATOR_AUTHENTICATOR_RESULT_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
