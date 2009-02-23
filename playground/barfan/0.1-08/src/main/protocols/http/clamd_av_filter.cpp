@@ -64,16 +64,15 @@ namespace findik
 
 						if(received_data == "PONG") {
 							FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
-							std::cout << "Clamd AV filter is running" << std::endl;
 							LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is running");
 						}
 						else
-							LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is not running");
+							LOG4CXX_ERROR(debug_logger, "Clamd AV filter is not running");
 
 					}
 					catch (std::exception& e)
 					{
-						LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is not running. Exception: " + (std::string)e.what());
+						LOG4CXX_ERROR(debug_logger, "Clamd AV filter is not running. Exception: " + (std::string)e.what());
 					}
 
 				}
@@ -141,19 +140,19 @@ namespace findik
 						int pos = av_result.find(" FOUND");
 						if(pos != std::string::npos) 
 						{
-							LOG4CXX_DEBUG(debug_logger, "VIRUS FOUND : " + av_result.substr(0,pos));
+							request_ptr req = last_request_of(connection_);
+							LOG4CXX_WARN(logging::log_initializer::filter_logger, "VIRUS FOUND : " + av_result.substr(0,pos) + " for URL " + req->request_uri());
 							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Virus Found : " + av_result.substr(0,pos), response::forbidden, true, findik::io::http));		
 						}	
 						socket.close();
 					}
 					catch (std::exception& e)
 					{
-						std::cout << "Exception: " << e.what() << "\n";
+						LOG4CXX_ERROR(debug_logger, "Clamd AV filter EXCEPTION " + std::string(e.what())); // log for filter entrance
 						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(0));
 					}
 				}
 				
-				LOG4CXX_DEBUG(debug_logger, "Clamd AV filter exited"); // log for filter entrance
 				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 			}
 

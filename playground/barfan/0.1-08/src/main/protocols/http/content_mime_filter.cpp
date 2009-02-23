@@ -44,10 +44,10 @@ namespace findik
 				std::string content_type;
 				if(!FI_SERVICES->db_srv().mimeTypeQuery(resp->magic_mime_type())) 
 				{
-					LOG4CXX_DEBUG(debug_logger, "Content mime-type filter failed" + resp->magic_mime_type());
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Content blocked for mime-type : " + resp->magic_mime_type(), response::forbidden, false, findik::io::http));						
+					request_ptr req = last_request_of(connection_);
+					LOG4CXX_WARN(logging::log_initializer::filter_logger, "Content mime-type filter FAILED for mime-type " + resp->magic_mime_type() + " for url " + req->request_uri());
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Content blocked for mime-type : " + resp->magic_mime_type() + " for URL " + req->request_uri(), response::forbidden, false, findik::io::http));						
 				}
-				LOG4CXX_DEBUG(debug_logger, "Content mime-type filter passed");
 
 				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 

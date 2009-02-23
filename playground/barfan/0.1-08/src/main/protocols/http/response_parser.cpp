@@ -516,18 +516,6 @@ namespace findik
 				is_keepalive_ = false;
 			}
 
-			request_ptr response_parser::last_request_of(findik::io::connection_ptr connection_)
-			{
-				request_ptr req;
-				BOOST_FOREACH(findik::io::abstract_data_ptr data_, connection_->data_queue())
-					if (data_->is_local())
-					{
-						req = boost::static_pointer_cast<request>(data_);
-					}
-
-				return req;
-			}
-
 			void response_parser::update_keepalive_timeout_of(findik::io::connection_ptr connection_, 
 					unsigned int & keepalive_timeout_)
 			{
