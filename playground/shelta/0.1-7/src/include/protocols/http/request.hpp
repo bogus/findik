@@ -94,6 +94,13 @@ namespace findik
 				*/
 				const std::string & request_path();
 
+				/*!
+				request_path() and request_uri() methods caches result of the first calculation
+				and returns the same value for every repeated call.
+				This method clears cache for those methods and enforces them to recalculate.
+				*/
+				void reset_uri_and_path();
+
 			protected:
 				
 				/*!

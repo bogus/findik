@@ -21,34 +21,53 @@
 #include <time.h>
 #include <iostream>
 #include <sstream>
+#include <boost/lexical_cast.hpp>
 
 namespace findik
 {
 	namespace service
 	{
 		reply_service::reply_service()
+		{}
+
+		reply_service::~reply_service()
+		{}
+
+		void reply_service::start()
 		{
 			stock_replies_[findik::io::http][FC_BAD_LOCAL] = "Bad request!";
 			stock_replies_[findik::io::http][FC_BAD_REMOTE] = "Bad response!";
 
-			std::string reply_file_name;
+			// std::string reply_file_name;
 			// FI_SERVICES->config_srv().getConfigValue_String("findik.reply.reply_file", reply_file_name);
 			
-			std::string line;
-			std::ifstream file ("/etc/index.html");
-			if (file.is_open())
 			{
-				while (!file.eof())
+				std::string line;
+				std::ifstream file (FI_CONFIG.reply_reply_file().c_str());
+				if (file.is_open())
 				{
-					getline (file,line);
-					reply_html_.append(line);
+					while (!file.eof())
+					{
+						getline (file,line);
+						reply_html_.append(line);
+					}
+					file.close();
 				}
-				file.close();
+			}
+			{
+				std::string line;
+				std::ifstream file (FI_CONFIG.reply_ssl_reply_file().c_str());
+				if (file.is_open())
+				{
+					while (!file.eof())
+					{
+						getline (file,line);
+						ssl_reply_html_.append(line);
+					}
+					file.close();
+				}
 			}
 		}
-
-		reply_service::~reply_service()
-		{}
 
 		void reply_service::reply(boost::asio::streambuf & sbuf,
 				findik::io::protocol proto, unsigned int code)
@@ -111,8 +130,24 @@ namespace findik
 					resp = resp + "Date: "+generateGMTDate()+"\r\n";	
 					resp = resp + "Content-Length : 0\r\n";	
 					resp = resp + "Proxy-Connection: close  \r\n";	
-                                } else {
+					resp = resp + "\r\n";
+                                }
+				else if (reason->return_code() == FC_SSL_TMPACCEPT)
+				{
+					std::string reply_str_(ssl_reply_html_);
+					FI_SERVICES->util_srv().pcre().global_replace("@@domain@@", reason->result_str() , reply_str_);	
+					FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", boost::lexical_cast<std::string>(reason->code()), reply_str_);
+                                        resp = resp + "200 OK\r\n";
+                                        resp = resp + "Content-Type: text/html; charset=UTF-8\r\n";
+                                        resp = resp + "Content-Length: " + boost::lexical_cast<std::string>(reply_str_.size()) + "\r\n";
+					resp = resp + "Connection: close\r\n";
+					resp = resp + "\r\n";
+					resp = resp + reply_str_;
+				}
+				else
+				{
                                         resp = resp + "404 Not Found\r\n";
+					resp = resp + "\r\n";
                                 }
 			}
 

@@ -75,6 +75,8 @@ namespace findik
 
 			const std::string & reply_reply_file();
 
+			const std::string & reply_ssl_reply_file();
+
 			const std::string & ssl_local_private_key();
 
 			const std::string & ssl_local_certificate();
@@ -130,6 +132,8 @@ namespace findik
 			unsigned int io_number_of_threads_;
 			
 			std::string reply_reply_file_;
+
+			std::string reply_ssl_reply_file_;
 
 			std::string ssl_local_private_key_;
 

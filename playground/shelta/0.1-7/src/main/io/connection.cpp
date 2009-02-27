@@ -42,6 +42,7 @@ namespace findik
 			is_keepalive_(boost::indeterminate),
 			remote_port_(0),
 			remote_hostname_(""),
+			local_endpoint_(""),
 			is_streaming_(false),
 			local_receive_timer_(FI_SERVICES->io_srv()),
 			remote_receive_timer_(FI_SERVICES->io_srv()),
@@ -186,6 +187,7 @@ namespace findik
 
 		void connection::start_processing()
 		{
+			local_endpoint_ = local_socket().remote_endpoint().address().to_string();
 			start_local();
 		}
 
@@ -215,6 +217,11 @@ namespace findik
 				FI_SERVICES->parser_srv().update_port_of(shared_from_this(), remote_port_);
 
 			return remote_port_;
+		}
+
+		const std::string & connection::local_endpoint()
+		{
+			return local_endpoint_;
 		}
 
 		const std::string & connection::remote_hostname()

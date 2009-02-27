@@ -40,14 +40,14 @@ namespace findik
 		{
 			local_ssl_context_.set_options(
 					boost::asio::ssl::context::default_workarounds
-					| boost::asio::ssl::context::default_workarounds);
+					| boost::asio::ssl::context::single_dh_use);
 
 			local_ssl_context_.use_certificate_chain_file(FI_CONFIG.ssl_local_certificate());
 			local_ssl_context_.use_private_key_file(FI_CONFIG.ssl_local_private_key(), boost::asio::ssl::context::pem);
 			local_ssl_context_.use_tmp_dh_file(FI_CONFIG.ssl_local_dh_parameters());
 
-//			remote_ssl_context_.set_verify_mode(boost::asio::ssl::context::verify_none);
-			remote_ssl_context_.set_verify_mode(boost::asio::ssl::context::verify_peer);
+			remote_ssl_context_.set_verify_mode(boost::asio::ssl::context::verify_none);
+//			remote_ssl_context_.set_verify_mode(boost::asio::ssl::context::verify_peer);
 			remote_ssl_context_.load_verify_file(FI_CONFIG.ssl_remote_ca());
 		}
 
@@ -56,6 +56,7 @@ namespace findik
 			db_srv_.connect();
 			util_srv_.start();
 			initialize_ssl_context();
+			reply_srv_.start();
 		}
 
 		bool service_container::check_config()

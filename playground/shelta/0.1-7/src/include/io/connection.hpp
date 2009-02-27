@@ -89,6 +89,12 @@ namespace findik
 			virtual boost::asio::ip::tcp::socket::lowest_layer_type & local_socket() = 0;
 
 			/*!
+			Endpoint of local connection.
+			\returns local endpoint
+			*/
+			const std::string & local_endpoint();
+
+			/*!
 			Remote hostname.
 			\returns remote hostname to connect.
 			*/
@@ -455,6 +461,11 @@ namespace findik
 			Whether connection is secure.
 			*/
 			bool is_secure_;
+
+			/*!
+			Local endpoint.
+			*/
+			std::string local_endpoint_;
 
 		};
 		

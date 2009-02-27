@@ -95,15 +95,15 @@ namespace findik
 
 			const std::string & request::request_path()
 			{
-				std::string prefix("");
-
-				if (is_https())
-					prefix.append("https://");
-				else
-					prefix.append("http://");
-
 				if (request_path_ == "") 
 				{
+					std::string prefix("");
+
+					if (is_https())
+						prefix.append("https://");
+					else
+						prefix.append("http://");
+
 					if (uri.find(prefix) == 0)
 					{
 						request_uri_ = uri;
@@ -119,6 +119,12 @@ namespace findik
 				}
 
 				return request_path_;
+			}
+
+			void request::reset_uri_and_path()
+			{
+				request_path_ = "";
+				request_uri_ = "";
 			}
 
 		}

@@ -38,6 +38,7 @@ namespace findik
 			db_pool_size_(32),
 			io_number_of_threads_(50),
 			reply_reply_file_("/etc/findik/index.html"),
+			reply_ssl_reply_file_("/etc/findik/ssl.html"),
 			ssl_local_private_key_("/etc/findik/ssl/private.pem"),
 			ssl_local_certificate_("/etc/findik/ssl/public.pem"),
 			ssl_local_dh_parameters_("/etc/findik/ssl/dh.pem"),
@@ -59,6 +60,7 @@ namespace findik
 			config_.getConfigValue_UInt("findik.db.pool_size", db_pool_size_);
 			config_.getConfigValue_UInt("findik.io.number_of_threads", io_number_of_threads_);
 			config_.getConfigValue_String("findik.reply.reply_file", reply_reply_file_);
+			config_.getConfigValue_String("findik.reply.ssl_reply_file", reply_ssl_reply_file_);
 			config_.getConfigValue_String("findik.ssl.local.private_key", ssl_local_private_key_);
 			config_.getConfigValue_String("findik.ssl.local.certificate", ssl_local_certificate_);
 			config_.getConfigValue_String("findik.ssl.local.dh_parameters", ssl_local_dh_parameters_);
@@ -150,6 +152,11 @@ namespace findik
 		const std::string & configuration_object::reply_reply_file()
 		{
 			return reply_reply_file_;
+		}
+
+		const std::string & configuration_object::reply_ssl_reply_file()
+		{
+			return reply_ssl_reply_file_;
 		}
 
 		const std::string & configuration_object::ssl_local_private_key()

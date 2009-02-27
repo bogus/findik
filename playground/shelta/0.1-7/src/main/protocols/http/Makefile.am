@@ -11,6 +11,7 @@ libfindik_http_la_SOURCES	= \
 	file_ext_filter.cpp \
 	html_content_filter.cpp \
 	http_session_manager.cpp \
+	https_authenticator.cpp \
 	request.cpp \
 	request_parser.cpp \
 	response.cpp \

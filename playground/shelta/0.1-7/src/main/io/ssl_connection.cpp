@@ -143,11 +143,62 @@ namespace findik
 		void ssl_connection::handle_handshake_remote(const boost::system::error_code& err)
 		{
 			//TODO: call logger
-			if (err)
-				return;
+//			if (err)
+//				std::cout << "--------->>> " << err.message() << std::endl;
+//				return;
+			long ssl_return_code_ = SSL_get_verify_result(remote_ssl_socket_.impl()->ssl);
 
-			current_data()->into_buffer(remote_write_buffer_);
-			register_for_remote_write();
+			switch (ssl_return_code_)
+			{
+			case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+			case X509_V_ERR_UNABLE_TO_GET_CRL:
+			case X509_V_ERR_CERT_SIGNATURE_FAILURE:
+			case X509_V_ERR_CRL_SIGNATURE_FAILURE:
+			case X509_V_ERR_CERT_NOT_YET_VALID:
+			case X509_V_ERR_CERT_HAS_EXPIRED:
+			case X509_V_ERR_CRL_NOT_YET_VALID:
+			case X509_V_ERR_CRL_HAS_EXPIRED:
+			case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
+			case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
+			case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
+			case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
+			case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+			case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+			case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+			case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
+			case X509_V_ERR_CERT_REVOKED:
+			case X509_V_ERR_INVALID_CA:
+			case X509_V_ERR_CERT_UNTRUSTED:
+			case X509_V_ERR_CERT_REJECTED:
+			case X509_V_ERR_SUBJECT_ISSUER_MISMATCH:
+				if( ! FI_SERVICES->session_srv().get_session(shared_from_this())
+					->is_already_authenticated(FC_SSL_TMPACCEPT, remote_hostname() ) )
+				{
+					shutdown_remote();
+					findik::authenticator::authentication_result_ptr auth_req = 
+						findik::authenticator::authentication_result::create_result(
+							FC_SSL_TMPACCEPT_REQ, remote_hostname(), FC_SSL_TMPACCEPT_REQ, false, proto()
+						);
+					FI_SERVICES->session_srv().get_session(shared_from_this())->store_authentication(auth_req);
+
+					findik::authenticator::authentication_result_ptr auth = 
+						findik::authenticator::authentication_result::create_result(
+							ssl_return_code_, remote_hostname(), FC_SSL_TMPACCEPT, false, proto()
+						);
+					FI_SERVICES->reply_srv().reply(local_write_buffer_, proto(), auth);
+					register_for_local_write();
+					break;
+				}
+			case X509_V_OK:
+				current_data()->into_buffer(remote_write_buffer_);
+				register_for_remote_write();
+				break;
+			default:
+				FI_SERVICES->reply_srv().reply(local_write_buffer_,
+						proto(), FC_BAD_REMOTE);
+				register_for_local_write();
+				break;
+			}
 		}
 
 		void ssl_connection::handle_shutdown_local(const boost::system::error_code& err)
