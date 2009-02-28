@@ -31,6 +31,8 @@
 #include "service_container.hpp"
 #include "protocol.hpp"
 
+#include "http_parser_constants.hpp"
+
 namespace findik
 {
 	namespace protocols
@@ -131,6 +133,7 @@ namespace findik
 						else
 						{
 							FI_TMPSTR_OF(connection_).push_back(toupper(input));
+							FI_CHECK_SSTR( FIR_TMPSTR_OF(connection_) );
 							return boost::indeterminate;
 						}
 					case uri_start:
@@ -151,6 +154,7 @@ namespace findik
 						else if (is_uri_char(input))
 						{
 							req->uri.push_back(input);
+							FI_CHECK_LSTR(req->uri);
 							return boost::indeterminate;
 						}
 						else
@@ -231,6 +235,7 @@ namespace findik
 						{
 							req->http_version_major = 
 								req->http_version_major * 10 + input - '0';
+							FI_CHECK_SINT(req->http_version_major);
 						return boost::indeterminate;
 						}
 						else
@@ -259,6 +264,7 @@ namespace findik
 						{
 							req->http_version_minor = 
 								req->http_version_minor * 10 + input - '0';
+							FI_CHECK_SINT(req->http_version_minor);
 							return boost::indeterminate;
 						}
 						else
@@ -294,6 +300,7 @@ namespace findik
 						else
 						{
 							req->add_blank_header();
+							FI_CHECK_VCTR(req->get_headers())
 							req->last_header().name.push_back(input);
 							FI_STATE_OF(connection_) = header_name;
 							return boost::indeterminate;
@@ -332,6 +339,7 @@ namespace findik
 						else
 						{
 							req->last_header().name.push_back(input);
+							FI_CHECK_MSTR(req->last_header().name);
 							return boost::indeterminate;
 						}
 					case space_before_header_value:
@@ -358,6 +366,7 @@ namespace findik
 						else
 						{
 							req->last_header().value.push_back(input);
+							FI_CHECK_LSTR(req->last_header().value);
 							return boost::indeterminate;
 						}
 					case expecting_newline_2:

@@ -28,6 +28,8 @@ namespace findik
 		namespace http
 		{
 			data::data() :
+				http_version_major(0),
+				http_version_minor(0),
 				content_length_(0),
 				stream_content_size_(0)
 			{

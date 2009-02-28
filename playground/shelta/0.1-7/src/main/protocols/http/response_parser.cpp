@@ -32,6 +32,8 @@
 #include "service_container.hpp"
 #include "protocol.hpp"
 
+#include "http_parser_constants.hpp"
+
 namespace findik
 {
 	namespace protocols
@@ -162,6 +164,7 @@ namespace findik
 						else if (is_digit(input))
 						{
 							resp->http_version_major = resp->http_version_major * 10 + input - '0';
+							FI_CHECK_SINT(resp->http_version_major);
 							return boost::indeterminate;
 						}
 						else
@@ -188,6 +191,7 @@ namespace findik
 						else if (is_digit(input))
 						{
 							resp->http_version_minor = resp->http_version_minor * 10 + input - '0';
+							FI_CHECK_SINT(resp->http_version_minor);
 							return boost::indeterminate;
 						}
 						else
@@ -198,8 +202,8 @@ namespace findik
 						if (is_digit(input))
 						{
 							FI_STATE_OF(connection_) = status_code;
-							FI_TMPSTR_OF(connection_).clear();
-							FIR_TMPSTR_OF(connection_).push_back(input);
+							FI_TMPINT_OF(connection_) = 0;
+							FIR_TMPINT_OF(connection_) = FIR_TMPINT_OF(connection_) * 10 + input - '0';
 							return boost::indeterminate;
 						}
 						else
@@ -207,16 +211,16 @@ namespace findik
 					case status_code:
 						if (input == ' ')
 						{
-							resp->status_code = (response::status_type) 
-								boost::lexical_cast< unsigned int >(FIR_TMPSTR_OF(connection_));
+							resp->status_code = (response::status_type) FIR_TMPINT_OF(connection_);
+							FI_TMPINT_OF(connection_) = 0;
 
-							FI_TMPSTR_OF(connection_).clear();
 							FI_STATE_OF(connection_) = status_line_start;
 							return boost::indeterminate;
 						}
 						else if (is_digit(input))
 						{
-							FI_TMPSTR_OF(connection_).push_back(input);
+							FI_TMPINT_OF(connection_) = FIR_TMPINT_OF(connection_) * 10 + input - '0';
+							FI_CHECK_SINT( FIR_TMPINT_OF(connection_) );
 							return boost::indeterminate;
 						}
 						else
@@ -234,6 +238,7 @@ namespace findik
 						if (isalpha(input) || input == ' ')
 						{
 							resp->status_line.push_back(input);
+							FI_CHECK_LSTR(resp->status_line);
 							return boost::indeterminate;
 						}
 						else if (input == '\r')
@@ -271,6 +276,7 @@ namespace findik
 						else
 						{
 							resp->add_blank_header();
+							FI_CHECK_VCTR(resp->get_headers());
 							resp->last_header().name.push_back(input);
 							FI_STATE_OF(connection_) = header_name;
 							return boost::indeterminate;
@@ -309,6 +315,7 @@ namespace findik
 						else
 						{
 							resp->last_header().name.push_back(input);
+							FI_CHECK_MSTR(resp->last_header().name);
 							return boost::indeterminate;
 						}
 					case space_before_header_value:
@@ -335,6 +342,7 @@ namespace findik
 						else
 						{
 							resp->last_header().value.push_back(input);
+							FI_CHECK_LSTR(resp->last_header().value);
 							return boost::indeterminate;
 						}
 					case expecting_newline_2:
@@ -537,10 +545,8 @@ namespace findik
 				}
 				else
 				{
-					if (connection_->current_data().get() == 0)
-						return;
-
-					if (connection_->current_data()->is_local())
+					if (connection_->current_data().get() == 0 ||
+							connection_->current_data()->is_local() )
 						return;
 
 					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
