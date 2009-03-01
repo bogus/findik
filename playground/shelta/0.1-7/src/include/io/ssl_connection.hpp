@@ -156,6 +156,14 @@ namespace findik
 			\param err error code if there is an error
 			*/
 			void handle_shutdown_remote(const boost::system::error_code& err);
+
+			/*!
+			Checks whether hostname of connection matches with certificates common name.
+			\param hostname_ fqdn representation of hostname
+			\param cert_ x509 certificate
+			\returns whether common name of certifacate matches with hostname.
+			*/
+			bool compare_hostname_and_certificate(const std::string & hostname_, X509 * cert_);
 		};
 	}
 }

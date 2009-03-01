@@ -20,6 +20,9 @@
 #include "services.hpp"
 
 #include <boost/bind.hpp>
+#include <algorithm>
+
+#define FC_SSL_INVALID_HOSTNAME 101
 
 namespace findik
 {
@@ -171,6 +174,7 @@ namespace findik
 			case X509_V_ERR_CERT_UNTRUSTED:
 			case X509_V_ERR_CERT_REJECTED:
 			case X509_V_ERR_SUBJECT_ISSUER_MISMATCH:
+			invalid_certificate:
 				if( ! FI_SERVICES->session_srv().get_session(shared_from_this())
 					->is_already_authenticated(FC_SSL_TMPACCEPT, remote_hostname() ) )
 				{
@@ -189,10 +193,26 @@ namespace findik
 					register_for_local_write();
 					break;
 				}
+				else
+				{
+					goto accept_certificate;
+				}
 			case X509_V_OK:
-				current_data()->into_buffer(remote_write_buffer_);
-				register_for_remote_write();
-				break;
+				if (compare_hostname_and_certificate(
+						remote_hostname(), 
+						SSL_get_peer_certificate(remote_ssl_socket_.impl()->ssl)
+					))
+				{
+				accept_certificate:
+					current_data()->into_buffer(remote_write_buffer_);
+					register_for_remote_write();
+					break;
+				}
+				else
+				{
+					ssl_return_code_ = FC_SSL_INVALID_HOSTNAME;
+					goto invalid_certificate;
+				}
 			default:
 				FI_SERVICES->reply_srv().reply(local_write_buffer_,
 						proto(), FC_BAD_REMOTE);
@@ -207,6 +227,27 @@ namespace findik
 
 		void ssl_connection::handle_shutdown_remote(const boost::system::error_code& err)
 		{
+		}
+
+		bool ssl_connection::compare_hostname_and_certificate(const std::string & hostname_, X509 * cert_)
+		{
+			std::string hname_(hostname_);
+			std::transform(hname_.begin(), hname_.end(), hname_.begin(), ::tolower);
+
+			std::string cname_("");
+			cname_ += X509_NAME_oneline(X509_get_subject_name(cert_),0,0);
+			cname_ = cname_.substr(cname_.find("/CN=") + 4 );
+			cname_ = cname_.substr(0, cname_.find("/"));
+			std::transform(cname_.begin(), cname_.end(), cname_.begin(), ::tolower);
+
+			if (cname_.size() > 0 && cname_[0] == '*')
+			{
+				return hname_.find(cname_.substr(1)) + cname_.size() - 1 == hname_.size();
+			}
+			else
+			{
+				return hname_ == cname_;
+			}
 		}
 
 	}
