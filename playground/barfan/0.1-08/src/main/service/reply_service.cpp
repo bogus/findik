@@ -105,12 +105,18 @@ namespace findik
                                 std::ostringstream stm;
                                 std::string reply_str_(reply_html_);
                                 resp = "HTTP/1.1 ";
-                                if(reason->return_code() == 407) {
+                                if(reason->return_code() == 101) {
                                         resp = resp + "407 Proxy Authentication Required\r\n";
 					resp = resp + "Proxy-Authenticate: Negotiate\r\n";	
 					resp = resp + "Date: "+generateGMTDate()+"\r\n";	
 					resp = resp + "Content-Length : 0\r\n";	
 					resp = resp + "Proxy-Connection: close  \r\n";	
+                                } else if(reason->return_code() == 102) {
+                                        resp = resp + "407 Proxy Authentication Required\r\n";
+                                        resp = resp + "Proxy-Authenticate: Basic realm=\"FINDIK\"\r\n";
+                                        resp = resp + "Date: "+generateGMTDate()+"\r\n";
+                                        resp = resp + "Content-Length : 0\r\n";
+                                        resp = resp + "Proxy-Connection: close  \r\n";
                                 } else {
                                         resp = resp + "404 Not Found\r\n";
                                 }

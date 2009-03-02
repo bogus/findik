@@ -99,6 +99,22 @@ namespace findik
 
                         const std::string & ad_keytab_file();
 
+			bool use_ldap_basic_auth();
+                        
+			const std::string & ldap_base_dn();
+
+                        const std::string & ldap_bind_dn_name();
+
+                        const std::string & ldap_bind_dn_password();
+
+                        const std::string & ldap_server_name();
+
+                        const std::string & ldap_search_attr();
+
+                        const std::string & ldap_password_attr();
+		
+			const std::string & ldap_realm();
+
 		protected:
 
 			bool server_http_run_with_squid_;
@@ -154,6 +170,22 @@ namespace findik
                         std::string ad_service_name_;
 
                         std::string ad_keytab_file_;
+
+			bool use_ldap_basic_auth_;
+                        
+			std::string ldap_base_dn_;
+
+                        std::string ldap_bind_dn_name_;
+
+                        std::string ldap_bind_dn_password_;
+
+			std::string ldap_server_name_;
+
+			std::string ldap_search_attr_;
+		
+			std::string ldap_password_attr_;
+
+			std::string ldap_realm_;
 
 		};
 	}
