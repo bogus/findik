@@ -486,8 +486,16 @@ namespace findik
                         {
 				if ( current_data().get() != 0 && current_data()->is_stream())
 				{
-					mark_as_streaming();
-					register_for_local_write(remote_read_buffer_.data(), bytes_transferred);
+					if (is_streaming())
+					{
+						register_for_local_write(remote_read_buffer_.data(), bytes_transferred);
+					}
+					else
+					{
+						mark_as_streaming();
+						current_data()->into_buffer(local_write_buffer_);
+						register_for_local_write();
+					}
 				}
 				else
 				{

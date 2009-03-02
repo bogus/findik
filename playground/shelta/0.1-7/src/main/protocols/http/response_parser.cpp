@@ -59,7 +59,7 @@ namespace findik
 				{
 					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 					if (resp->is_stream()) {
-							resp->add_to_stream_content_size(end - begin); // this will given chunk length, TODO: reimplement this
+						resp->add_to_stream_content_size(end - begin); // this will given chunk length, TODO: reimplement this
 						
 						boost::tribool result = boost::indeterminate;
 						if ( !( resp->content_size() < resp->content_length() ) )

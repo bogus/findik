@@ -56,7 +56,9 @@ namespace findik
 			bool content_mime_filter::is_applicable(findik::io::connection_ptr connection_)
 			{
 				// set this filter to be used in request only
-				return connection_->proto() == findik::io::http && connection_->current_data()->is_remote();	
+				return connection_->proto() == findik::io::http
+					&& connection_->current_data()->is_remote()
+					&& connection_->current_data()->has_content();
 			}
 		}
 	}
