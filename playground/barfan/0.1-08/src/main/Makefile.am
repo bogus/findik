@@ -24,6 +24,8 @@ findik_LDADD		=	libfindik.la
 LIBS = \
 	-lboost_thread \
 	-lboost_system \
+	-lcrypt \
+	-lcrypto \
 	-lgssapi \
 	-lpthread \
 	-llog4cxx \

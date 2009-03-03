@@ -56,7 +56,10 @@ namespace findik
 				if( auth == "")
 					return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", authenticator_code, false, findik::io::http));	
 				else {
-					std::cout << "********\n" << base64_decode(auth.substr(6)) << std::endl;
+
+					std::string auth_response = base64_decode(auth.substr(6));
+					std::string username, passwd;
+
 					LDAP *ld = (LDAP *) NULL;
 					LDAPMessage *result = (LDAPMessage *) NULL;
 					std::string base_dn = FI_CONFIG.ldap_base_dn();
@@ -95,11 +98,19 @@ namespace findik
 					tv.tv_usec=0;
 
 					int msgid;
+						
+					size_t found;
+  					found=auth_response.find(":");
+					if (found != std::string::npos)
+					{
+						username = auth_response.substr(0,found);
+						passwd = auth_response.substr(found+1); 		
+					}	
 					
 					rc = ldap_search_ext(ld,
 							base_dn.c_str(),
 							LDAP_SCOPE_SUBTREE,
-							("(&(objectClass=*)(uid=" +  base64_decode(auth.substr(6)) + "))").c_str(),
+							("(&(objectClass=*)(" + FI_CONFIG.ldap_search_attr() + "=" + username + "))").c_str(),
 							attrs, 0,NULL,NULL,&tv,1000000,
 							&msgid);
 

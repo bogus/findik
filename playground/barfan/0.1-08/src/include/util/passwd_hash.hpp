@@ -16,9 +16,25 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifndef FINDIK_UTIL_PASSWD_HASH_HPP
+#define FINDIK_UTIL_PASSWD_HASH_HPP
 
 #include <string>
+#include <unistd.h>
+#include <iostream>
+#include <openssl/md5.h>
+#include <openssl/sha.h>
 
-std::string base64_encode(unsigned char const* , unsigned int len);
-std::string base64_decode(std::string const& s);
+
+namespace findik {
+	namespace util {
+		
+		bool crypt(const std::string & pass, const std::string &hash);
+		bool md5(const std::string & pass, const std::string &hash);
+		bool sha1(const std::string & pass, const std::string &hash);
+
+	}
+}
+
+#endif
 

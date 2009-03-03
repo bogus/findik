@@ -33,6 +33,7 @@
 #include "request.hpp"
 #include "service_container.hpp"
 #include "protocol.hpp"
+#include "passwd_hash.hpp"
 
 #include <string>
 
