@@ -22,7 +22,7 @@
 namespace findik {
 	namespace util {
 		
-		bool crypt(const std::string & pass, const std::string & hash)
+		bool crypt_check(const std::string & pass, const std::string & hash)
 		{
 			if(hash.length() == 13)
 			{
@@ -38,34 +38,62 @@ namespace findik {
 			} else if (hash.substr(0,3) == "$1$") {
 				// MD5
 				if(std::string((const char *)crypt(pass.c_str(),
-                                                        hash.substr(3,8).c_str())) == hash)
+                                                        hash.substr(0,11).c_str())) == hash)
                                         return true;
 			} else if (hash.substr(0,3) == "$2$") {
 				// SHA1 with $2$ header
                                 if(std::string((const char *)crypt(pass.c_str(),
-                                                        hash.substr(3,16).c_str())) == hash)
+                                                        hash.substr(0,19).c_str())) == hash)
                                         return true;
                         } else if (hash.substr(0,4) == "$2a$") {
 				// SHA1 with $2a$ header
                                 if(std::string((const char *)crypt(pass.c_str(),
-                                                        hash.substr(4,16).c_str())) == hash)
+                                                        hash.substr(0,20).c_str())) == hash)
                                         return true;
-			}
+			} 
 
 			return false;
 		}
 
-                bool md5(const std::string & pass, const std::string & hash)
+                bool md5_check(const std::string & pass, const std::string & hash)
 		{
-
+			unsigned char md[16];
+			MD5((const unsigned char *)pass.c_str(), pass.length(), md);
+			std::string sha1_value((const char *)md);
+			if(hash == sha1_value)
+				return true;
 			return false;
 		}
 
-                bool sha1(const std::string & pass, const std::string & hash)
+                bool sha1_check(const std::string & pass, const std::string & hash)
 		{
-
+			unsigned char md[20];
+			SHA1((const unsigned char *)pass.c_str(), pass.length(), md);
+			std::string sha1_value((const char *)md);
+			if(hash == sha1_value)
+				return true;
 			return false;
 		}
+		
+		std::string crypt_hash(const std::string & pass,  crypt_types type)
+		{
+			std::string hash_value = "";
 
+			return hash_value;
+		}
+
+                std::string md5_hash(const std::string & pass)
+		{
+			unsigned char md[16];
+			MD5((const unsigned char *)pass.c_str(), pass.length(), md);
+			return std::string((const char *)md);
+		}
+
+                std::string sha1_hash(const std::string & pass)
+		{
+			unsigned char md[20];
+			SHA1((const unsigned char *)pass.c_str(), pass.length(), md);
+			return std::string((const char *)md);
+		}
 	}
 }

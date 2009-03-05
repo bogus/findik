@@ -36,6 +36,7 @@
 #include "passwd_hash.hpp"
 
 #include <string>
+#include <map>
 
 namespace findik
 {
@@ -88,6 +89,25 @@ namespace findik
 					static log4cxx::LoggerPtr debug_logger;
 	
 					static int authenticator_code;
+
+					static std::string ldap_server;
+
+					static std::string bind_dn_name;
+
+					//static BerValue bind_dn_creds; 
+					
+					static std::string base_dn;
+
+					static std::string username_attr;
+
+					static std::string password_attr;
+
+					static char *result_attrs[2];
+				
+					static struct timeval tv; 
+
+					static std::map<std::string,std::string> auth_cache;
+					
 
 			};
 

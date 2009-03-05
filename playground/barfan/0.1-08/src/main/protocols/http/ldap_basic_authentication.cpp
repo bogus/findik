@@ -28,13 +28,57 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr ldap_basic_authentication::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.ldap_basic_authentication"));	
+
 			int ldap_basic_authentication::authenticator_code = 102;
+			char *ldap_basic_authentication::result_attrs[2];
+			//BerValue ldap_basic_authentication::bind_dn_creds;
+			struct timeval ldap_basic_authentication::tv;
+			std::string ldap_basic_authentication::ldap_server = FI_CONFIG.ldap_server_name();
+			std::string ldap_basic_authentication::bind_dn_name = FI_CONFIG.ldap_bind_dn_name();
+			std::string ldap_basic_authentication::base_dn = FI_CONFIG.ldap_base_dn();
+			std::string ldap_basic_authentication::username_attr = FI_CONFIG.ldap_search_attr();
+			std::string ldap_basic_authentication::password_attr = FI_CONFIG.ldap_password_attr();
+			std::map<std::string,std::string> ldap_basic_authentication::auth_cache;
+
 			// constructor definition of filter service registration inner class
 			ldap_basic_authentication::initializer::initializer()
                         {
                                 ldap_basic_authentication_ptr akn(new ldap_basic_authentication());
-				if(FI_CONFIG.use_ldap_basic_auth())
-	                                FI_SERVICES->authentication_srv().register_authenticator(akn);
+			
+				BerValue bind_dn_creds;
+
+				bind_dn_creds.bv_len=FI_CONFIG.ldap_bind_dn_password().length();
+                                bind_dn_creds.bv_val=(char *)FI_CONFIG.ldap_bind_dn_password().c_str();
+
+				result_attrs[0] = (char *)FI_CONFIG.ldap_password_attr().c_str();
+				result_attrs[1] = NULL;
+
+				tv.tv_sec=60*60;
+	                        tv.tv_usec=0;
+				
+				LDAP *ld = (LDAP *) NULL;
+				int rc = -1;
+
+				if(FI_CONFIG.use_ldap_basic_auth()) {
+
+                                        rc = ldap_initialize (&ld, ldap_basic_authentication::ldap_server.c_str());
+
+                                        if (rc != LDAP_SUCCESS)
+                                        {
+						LOG4CXX_ERROR(debug_logger, "Could not initiazlize LDAP, reason: " + std::string(ldap_err2string(rc)));
+                                                return;
+                                        }
+
+
+                                        rc=ldap_sasl_bind_s(ld,bind_dn_name.c_str(),NULL,&bind_dn_creds,NULL,NULL,NULL);
+                                        if (rc != LDAP_SUCCESS)
+                                        {
+						LOG4CXX_ERROR(debug_logger, "Could not bind to LDAP server, reason: " + std::string(ldap_err2string(rc)));
+                                                return;
+                                        }
+
+	                                FI_SERVICES->authentication_srv().register_authenticator(akn);			
+				}
                         }
 
                         ldap_basic_authentication::initializer ldap_basic_authentication::initializer::instance;
@@ -58,81 +102,105 @@ namespace findik
 				else {
 
 					std::string auth_response = base64_decode(auth.substr(6));
-					std::string username, passwd;
-
+					std::string username = "", passwd = "";
 					LDAP *ld = (LDAP *) NULL;
 					LDAPMessage *result = (LDAPMessage *) NULL;
-					std::string base_dn = FI_CONFIG.ldap_base_dn();
 					int rc = -1;
-					struct berval cred;
-					std::string bind_dn_name = FI_CONFIG.ldap_bind_dn_name();
-					std::string bind_dn_pass = FI_CONFIG.ldap_bind_dn_password();
-
-					cred.bv_len=bind_dn_pass.length();
-					cred.bv_val=(char *)bind_dn_pass.c_str();
-
-
-					rc = ldap_initialize (&ld, FI_CONFIG.ldap_server_name().c_str());
-
-					if (rc != LDAP_SUCCESS)
-					{
-						printf("Could not initiazlize LDAP, reason: %s\n",ldap_err2string(rc));
-						return 0;
-					}
-
-
-					rc=ldap_sasl_bind_s(ld,bind_dn_name.c_str(),NULL,&cred,NULL,NULL,NULL);
-					if (rc != LDAP_SUCCESS)
-					{
-						printf("Could not bind to LDAP server, reason: %s\n",ldap_err2string(rc));
-						return 0;
-					}
-
-					char *attrs[2];
-					attrs[0] = (char *)FI_CONFIG.ldap_password_attr().c_str();
-					attrs[1] = NULL;
-
-					struct timeval tv;
-
-					tv.tv_sec=60*60;
-					tv.tv_usec=0;
-
 					int msgid;
-						
 					size_t found;
+					BerValue bind_dn_creds;
+
   					found=auth_response.find(":");
 					if (found != std::string::npos)
 					{
 						username = auth_response.substr(0,found);
 						passwd = auth_response.substr(found+1); 		
-					}	
+					}
+					if(username == "" ||passwd == "")
+						return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", authenticator_code, false, findik::io::http));		
 					
-					rc = ldap_search_ext(ld,
-							base_dn.c_str(),
-							LDAP_SCOPE_SUBTREE,
-							("(&(objectClass=*)(" + FI_CONFIG.ldap_search_attr() + "=" + username + "))").c_str(),
-							attrs, 0,NULL,NULL,&tv,1000000,
-							&msgid);
+					std::map<std::string,std::string>::iterator it;
+					it = auth_cache.find(username);					
+					if(it != auth_cache.end()) 
+					{
+						if(it->second == findik::util::md5_hash(passwd)) {
+							LOG4CXX_DEBUG(debug_logger, "Authentication done from cache for LDAP for user: " + username);
+							return boost::make_tuple(true, findik::authenticator::authentication_result::create_result(0));							
+						}
+					}
+
+	                                bind_dn_creds.bv_len=FI_CONFIG.ldap_bind_dn_password().length();
+        	                        bind_dn_creds.bv_val=(char *)FI_CONFIG.ldap_bind_dn_password().c_str();
+					
+					rc = ldap_initialize (&ld, ldap_server.c_str());
 
 					if (rc != LDAP_SUCCESS)
 					{
-						printf("Could not search LDAP server, reason: %s",ldap_err2string(rc));
+						LOG4CXX_ERROR(debug_logger, "Could not initiazlize LDAP, reason: " + std::string(ldap_err2string(rc)));				
+						return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", authenticator_code, false, findik::io::http));
 					}
 
-					tv.tv_sec=30;
-					tv.tv_usec=0;
+
+					if(bind_dn_name == "")
+						rc=ldap_sasl_bind_s(ld,NULL,NULL,NULL,NULL,NULL,NULL);
+					else
+						rc=ldap_sasl_bind_s(ld,bind_dn_name.c_str(),NULL,&bind_dn_creds,NULL,NULL,NULL);
+					if (rc != LDAP_SUCCESS)
+					{
+						LOG4CXX_ERROR(debug_logger, "Could not bind to LDAP server, reason: " + std::string(ldap_err2string(rc)));
+                                                return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", authenticator_code, false, findik::io::http));
+					}
+
+						
+					rc = ldap_search_ext(ld,base_dn.c_str(),LDAP_SCOPE_SUBTREE,("(&(objectClass=*)(" + username_attr + "=" + username + "))").c_str(),result_attrs, 0,NULL,NULL,&tv,1000000,&msgid);
+
+					if (rc != LDAP_SUCCESS)
+					{
+						LOG4CXX_ERROR(debug_logger, "Could not search LDAP server, reason: " + std::string(ldap_err2string(rc)));
+                                                return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", authenticator_code, false, findik::io::http));
+					}
 
 					rc=ldap_result(ld, msgid, 0, &tv, &result);
 
-					LDAPMessage *entry =ldap_first_message(ld,result);
+					if(ldap_count_messages(ld,result) == 1) {
 
-					struct berval **n_val = ldap_get_values_len(ld, entry, FI_CONFIG.ldap_password_attr().c_str());
+						LDAPMessage *entry = ldap_first_message(ld,result);
 
-					if(n_val != NULL)
-						std::cout << n_val[0]->bv_val << std::endl;
+						BerValue **n_val = ldap_get_values_len(ld, entry, password_attr.c_str());
 
+						if(n_val != NULL) {
+							std::string userpass(n_val[0]->bv_val);
+							bool is_passwd_correct = false;	
+							if(userpass.substr(1,5) == "crypt" || userpass.substr(1,5) == "CRYPT") {
+								if(findik::util::crypt_check(passwd,userpass.substr(7))) 
+									is_passwd_correct = true;
+							}
+							else if(userpass.substr(1,3) == "md5" || userpass.substr(1,3) == "MD5") {
+								if(findik::util::md5_check(passwd,userpass.substr(5))) 
+									is_passwd_correct = true;
+							}
+							else if(userpass.substr(1,3) == "sha" || userpass.substr(1,3) == "SHA") {
+								if(findik::util::sha1_check(passwd,userpass.substr(5))) 
+									is_passwd_correct = true;
+							}
+							else if(userpass.substr(1,9) == "cleartext" || userpass.substr(1,9) == "CLEARTEXT") {
+								if(passwd == userpass.substr(11)) 
+									is_passwd_correct = true;
+							}
 
-					return boost::make_tuple(true, findik::authenticator::authentication_result::create_result(0));
+							if(is_passwd_correct)
+							{
+								if(it != auth_cache.end())
+									auth_cache.erase(it);
+								auth_cache.insert(std::pair<std::string,std::string>(username,findik::util::md5_hash(passwd)));
+								LOG4CXX_DEBUG(debug_logger, "Authentication done from LDAP host for user: " + username);
+								return boost::make_tuple(true, findik::authenticator::authentication_result::create_result(0));
+
+							}
+						}
+					}
+
+					return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", authenticator_code, false, findik::io::http));	
 				}
 
 			}

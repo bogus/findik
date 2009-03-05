@@ -29,9 +29,20 @@
 namespace findik {
 	namespace util {
 		
-		bool crypt(const std::string & pass, const std::string &hash);
-		bool md5(const std::string & pass, const std::string &hash);
-		bool sha1(const std::string & pass, const std::string &hash);
+		enum crypt_types {
+			CRYPT_STD_DES = 1,
+			CRYPT_EXT_DES = 2,
+			CRYPT_MD5 = 3,
+			CRYPT_BLOWFISH = 4
+		};
+
+		bool crypt_check(const std::string & pass, const std::string &hash);
+		bool md5_check(const std::string & pass, const std::string &hash);
+		bool sha1_check(const std::string & pass, const std::string &hash);
+
+		std::string crypt_hash(const std::string & pass, crypt_types type);
+		std::string md5_hash(const std::string & pass);
+		std::string sha1_hash(const std::string & pass);
 
 	}
 }
