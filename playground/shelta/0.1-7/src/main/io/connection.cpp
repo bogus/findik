@@ -69,6 +69,7 @@ namespace findik
 
 				boost::system::error_code ignored_ec;
 				socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+				socket.close(ignored_ec);
 			}
 		}
 
@@ -139,12 +140,12 @@ namespace findik
 
 		void connection::register_for_keepalive_timeout()
 		{
-			unsigned int timeout = 60;
+			unsigned int timeout = 15;
 
 			FI_SERVICES->parser_srv().update_keepalive_timeout_of(shared_from_this(), timeout);
 
 			keepalive_timer_.expires_from_now(boost::posix_time::seconds(timeout));
-			keepalive_timer_.async_wait(boost::bind(&connection::handle_timeout, shared_from_this(),
+			keepalive_timer_.async_wait(boost::bind(&connection::handle_socket_timeout, shared_from_this(),
 					boost::asio::placeholders::error));
 		}
 
@@ -156,7 +157,7 @@ namespace findik
 		void connection::register_for_local_receive_timeout()
 		{
 			local_receive_timer_.expires_from_now(boost::posix_time::seconds(FI_CONFIG.server_local_receive_timeout()));
-			local_receive_timer_.async_wait(boost::bind(&connection::handle_timeout, shared_from_this(),
+			local_receive_timer_.async_wait(boost::bind(&connection::handle_socket_timeout, shared_from_this(),
 					boost::asio::placeholders::error));
 		}
 
@@ -168,7 +169,7 @@ namespace findik
 		void connection::register_for_remote_receive_timeout()
 		{
 			remote_receive_timer_.expires_from_now(boost::posix_time::seconds(FI_CONFIG.server_remote_receive_timeout()));
-			remote_receive_timer_.async_wait(boost::bind(&connection::handle_timeout, shared_from_this(),
+			remote_receive_timer_.async_wait(boost::bind(&connection::handle_socket_timeout, shared_from_this(),
 					boost::asio::placeholders::error));
 		}
 
@@ -177,7 +178,7 @@ namespace findik
 			remote_receive_timer_.cancel();
 		}
 
-		void connection::handle_timeout(const boost::system::error_code& err)
+		void connection::handle_socket_timeout(const boost::system::error_code& err)
 		{
 			if (err != boost::asio::error::operation_aborted)
 			{
@@ -279,9 +280,15 @@ namespace findik
 		void connection::handle_read_local(const boost::system::error_code& err,
 			std::size_t bytes_transferred)
 		{
-			// TODO: call logger
+			//LOG4CXX_DEBUG(debug_logger, "Handling local read.");
+			// TODO: refinement
 			if (err)
+			{
+				if (err != boost::asio::error::operation_aborted)
+					LOG4CXX_ERROR(debug_logger, "Handling local read: " + err.message());
+				close();
 				return;
+			}
 
 			if (is_keepalive())
 			{
@@ -367,9 +374,13 @@ namespace findik
 			boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Handling remote resolve.");
-			// TODO: call logger
 			if (err)
+			{
+				if (err != boost::asio::error::operation_aborted)
+					LOG4CXX_ERROR(debug_logger, "Handling resolve remote: " + err.message());
+				close();
 				return;
+			}
 
 			register_for_connect(endpoint_iterator);
 		}
@@ -394,6 +405,7 @@ namespace findik
 			{
 				LOG4CXX_ERROR(debug_logger, "On remote connect: " + err.message() + " -> " +
 						 remote_hostname_);
+				close();
 				return;
 			}
 		}
@@ -401,9 +413,13 @@ namespace findik
 		void connection::handle_write_remote(const boost::system::error_code& err)
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Handling remote write.");
-			//TODO: call logger
 			if (err)
+			{
+				if (err != boost::asio::error::operation_aborted)
+					LOG4CXX_ERROR(debug_logger, "Handling write remote: " + err.message());
+				close();
 				return;
+			}
 
 			push_current_data_to_queue();
 			register_for_remote_read();
@@ -412,9 +428,18 @@ namespace findik
 		void connection::handle_read_remote(const boost::system::error_code& err,
 			std::size_t bytes_transferred)
 		{
-			//TODO: call logger
-			if (err && err != boost::asio::error::eof)
+			//LOG4CXX_DEBUG(debug_logger, "Handling remote read.");
+			if ( (err && err != boost::asio::error::eof) || 
+				( err == boost::asio::error::eof &&
+					!(current_data().get() != 0 &&
+					current_data()->is_expecting_eof() 
+				)))
+			{
+				if (err != boost::asio::error::operation_aborted)
+					LOG4CXX_ERROR(debug_logger, "Handling remote read: " + err.message());
+				close();
 				return;
+			}
 
 			cancel_remote_receive_timeout();
 
@@ -507,9 +532,13 @@ namespace findik
 		void connection::handle_write_local(const boost::system::error_code& err)
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Handling local write.");
-			//TODO: call logger
 			if (err)
+			{
+				if (err != boost::asio::error::operation_aborted)
+					LOG4CXX_ERROR(debug_logger, "Handling write local: " + err.message());
+				close();
 				return;
+			}
 
 			if (is_streaming())
 			{

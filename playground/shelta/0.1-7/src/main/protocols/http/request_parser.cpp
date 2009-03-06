@@ -78,7 +78,13 @@ namespace findik
 
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 
-				switch (FIR_STATE_OF(connection_))
+				enum states current_state_;
+				{
+					boost::mutex::scoped_lock parser_state_map_lock(parser_state_map_mutex_);
+					current_state_ = (states) FIR_STATE_OF(connection_);
+				}
+
+				switch (current_state_)
 				{
 					case method_start:
 						if (!is_char(input) || is_ctl(input) || is_tspecial(input))
@@ -95,6 +101,7 @@ namespace findik
 					case method:
 						if (input == ' ')
 						{
+							boost::mutex::scoped_lock parser_temp_str_map_lock(parser_temp_str_map_mutex_);
 							if (FIR_TMPSTR_OF(connection_) == "GET")
 								req->method = request::get;
 
@@ -121,7 +128,7 @@ namespace findik
 							else
 								return false;
 
-							FI_TMPSTR_OF(connection_).clear();
+							FIR_TMPSTR_OF(connection_).clear();
 
 							FI_STATE_OF(connection_) = uri;
 							return boost::indeterminate;
@@ -366,7 +373,14 @@ namespace findik
 						else
 						{
 							req->last_header().value.push_back(input);
-							FI_CHECK_LSTR(req->last_header().value);
+							if (req->last_header().name == "Cookie")
+							{
+								FI_CHECK_HSTR(req->last_header().value);
+							}
+							else
+							{
+								FI_CHECK_LSTR(req->last_header().value);
+							}
 							return boost::indeterminate;
 						}
 					case expecting_newline_2:

@@ -30,7 +30,7 @@ namespace findik
 			data::data() :
 				http_version_major(0),
 				http_version_minor(0),
-				content_length_(0),
+				content_length_(-1),
 				stream_content_size_(0)
 			{
 				is_stream_ = false;
@@ -57,13 +57,15 @@ namespace findik
 				return headers_;
 			}
 
-			unsigned int data::content_length()
+			int data::content_length()
 			{
-				if (content_length_ == 0)
-					BOOST_FOREACH( header h, headers_ )
+				if (content_length_ == -1)
+					BOOST_FOREACH( header h, get_headers() )
 						if (h.name == "Content-Length")
-							content_length_ =
-							boost::lexical_cast< unsigned int >(h.value);
+						{
+							content_length_ = boost::lexical_cast< int >(h.value);
+							break;
+						}
 
 				return content_length_;
 			}

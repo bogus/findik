@@ -92,7 +92,13 @@ namespace findik
 
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 
-				switch (FIR_STATE_OF(connection_))
+				enum states current_state_;
+				{
+					boost::mutex::scoped_lock parser_state_map_lock(parser_state_map_mutex_);
+					current_state_ = (states) FIR_STATE_OF(connection_);
+				}
+
+				switch (current_state_)
 				{
 					case http_version_start:
 						if (input == 'H')
@@ -211,8 +217,9 @@ namespace findik
 					case status_code:
 						if (input == ' ')
 						{
+							boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);
 							resp->status_code = (response::status_type) FIR_TMPINT_OF(connection_);
-							FI_TMPINT_OF(connection_) = 0;
+							FIR_TMPINT_OF(connection_) = 0;
 
 							FI_STATE_OF(connection_) = status_line_start;
 							return boost::indeterminate;
@@ -342,7 +349,14 @@ namespace findik
 						else
 						{
 							resp->last_header().value.push_back(input);
-							FI_CHECK_LSTR(resp->last_header().value);
+							if (resp->last_header().name == "Cookie")
+							{
+								FI_CHECK_HSTR(resp->last_header().value);
+							}
+							else
+							{
+								FI_CHECK_LSTR(resp->last_header().value);
+							}
 							return boost::indeterminate;
 						}
 					case expecting_newline_2:
@@ -370,8 +384,8 @@ namespace findik
 							FI_STATE_OF(connection_) = chunked_size_start;
 							return boost::indeterminate;
 						}
-						else if (http_version_major == 1 &&
-								http_version_minor == 1)
+						else if (resp->http_version_major == 1 &&
+								resp->http_version_minor == 1)
 						{
 							if (resp->content_length() == 0)
 								return true;
@@ -386,10 +400,14 @@ namespace findik
 						}
 						else
 						{
-							if (resp->content_length() == 0)
+							if (resp->content_length() < 0) 
 							{
 								FI_STATE_OF(connection_) = content_eof;
 								resp->wait_for_eof();
+							}
+							else if (resp->content_length() == 0)
+							{
+								return true;
 							}
 							else
 							{
@@ -452,6 +470,7 @@ namespace findik
 						if (input == '\n')
 						{
 							resp->push_to_content(input); // not chunked
+							boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);
 							if (FIR_TMPINT_OF(connection_) == 0)
 								return true;
 							FI_STATE_OF(connection_) = chunked_line;
@@ -464,9 +483,12 @@ namespace findik
 						{
 							FI_TMPINT_OF(connection_)--;
 						}
-						if (FIR_TMPINT_OF(connection_) == 0)
 						{
-							FI_STATE_OF(connection_) = chunked_newline_2;
+							boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);
+							if (FIR_TMPINT_OF(connection_) == 0)
+							{
+								FI_STATE_OF(connection_) = chunked_newline_2;
+							}
 						}
 						return boost::indeterminate;
 					case chunked_newline_2:

@@ -401,7 +401,7 @@ namespace findik
 
 			\param err error code if there is an error
 			*/
-			void handle_timeout(const boost::system::error_code& err);
+			void handle_socket_timeout(const boost::system::error_code& err);
 
 			/*!
 			Ends connection.

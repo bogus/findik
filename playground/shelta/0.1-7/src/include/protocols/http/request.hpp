@@ -113,6 +113,11 @@ namespace findik
 				*/
 				std::string request_uri_;
 				
+				/*!
+				Whether request is sent to a proxy from client.
+				\returns whether request is sent to a proxy.
+				*/
+				bool is_proxy_request();
 			};
 			
 			typedef boost::shared_ptr<request> request_ptr;
