@@ -34,7 +34,6 @@ namespace findik
 				content_encoding_(indeterminate),
 				is_chunked_(boost::indeterminate)
 			{
-				content_length_ = 0;
 				is_local_ = false;
 				is_https_ = is_https;
 			}
@@ -90,9 +89,13 @@ namespace findik
 
 			const std::string & response::magic_mime_type()
 			{
-				if (magic_mime_type_.empty()){
+				if (magic_mime_type_.empty() && (content_hr().size() > 0)){
 					FI_SERVICES->util_srv().magic_num().get_magic_number(content_hr(),magic_mime_type_);
 				}
+				else if(content_hr().size() <= 0) {
+					magic_mime_type_ = "application/x-empty";
+				}
+				
 				return magic_mime_type_;
 			}
 

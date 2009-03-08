@@ -58,7 +58,7 @@ namespace findik
 					}
 				}
 				if( auth == "")
-					return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", 407, false, findik::io::http));	
+					return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", authenticator_code, false, findik::io::http));	
 				else {
 					OM_uint32 major_status, minor_status, minor_status2;
 					gss_buffer_desc input_token = GSS_C_EMPTY_BUFFER;

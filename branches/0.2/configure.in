@@ -30,6 +30,8 @@ AM_INIT_AUTOMAKE
 AC_CHECK_LIB([pthread],[break])
 AC_CHECK_LIB([boost_thread],[break])
 AC_CHECK_LIB([boost_system],[break])
+AC_CHECK_LIB([crypt],[break])
+AC_CHECK_LIB([crypto],[break])
 AC_CHECK_LIB([log4cxx],[break])
 AC_CHECK_LIB([config++],[break])
 AC_CHECK_LIB([z],[break])

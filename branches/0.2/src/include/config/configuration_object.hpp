@@ -75,6 +75,8 @@ namespace findik
 
 			const std::string & reply_reply_file();
 
+			const std::string & reply_ssl_reply_file();
+
 			const std::string & ssl_local_private_key();
 
 			const std::string & ssl_local_certificate();
@@ -98,6 +100,24 @@ namespace findik
                         const std::string & ad_service_name();
 
                         const std::string & ad_keytab_file();
+
+			bool use_ldap_basic_auth();
+                        
+			const std::string & ldap_base_dn();
+
+                        const std::string & ldap_bind_dn_name();
+
+                        const std::string & ldap_bind_dn_password();
+
+			const std::string & ldap_extra_filter();
+
+                        const std::string & ldap_server_name();
+
+                        const std::string & ldap_search_attr();
+
+                        const std::string & ldap_password_attr();
+		
+			const std::string & ldap_realm();
 
 		protected:
 
@@ -131,6 +151,8 @@ namespace findik
 			
 			std::string reply_reply_file_;
 
+			std::string reply_ssl_reply_file_;
+
 			std::string ssl_local_private_key_;
 
 			std::string ssl_local_certificate_;
@@ -154,6 +176,24 @@ namespace findik
                         std::string ad_service_name_;
 
                         std::string ad_keytab_file_;
+
+			bool use_ldap_basic_auth_;
+                        
+			std::string ldap_base_dn_;
+
+                        std::string ldap_bind_dn_name_;
+
+                        std::string ldap_bind_dn_password_;
+
+			std::string ldap_extra_filter_;
+
+			std::string ldap_server_name_;
+
+			std::string ldap_search_attr_;
+		
+			std::string ldap_password_attr_;
+
+			std::string ldap_realm_;
 
 		};
 	}

@@ -89,7 +89,7 @@ namespace findik
 				Length of content specified in Content-Length header.
 				\returns length of content.
 				*/
-				unsigned int content_length();
+				int content_length();
 
 				/*!
 				Overrides abstract_data::content_size() because of streaming operation handle requirement.
@@ -119,7 +119,7 @@ namespace findik
 				Length of content specified in Content-Length header.
 				This variable will be used as cache.
 				*/
-				unsigned int content_length_;
+				int content_length_;
 
 				/*!
 				Clears content_ vector.

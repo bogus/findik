@@ -31,6 +31,8 @@
 #include "service_container.hpp"
 #include "protocol.hpp"
 
+#include "http_parser_constants.hpp"
+
 namespace findik
 {
 	namespace protocols
@@ -76,7 +78,13 @@ namespace findik
 
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 
-				switch (FIR_STATE_OF(connection_))
+				enum states current_state_;
+				{
+					boost::mutex::scoped_lock parser_state_map_lock(parser_state_map_mutex_);
+					current_state_ = (states) FIR_STATE_OF(connection_);
+				}
+
+				switch (current_state_)
 				{
 					case method_start:
 						if (!is_char(input) || is_ctl(input) || is_tspecial(input))
@@ -93,6 +101,7 @@ namespace findik
 					case method:
 						if (input == ' ')
 						{
+							boost::mutex::scoped_lock parser_temp_str_map_lock(parser_temp_str_map_mutex_);
 							if (FIR_TMPSTR_OF(connection_) == "GET")
 								req->method = request::get;
 
@@ -119,7 +128,7 @@ namespace findik
 							else
 								return false;
 
-							FI_TMPSTR_OF(connection_).clear();
+							FIR_TMPSTR_OF(connection_).clear();
 
 							FI_STATE_OF(connection_) = uri;
 							return boost::indeterminate;
@@ -131,6 +140,7 @@ namespace findik
 						else
 						{
 							FI_TMPSTR_OF(connection_).push_back(toupper(input));
+							FI_CHECK_SSTR( FIR_TMPSTR_OF(connection_) );
 							return boost::indeterminate;
 						}
 					case uri_start:
@@ -151,6 +161,7 @@ namespace findik
 						else if (is_uri_char(input))
 						{
 							req->uri.push_back(input);
+							FI_CHECK_LSTR(req->uri);
 							return boost::indeterminate;
 						}
 						else
@@ -231,6 +242,7 @@ namespace findik
 						{
 							req->http_version_major = 
 								req->http_version_major * 10 + input - '0';
+							FI_CHECK_SINT(req->http_version_major);
 						return boost::indeterminate;
 						}
 						else
@@ -259,6 +271,7 @@ namespace findik
 						{
 							req->http_version_minor = 
 								req->http_version_minor * 10 + input - '0';
+							FI_CHECK_SINT(req->http_version_minor);
 							return boost::indeterminate;
 						}
 						else
@@ -294,6 +307,7 @@ namespace findik
 						else
 						{
 							req->add_blank_header();
+							FI_CHECK_VCTR(req->get_headers())
 							req->last_header().name.push_back(input);
 							FI_STATE_OF(connection_) = header_name;
 							return boost::indeterminate;
@@ -332,6 +346,7 @@ namespace findik
 						else
 						{
 							req->last_header().name.push_back(input);
+							FI_CHECK_MSTR(req->last_header().name);
 							return boost::indeterminate;
 						}
 					case space_before_header_value:
@@ -358,6 +373,14 @@ namespace findik
 						else
 						{
 							req->last_header().value.push_back(input);
+							if (req->last_header().name == "Cookie")
+							{
+								FI_CHECK_HSTR(req->last_header().value);
+							}
+							else
+							{
+								FI_CHECK_LSTR(req->last_header().value);
+							}
 							return boost::indeterminate;
 						}
 					case expecting_newline_2:
