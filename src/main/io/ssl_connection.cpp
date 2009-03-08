@@ -20,6 +20,9 @@
 #include "services.hpp"
 
 #include <boost/bind.hpp>
+#include <algorithm>
+
+#define FC_SSL_INVALID_HOSTNAME 101
 
 namespace findik
 {
@@ -143,11 +146,79 @@ namespace findik
 		void ssl_connection::handle_handshake_remote(const boost::system::error_code& err)
 		{
 			//TODO: call logger
-			if (err)
-				return;
+//			if (err)
+//				std::cout << "--------->>> " << err.message() << std::endl;
+//				return;
+			long ssl_return_code_ = SSL_get_verify_result(remote_ssl_socket_.impl()->ssl);
 
-			current_data()->into_buffer(remote_write_buffer_);
-			register_for_remote_write();
+			switch (ssl_return_code_)
+			{
+			case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+			case X509_V_ERR_UNABLE_TO_GET_CRL:
+			case X509_V_ERR_CERT_SIGNATURE_FAILURE:
+			case X509_V_ERR_CRL_SIGNATURE_FAILURE:
+			case X509_V_ERR_CERT_NOT_YET_VALID:
+			case X509_V_ERR_CERT_HAS_EXPIRED:
+			case X509_V_ERR_CRL_NOT_YET_VALID:
+			case X509_V_ERR_CRL_HAS_EXPIRED:
+			case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
+			case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
+			case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
+			case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
+			case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+			case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+			case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+			case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
+			case X509_V_ERR_CERT_REVOKED:
+			case X509_V_ERR_INVALID_CA:
+			case X509_V_ERR_CERT_UNTRUSTED:
+			case X509_V_ERR_CERT_REJECTED:
+			case X509_V_ERR_SUBJECT_ISSUER_MISMATCH:
+			invalid_certificate:
+				if( ! FI_SERVICES->session_srv().get_session(shared_from_this())
+					->is_already_authenticated(FC_SSL_TMPACCEPT, remote_hostname() ) )
+				{
+					shutdown_remote();
+					findik::authenticator::authentication_result_ptr auth_req = 
+						findik::authenticator::authentication_result::create_result(
+							FC_SSL_TMPACCEPT_REQ, remote_hostname(), FC_SSL_TMPACCEPT_REQ, false, proto()
+						);
+					FI_SERVICES->session_srv().get_session(shared_from_this())->store_authentication(auth_req);
+
+					findik::authenticator::authentication_result_ptr auth = 
+						findik::authenticator::authentication_result::create_result(
+							ssl_return_code_, remote_hostname(), FC_SSL_TMPACCEPT, false, proto()
+						);
+					FI_SERVICES->reply_srv().reply(local_write_buffer_, proto(), auth);
+					register_for_local_write();
+					break;
+				}
+				else
+				{
+					goto accept_certificate;
+				}
+			case X509_V_OK:
+				if (compare_hostname_and_certificate(
+						remote_hostname(), 
+						SSL_get_peer_certificate(remote_ssl_socket_.impl()->ssl)
+					))
+				{
+				accept_certificate:
+					current_data()->into_buffer(remote_write_buffer_);
+					register_for_remote_write();
+					break;
+				}
+				else
+				{
+					ssl_return_code_ = FC_SSL_INVALID_HOSTNAME;
+					goto invalid_certificate;
+				}
+			default:
+				FI_SERVICES->reply_srv().reply(local_write_buffer_,
+						proto(), FC_BAD_REMOTE);
+				register_for_local_write();
+				break;
+			}
 		}
 
 		void ssl_connection::handle_shutdown_local(const boost::system::error_code& err)
@@ -156,6 +227,27 @@ namespace findik
 
 		void ssl_connection::handle_shutdown_remote(const boost::system::error_code& err)
 		{
+		}
+
+		bool ssl_connection::compare_hostname_and_certificate(const std::string & hostname_, X509 * cert_)
+		{
+			std::string hname_(hostname_);
+			std::transform(hname_.begin(), hname_.end(), hname_.begin(), ::tolower);
+
+			std::string cname_("");
+			cname_ += X509_NAME_oneline(X509_get_subject_name(cert_),0,0);
+			cname_ = cname_.substr(cname_.find("/CN=") + 4 );
+			cname_ = cname_.substr(0, cname_.find("/"));
+			std::transform(cname_.begin(), cname_.end(), cname_.begin(), ::tolower);
+
+			if (cname_.size() > 0 && cname_[0] == '*')
+			{
+				return hname_.find(cname_.substr(1)) + cname_.size() - 1 == hname_.size();
+			}
+			else
+			{
+				return hname_ == cname_;
+			}
 		}
 
 	}

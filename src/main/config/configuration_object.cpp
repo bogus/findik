@@ -38,6 +38,7 @@ namespace findik
 			db_pool_size_(32),
 			io_number_of_threads_(50),
 			reply_reply_file_("/etc/findik/index.html"),
+			reply_ssl_reply_file_("/etc/findik/ssl.html"),
 			ssl_local_private_key_("/etc/findik/ssl/private.pem"),
 			ssl_local_certificate_("/etc/findik/ssl/public.pem"),
 			ssl_local_dh_parameters_("/etc/findik/ssl/dh.pem"),
@@ -59,6 +60,7 @@ namespace findik
 			config_.getConfigValue_UInt("findik.db.pool_size", db_pool_size_);
 			config_.getConfigValue_UInt("findik.io.number_of_threads", io_number_of_threads_);
 			config_.getConfigValue_String("findik.reply.reply_file", reply_reply_file_);
+			config_.getConfigValue_String("findik.reply.ssl_reply_file", reply_ssl_reply_file_);
 			config_.getConfigValue_String("findik.ssl.local.private_key", ssl_local_private_key_);
 			config_.getConfigValue_String("findik.ssl.local.certificate", ssl_local_certificate_);
 			config_.getConfigValue_String("findik.ssl.local.dh_parameters", ssl_local_dh_parameters_);
@@ -68,9 +70,20 @@ namespace findik
 			config_.getConfigValue_Bool("findik.filters.http.use_clamd", use_clamd_);
 			config_.getConfigValue_String("findik.filters.http.clamd_host", clamd_host_);
 			config_.getConfigValue_String("findik.filters.http.clamd_port", clamd_port_);
-			config_.getConfigValue_Bool("findik.authentication.http.use_ad_kerbv5_negotiation_auth", use_ad_kerbv5_negotiation_auth_);
-			config_.getConfigValue_String("findik.authentication.http.ad_service_name", ad_service_name_);
-			config_.getConfigValue_String("findik.authentication.http.ad_keytab_file", ad_keytab_file_);
+			config_.getConfigValue_Bool("findik.authentication.http.ad_kerbv5.use_ad_kerbv5_negotiation_auth", use_ad_kerbv5_negotiation_auth_);
+			config_.getConfigValue_String("findik.authentication.http.ad_kerbv5.ad_service_name", ad_service_name_);
+			config_.getConfigValue_String("findik.authentication.http.ad_kerbv5.ad_keytab_file", ad_keytab_file_);
+			config_.getConfigValue_Bool("findik.authentication.http.ldap_basic.use_ldap_basic_auth", use_ldap_basic_auth_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_base_dn", ldap_base_dn_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_bind_dn_name", ldap_bind_dn_name_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_bind_dn_password", ldap_bind_dn_password_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_extra_filter", ldap_extra_filter_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_server_name", ldap_server_name_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_search_attr", ldap_search_attr_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_password_attr", ldap_password_attr_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_realm", ldap_realm_);
+			
+		
 		}
 
 		configuration_object::~configuration_object()
@@ -152,6 +165,11 @@ namespace findik
 			return reply_reply_file_;
 		}
 
+		const std::string & configuration_object::reply_ssl_reply_file()
+		{
+			return reply_ssl_reply_file_;
+		}
+
 		const std::string & configuration_object::ssl_local_private_key()
 		{
 			return ssl_local_private_key_;
@@ -210,6 +228,51 @@ namespace findik
 		const std::string & configuration_object::ad_keytab_file()
 		{
 			return ad_keytab_file_;
+		}
+
+		bool configuration_object::use_ldap_basic_auth()
+		{
+			return use_ldap_basic_auth_;
+		}
+
+		const std::string & configuration_object::ldap_base_dn()
+		{
+			return ldap_base_dn_;
+		}
+
+		const std::string & configuration_object::ldap_bind_dn_name()
+		{
+			return ldap_bind_dn_name_;
+		}
+
+		const std::string & configuration_object::ldap_bind_dn_password()
+		{		
+			return ldap_bind_dn_password_;
+		}
+
+		const std::string & configuration_object::ldap_extra_filter()
+		{
+			return ldap_extra_filter_;
+		}
+
+		const std::string & configuration_object::ldap_server_name()
+		{
+			return ldap_server_name_;
+		}
+
+		const std::string & configuration_object::ldap_search_attr()
+		{
+			return ldap_search_attr_;
+		}
+
+		const std::string & configuration_object::ldap_password_attr()
+		{
+			return ldap_password_attr_;
+		}
+
+		const std::string & configuration_object::ldap_realm()
+		{
+			return ldap_realm_;
 		}
 	}
 }

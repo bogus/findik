@@ -111,13 +111,6 @@ namespace findik
 			protected:
 
 				/*!
-				Iterates over data_queue of connection and returns most recent local data. 
-				\param connection_
-				\returns most recent local data.
-				*/
-				request_ptr last_request_of(findik::io::connection_ptr connection_);
-
-				/*!
 				Defined parser states.
 				*/
 				enum states {

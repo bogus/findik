@@ -56,11 +56,10 @@ namespace findik
 					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 				
 				if((pos != std::string::npos) && !FI_SERVICES->db_srv().fileExtQuery(url.substr(pos+1))){
-					LOG4CXX_DEBUG(debug_logger, "URL file extension filter failed for " + url + " for extension " + url.substr(pos+1));
+					LOG4CXX_WARN(logging::log_initializer::filter_logger, "URL file extension filter FAILED for " + url + " for extension " + url.substr(pos+1));
 					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"File blocked : " + url, response::forbidden, false, findik::io::http));
 				} 
 				else {
-					LOG4CXX_DEBUG(debug_logger, "URL file extension filter passed for " + url);
 				}
 			
 				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));	

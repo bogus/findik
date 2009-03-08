@@ -53,11 +53,10 @@ namespace findik
 				
 				// check whether hostname exists in domain blacklist
 				if(FI_SERVICES->util_srv().pcre().matches_predefined(hostname).size() > 0){
-					LOG4CXX_DEBUG(debug_logger, "Domain name regular expression filter failed for domain " + hostname);
+					LOG4CXX_WARN(logging::log_initializer::filter_logger, "Domain name regular expression filter FAILED for domain " + hostname);
 					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Domain blocked : " + hostname,response::forbidden, true, findik::io::http));
 				} 
 				else {
-					LOG4CXX_DEBUG(debug_logger, "Domain name regular expression filter passed for domain " + hostname);
 				}
 				
 				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));	

@@ -22,6 +22,9 @@
 #define FC_BAD_LOCAL 400
 #define FC_BAD_REMOTE 500
 
+#define FC_SSL_TMPACCEPT 80001
+#define FC_SSL_TMPACCEPT_REQ 80002
+
 #include <boost/asio.hpp>
 #include <boost/noncopyable.hpp>
 #include <map>
@@ -82,6 +85,11 @@ namespace findik
 			*/
 			void reply(boost::asio::streambuf & sbuf, findik::io::protocol proto, unsigned int code);
 
+			/*!
+			Method to initialize service.
+			*/
+			void start();
+
 		protected:
 			/*!
 			Map to store stock replies.
@@ -92,6 +100,11 @@ namespace findik
                         String to hold reply html data
                         */
 			std::string reply_html_;
+
+			/*!
+                        String to hold SSL reply html data
+                        */
+			std::string ssl_reply_html_;
 
 			/*!
                         Returns GMT Date format like Wed, 18 Feb 2009 12:34:12 GMT

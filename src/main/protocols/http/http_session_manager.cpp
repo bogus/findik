@@ -37,8 +37,7 @@ namespace findik
 
 			bool http_session_manager::is_associated(findik::io::session_ptr session_, findik::io::connection_ptr connection_)
 			{
-				return session_->connection_queue().front()->local_socket().remote_endpoint().address() ==
-					connection_->local_socket().remote_endpoint().address();
+				return session_->connection_queue().front()->local_endpoint() == connection_->local_endpoint();
 			}
 		}
 	}

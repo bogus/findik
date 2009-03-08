@@ -32,6 +32,8 @@
 #include "service_container.hpp"
 #include "protocol.hpp"
 
+#include "http_parser_constants.hpp"
+
 namespace findik
 {
 	namespace protocols
@@ -57,7 +59,7 @@ namespace findik
 				{
 					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 					if (resp->is_stream()) {
-							resp->add_to_stream_content_size(end - begin); // this will given chunk length, TODO: reimplement this
+						resp->add_to_stream_content_size(end - begin); // this will given chunk length, TODO: reimplement this
 						
 						boost::tribool result = boost::indeterminate;
 						if ( !( resp->content_size() < resp->content_length() ) )
@@ -90,7 +92,13 @@ namespace findik
 
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 
-				switch (FIR_STATE_OF(connection_))
+				enum states current_state_;
+				{
+					boost::mutex::scoped_lock parser_state_map_lock(parser_state_map_mutex_);
+					current_state_ = (states) FIR_STATE_OF(connection_);
+				}
+
+				switch (current_state_)
 				{
 					case http_version_start:
 						if (input == 'H')
@@ -162,6 +170,7 @@ namespace findik
 						else if (is_digit(input))
 						{
 							resp->http_version_major = resp->http_version_major * 10 + input - '0';
+							FI_CHECK_SINT(resp->http_version_major);
 							return boost::indeterminate;
 						}
 						else
@@ -188,6 +197,7 @@ namespace findik
 						else if (is_digit(input))
 						{
 							resp->http_version_minor = resp->http_version_minor * 10 + input - '0';
+							FI_CHECK_SINT(resp->http_version_minor);
 							return boost::indeterminate;
 						}
 						else
@@ -198,8 +208,8 @@ namespace findik
 						if (is_digit(input))
 						{
 							FI_STATE_OF(connection_) = status_code;
-							FI_TMPSTR_OF(connection_).clear();
-							FIR_TMPSTR_OF(connection_).push_back(input);
+							FI_TMPINT_OF(connection_) = 0;
+							FIR_TMPINT_OF(connection_) = FIR_TMPINT_OF(connection_) * 10 + input - '0';
 							return boost::indeterminate;
 						}
 						else
@@ -207,16 +217,17 @@ namespace findik
 					case status_code:
 						if (input == ' ')
 						{
-							resp->status_code = (response::status_type) 
-								boost::lexical_cast< unsigned int >(FIR_TMPSTR_OF(connection_));
+							boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);
+							resp->status_code = (response::status_type) FIR_TMPINT_OF(connection_);
+							FIR_TMPINT_OF(connection_) = 0;
 
-							FI_TMPSTR_OF(connection_).clear();
 							FI_STATE_OF(connection_) = status_line_start;
 							return boost::indeterminate;
 						}
 						else if (is_digit(input))
 						{
-							FI_TMPSTR_OF(connection_).push_back(input);
+							FI_TMPINT_OF(connection_) = FIR_TMPINT_OF(connection_) * 10 + input - '0';
+							FI_CHECK_SINT( FIR_TMPINT_OF(connection_) );
 							return boost::indeterminate;
 						}
 						else
@@ -234,6 +245,7 @@ namespace findik
 						if (isalpha(input) || input == ' ')
 						{
 							resp->status_line.push_back(input);
+							FI_CHECK_LSTR(resp->status_line);
 							return boost::indeterminate;
 						}
 						else if (input == '\r')
@@ -271,6 +283,7 @@ namespace findik
 						else
 						{
 							resp->add_blank_header();
+							FI_CHECK_VCTR(resp->get_headers());
 							resp->last_header().name.push_back(input);
 							FI_STATE_OF(connection_) = header_name;
 							return boost::indeterminate;
@@ -309,6 +322,7 @@ namespace findik
 						else
 						{
 							resp->last_header().name.push_back(input);
+							FI_CHECK_MSTR(resp->last_header().name);
 							return boost::indeterminate;
 						}
 					case space_before_header_value:
@@ -335,6 +349,14 @@ namespace findik
 						else
 						{
 							resp->last_header().value.push_back(input);
+							if (resp->last_header().name == "Cookie")
+							{
+								FI_CHECK_HSTR(resp->last_header().value);
+							}
+							else
+							{
+								FI_CHECK_LSTR(resp->last_header().value);
+							}
 							return boost::indeterminate;
 						}
 					case expecting_newline_2:
@@ -362,8 +384,8 @@ namespace findik
 							FI_STATE_OF(connection_) = chunked_size_start;
 							return boost::indeterminate;
 						}
-						else if (http_version_major == 1 &&
-								http_version_minor == 1)
+						else if (resp->http_version_major == 1 &&
+								resp->http_version_minor == 1)
 						{
 							if (resp->content_length() == 0)
 								return true;
@@ -378,10 +400,14 @@ namespace findik
 						}
 						else
 						{
-							if (resp->content_length() == 0)
+							if (resp->content_length() < 0) 
 							{
 								FI_STATE_OF(connection_) = content_eof;
 								resp->wait_for_eof();
+							}
+							else if (resp->content_length() == 0)
+							{
+								return true;
 							}
 							else
 							{
@@ -444,6 +470,7 @@ namespace findik
 						if (input == '\n')
 						{
 							resp->push_to_content(input); // not chunked
+							boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);
 							if (FIR_TMPINT_OF(connection_) == 0)
 								return true;
 							FI_STATE_OF(connection_) = chunked_line;
@@ -456,9 +483,12 @@ namespace findik
 						{
 							FI_TMPINT_OF(connection_)--;
 						}
-						if (FIR_TMPINT_OF(connection_) == 0)
 						{
-							FI_STATE_OF(connection_) = chunked_newline_2;
+							boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);
+							if (FIR_TMPINT_OF(connection_) == 0)
+							{
+								FI_STATE_OF(connection_) = chunked_newline_2;
+							}
 						}
 						return boost::indeterminate;
 					case chunked_newline_2:
@@ -516,18 +546,6 @@ namespace findik
 				is_keepalive_ = false;
 			}
 
-			request_ptr response_parser::last_request_of(findik::io::connection_ptr connection_)
-			{
-				request_ptr req;
-				BOOST_FOREACH(findik::io::abstract_data_ptr data_, connection_->data_queue())
-					if (data_->is_local())
-					{
-						req = boost::static_pointer_cast<request>(data_);
-					}
-
-				return req;
-			}
-
 			void response_parser::update_keepalive_timeout_of(findik::io::connection_ptr connection_, 
 					unsigned int & keepalive_timeout_)
 			{
@@ -537,10 +555,8 @@ namespace findik
 				}
 				else
 				{
-					if (connection_->current_data().get() == 0)
-						return;
-
-					if (connection_->current_data()->is_local())
+					if (connection_->current_data().get() == 0 ||
+							connection_->current_data()->is_local() )
 						return;
 
 					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());

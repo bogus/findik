@@ -37,7 +37,9 @@
 #include "abstract_filter.hpp"
 #include "reply_service.hpp"
 #include "response.hpp"
+#include "request.hpp"
 #include "service_container.hpp"
+#include "http_util.hpp"
 
 namespace findik
 {

@@ -46,11 +46,10 @@ namespace findik
 				std::string url = req->request_uri();	
 				// check whether hostname exists in domain blacklist
 				if(!FI_SERVICES->db_srv().urlQuery(req->request_uri())){
-					LOG4CXX_DEBUG(debug_logger, "URL filter failed for " + url);
+					LOG4CXX_WARN(logging::log_initializer::filter_logger, "URL filter FAILED for " + url);
 					 return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"URL blocked : " + url, response::forbidden, true, findik::io::http));
 				} 
 				else {
-					LOG4CXX_DEBUG(debug_logger, "URL filter passed for " + url);
 				}
 			
 				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));	

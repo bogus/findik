@@ -47,11 +47,10 @@ namespace findik
 				
 				// check whether hostname exists in domain blacklist
 				if(FI_SERVICES->util_srv().pcre().matches_predefined(url).size() > 0){
-					LOG4CXX_DEBUG(debug_logger, "URL regular expression filter failed for " + url);
+					LOG4CXX_WARN(logging::log_initializer::filter_logger, "URL regular expression filter FAILED for " + url);
 					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"URL blocked : " + url,response::forbidden, true, findik::io::http));
 				} 
 				else {
-					LOG4CXX_DEBUG(debug_logger, "URL regular expression filter passed for domain " + url);
 				}
 				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 			}

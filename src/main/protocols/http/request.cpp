@@ -31,7 +31,6 @@ namespace findik
 				request_path_(""),
 				request_uri_("")
 			{
-				content_length_ = 0;
 				is_local_ = true;
 				is_https_ = is_https;
 			}
@@ -62,7 +61,7 @@ namespace findik
 
 				request_stream	<< " ";
 
-				if ( !is_https() && FI_CONFIG.server_http_run_with_squid() )
+				if ( !is_https() && is_proxy_request() )
 				{
 					request_stream << request_uri();
 				}
@@ -95,15 +94,15 @@ namespace findik
 
 			const std::string & request::request_path()
 			{
-				std::string prefix("");
-
-				if (is_https())
-					prefix.append("https://");
-				else
-					prefix.append("http://");
-
 				if (request_path_ == "") 
 				{
+					std::string prefix("");
+
+					if (is_https())
+						prefix.append("https://");
+					else
+						prefix.append("http://");
+
 					if (uri.find(prefix) == 0)
 					{
 						request_uri_ = uri;
@@ -119,6 +118,20 @@ namespace findik
 				}
 
 				return request_path_;
+			}
+
+			void request::reset_uri_and_path()
+			{
+				request_path_ = "";
+				request_uri_ = "";
+			}
+
+			bool request::is_proxy_request()
+			{
+				if (is_https())
+					return uri.find("https://") == 0;
+				else
+					return uri.find("http://") == 0;
 			}
 
 		}

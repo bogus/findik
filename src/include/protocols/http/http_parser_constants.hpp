@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2008 Burak OGUZ (barfan) <findikmail@gmail.com>
+  Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,9 +16,16 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifndef FINDIK_PROTOCOLS_HTTP_HTTP_PARSER_CONSTANTS_HPP
+#define FINDIK_PROTOCOLS_HTTP_HTTP_PARSER_CONSTANTS_HPP
 
-#include <string>
+#define FI_CHECK_SINT(arg) if (arg > 1024) return false;
+#define FI_CHECK_SSTR(arg) if (arg.size() > 16) return false;
+#define FI_CHECK_MSTR(arg) if (arg.size() > 128) return false;
+#define FI_CHECK_LSTR(arg) if (arg.size() > 1024) return false;
+#define FI_CHECK_HSTR(arg) if (arg.size() > 8192) return false;
 
-std::string base64_encode(unsigned char const* , unsigned int len);
-std::string base64_decode(std::string const& s);
+#define FI_CHECK_VCTR(arg) if (arg.size() > 128) return false;
+
+#endif
 
