@@ -98,6 +98,8 @@ namespace findik
 					
 					static std::string base_dn;
 
+					static std::string extra_filter;
+
 					static std::string username_attr;
 
 					static std::string password_attr;

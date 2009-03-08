@@ -36,6 +36,7 @@ namespace findik
 			std::string ldap_basic_authentication::ldap_server = FI_CONFIG.ldap_server_name();
 			std::string ldap_basic_authentication::bind_dn_name = FI_CONFIG.ldap_bind_dn_name();
 			std::string ldap_basic_authentication::base_dn = FI_CONFIG.ldap_base_dn();
+			std::string ldap_basic_authentication::extra_filter = FI_CONFIG.ldap_extra_filter();
 			std::string ldap_basic_authentication::username_attr = FI_CONFIG.ldap_search_attr();
 			std::string ldap_basic_authentication::password_attr = FI_CONFIG.ldap_password_attr();
 			std::map<std::string,std::string> ldap_basic_authentication::auth_cache;
@@ -152,7 +153,7 @@ namespace findik
 					}
 
 						
-					rc = ldap_search_ext(ld,base_dn.c_str(),LDAP_SCOPE_SUBTREE,("(&(objectClass=*)(" + username_attr + "=" + username + "))").c_str(),result_attrs, 0,NULL,NULL,&tv,1000000,&msgid);
+					rc = ldap_search_ext(ld,base_dn.c_str(),LDAP_SCOPE_SUBTREE,("(&"+ extra_filter +"(" + username_attr + "=" + username + "))").c_str(),result_attrs, 0,NULL,NULL,&tv,1000000,&msgid);
 
 					if (rc != LDAP_SUCCESS)
 					{

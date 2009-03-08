@@ -68,17 +68,18 @@ namespace findik
 			config_.getConfigValue_Bool("findik.filters.http.use_clamd", use_clamd_);
 			config_.getConfigValue_String("findik.filters.http.clamd_host", clamd_host_);
 			config_.getConfigValue_String("findik.filters.http.clamd_port", clamd_port_);
-			config_.getConfigValue_Bool("findik.authentication.http.use_ad_kerbv5_negotiation_auth", use_ad_kerbv5_negotiation_auth_);
-			config_.getConfigValue_String("findik.authentication.http.ad_service_name", ad_service_name_);
-			config_.getConfigValue_String("findik.authentication.http.ad_keytab_file", ad_keytab_file_);
-			config_.getConfigValue_Bool("findik.authentication.http.use_ldap_basic_auth", use_ldap_basic_auth_);
-			config_.getConfigValue_String("findik.authentication.http.ldap_base_dn", ldap_base_dn_);
-			config_.getConfigValue_String("findik.authentication.http.ldap_bind_dn_name", ldap_bind_dn_name_);
-			config_.getConfigValue_String("findik.authentication.http.ldap_bind_dn_password", ldap_bind_dn_password_);
-			config_.getConfigValue_String("findik.authentication.http.ldap_server_name", ldap_server_name_);
-			config_.getConfigValue_String("findik.authentication.http.ldap_search_attr", ldap_search_attr_);
-			config_.getConfigValue_String("findik.authentication.http.ldap_password_attr", ldap_password_attr_);
-			config_.getConfigValue_String("findik.authentication.http.ldap_realm", ldap_realm_);
+			config_.getConfigValue_Bool("findik.authentication.http.ad_kerbv5.use_ad_kerbv5_negotiation_auth", use_ad_kerbv5_negotiation_auth_);
+			config_.getConfigValue_String("findik.authentication.http.ad_kerbv5.ad_service_name", ad_service_name_);
+			config_.getConfigValue_String("findik.authentication.http.ad_kerbv5.ad_keytab_file", ad_keytab_file_);
+			config_.getConfigValue_Bool("findik.authentication.http.ldap_basic.use_ldap_basic_auth", use_ldap_basic_auth_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_base_dn", ldap_base_dn_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_bind_dn_name", ldap_bind_dn_name_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_bind_dn_password", ldap_bind_dn_password_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_extra_filter", ldap_extra_filter_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_server_name", ldap_server_name_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_search_attr", ldap_search_attr_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_password_attr", ldap_password_attr_);
+			config_.getConfigValue_String("findik.authentication.http.ldap_basic.ldap_realm", ldap_realm_);
 			
 		
 		}
@@ -240,6 +241,11 @@ namespace findik
 		const std::string & configuration_object::ldap_bind_dn_password()
 		{		
 			return ldap_bind_dn_password_;
+		}
+
+		const std::string & configuration_object::ldap_extra_filter()
+		{
+			return ldap_extra_filter_;
 		}
 
 		const std::string & configuration_object::ldap_server_name()

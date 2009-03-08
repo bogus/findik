@@ -107,6 +107,8 @@ namespace findik
 
                         const std::string & ldap_bind_dn_password();
 
+			const std::string & ldap_extra_filter();
+
                         const std::string & ldap_server_name();
 
                         const std::string & ldap_search_attr();
@@ -178,6 +180,8 @@ namespace findik
                         std::string ldap_bind_dn_name_;
 
                         std::string ldap_bind_dn_password_;
+
+			std::string ldap_extra_filter_;
 
 			std::string ldap_server_name_;
 
