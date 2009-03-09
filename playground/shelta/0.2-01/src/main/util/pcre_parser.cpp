@@ -40,7 +40,8 @@ namespace findik
 		}
 		pcre_parser::pcre_parser(pcre_parser const &pcre_parser_)
 		{
-
+			delete re_;
+			delete options_;
 		}
 		pcrecpp::RE * pcre_parser::get_re()
 		{
