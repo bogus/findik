@@ -25,37 +25,36 @@ namespace findik
 		namespace http
 		{
 			// initialization of logger
-			log4cxx::LoggerPtr html_content_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.html_content_filter"));	
-			int  html_content_filter::filter_code = 502;	
+			log4cxx::LoggerPtr html_content_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.html_content_filter"));	
+			int  html_content_filter::filter_code_ = 502;	
 			// constructor definition of filter service registration inner class
 			html_content_filter::initializer::initializer()
                         {
                                 html_content_filter_ptr dfp(new html_content_filter());
 
-                                FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
+                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
                         }
 
                         html_content_filter::initializer html_content_filter::initializer::instance;
 
 			boost::tuple<bool, findik::filter::filter_reason_ptr> html_content_filter::filter(findik::io::connection_ptr connection_) 
 			{
-				LOG4CXX_DEBUG(debug_logger, "HTML content filter entered"); // log for filter entrance
+				LOG4CXX_DEBUG(debug_logger_, "HTML content filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
+				request_ptr req = last_request_of(connection_);
 				std::string content_type;
 				if((resp->magic_mime_type() == "text/html") || (resp->content_type() == "text/html" && resp->magic_mime_type().compare(0,10,"text/plain") == 0)) 
 				{
 					std::vector<findik::util::pcre_analyzer> pcre_analyze = FI_SERVICES->util_srv().pcre().matches_predefined(&(resp->content_hr())[0]); 
 					if(pcre_analyze.size() > 0){
-						request_ptr req = last_request_of(connection_);
-						LOG4CXX_WARN(logging::log_initializer::filter_logger, "HTML content filter FAILED for URL " + req->request_uri() + " Word: " + pcre_analyze[0].get_word());
-						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Content blocked for URL : "  + req->request_uri(), response::forbidden, true, findik::io::http));						
+						//LOG4CXX_WARN(logging::log_initializer::filter_logger, "HTML content filter FAILED for URL " + req->request_uri() + " Word: " + pcre_analyze[0].get_word());
+						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"Content blocked for URL : "  + req->request_uri(), response::forbidden, true, findik::io::http, req->request_host() + " " + req->request_uri()));						
 					}
 					else {
 					}
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
 				}
 
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));
 
 			}
 

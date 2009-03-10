@@ -44,7 +44,6 @@ int main(int argc, char* argv[])
 		std::string address("0.0.0.0");
 		unsigned int port = 8080;
 		unsigned int ssl_port = 8443;
-		std::size_t num_threads(100);
 
 		// Initialize request filter
 		//findik::filter::generate_request_filter_factory_map();
@@ -67,7 +66,7 @@ int main(int argc, char* argv[])
 
 		// Create a pool of threads to run all of the io_services.
 		std::vector<boost::shared_ptr<boost::thread> > threads;
-		for (std::size_t i = 0; i < num_threads; ++i)
+		for (std::size_t i = 0; i < FI_CONFIG.io_number_of_threads(); ++i)
 		{
 			boost::shared_ptr<boost::thread> thread(new boost::thread(
 			boost::bind(&boost::asio::io_service::run, &(FI_SERVICES->io_srv()))));

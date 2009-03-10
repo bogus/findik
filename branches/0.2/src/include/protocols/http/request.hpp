@@ -88,6 +88,13 @@ namespace findik
 				const std::string & request_uri();
 
 				/*!
+                                Gets hostname of request. 
+
+                                \return full uri of request.
+                                */
+                                const std::string & request_host();
+
+				/*!
 				Gets request path. This methods gets request path from HTTP request command line.
 
 				\return full uri of request.
@@ -112,6 +119,11 @@ namespace findik
 				Request uri.
 				*/
 				std::string request_uri_;
+
+				/*!
+                                Request hostname.
+                                */
+                                std::string request_host_;
 				
 				/*!
 				Whether request is sent to a proxy from client.

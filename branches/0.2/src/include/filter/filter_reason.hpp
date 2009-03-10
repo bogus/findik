@@ -57,9 +57,9 @@ namespace findik
 			\returns a new filter reason instance
 			*/
 			static boost::shared_ptr<filter_reason> create_reason(
-					unsigned int code, const std::string & reason_str, unsigned int return_code, bool close_connection, unsigned int protocol)
+					unsigned int code, const std::string & reason_str, unsigned int return_code, bool close_connection, unsigned int protocol, const std::string & log_str)
 			{
-				boost::shared_ptr<filter_reason> p(new filter_reason(code, reason_str, return_code, close_connection, protocol));
+				boost::shared_ptr<filter_reason> p(new filter_reason(code, reason_str, return_code, close_connection, protocol, log_str));
 				return p;
 			}
 
@@ -98,6 +98,12 @@ namespace findik
                         */
                         unsigned int protocol();
 
+			/*!
+                        Detail of log.
+                        \returns log details
+                        */
+                        const std::string & log_str();
+
 		protected:
 			/*!
 			Constructor.
@@ -107,7 +113,7 @@ namespace findik
 			/*!
 			Constructor.
 			*/
-			filter_reason(unsigned int code, const std::string & reason_str, unsigned int return_code, bool close_connection, unsigned int protocol);
+			filter_reason(unsigned int code, const std::string & reason_str, unsigned int return_code, bool close_connection, unsigned int protocol, const std::string & log_str);
 
 			/*!
 			Reason code.
@@ -133,6 +139,11 @@ namespace findik
 			Protocol
 			*/
 			unsigned int protocol_;
+
+			/*!
+                        Log string.
+                        */
+                        std::string log_str_;
 		};
 		
 		typedef boost::shared_ptr<filter_reason> filter_reason_ptr;

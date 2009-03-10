@@ -86,29 +86,29 @@ namespace findik
 
 
 				protected:
-					static log4cxx::LoggerPtr debug_logger;
+					static log4cxx::LoggerPtr debug_logger_;
 	
-					static int authenticator_code;
+					static int authenticator_code_;
 
-					static std::string ldap_server;
+					static std::string ldap_server_;
 
-					static std::string bind_dn_name;
+					static std::string bind_dn_name_;
 
 					//static BerValue bind_dn_creds; 
 					
-					static std::string base_dn;
+					static std::string base_dn_;
 
-					static std::string extra_filter;
+					static std::string extra_filter_;
 
-					static std::string username_attr;
+					static std::string username_attr_;
 
-					static std::string password_attr;
+					static std::string password_attr_;
 
-					static char *result_attrs[2];
+					static char *result_attrs_[2];
 				
-					static struct timeval tv; 
+					static struct timeval tv_; 
 
-					static std::map<std::string,std::string> auth_cache;
+					static std::map<std::string,std::string> auth_cache_;
 					
 
 			};

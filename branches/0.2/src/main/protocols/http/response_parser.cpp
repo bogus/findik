@@ -55,12 +55,13 @@ namespace findik
 					char* begin, char* end
 				)
 			{
-				if (connection_->current_data().get() != 0)
+				if (connection_->current_data().get() != 0) // if stream, do not parse data just increment size and return
 				{
 					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
-					if (resp->is_stream()) {
-						resp->add_to_stream_content_size(end - begin); // this will given chunk length, TODO: reimplement this
-						
+					if (resp->is_stream())
+					{
+						resp->add_to_stream_content_size((end - begin)/sizeof(char));
+
 						boost::tribool result = boost::indeterminate;
 						if ( !( resp->content_size() < resp->content_length() ) )
 							result = true;
@@ -69,12 +70,30 @@ namespace findik
 					}
 				}
 
-
 				while (begin != end)
 				{
 					boost::tribool result = consume(connection_, *begin++);
 					if (result || !result)
 						return boost::make_tuple(result, begin);
+				}
+
+				if (connection_->current_data().get() != 0)
+				{
+					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
+					if ( ! resp->is_stream() )
+					{
+						enum states current_state_;
+						{
+							boost::mutex::scoped_lock parser_state_map_lock(parser_state_map_mutex_);
+							current_state_ = (states) FIR_STATE_OF(connection_);
+						}
+
+						if (current_state_ > 699 && current_state_ < 899) // chunked or content_eof
+						{
+							if (resp->content_size() > FI_CONFIG.server_http_max_object_size())
+								resp->mark_as_stream();
+						}
+					}
 				}
 
 				boost::tribool result = boost::indeterminate;
