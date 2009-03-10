@@ -84,9 +84,9 @@ namespace findik
 
 
 				protected:
-					static log4cxx::LoggerPtr debug_logger;
+					static log4cxx::LoggerPtr debug_logger_;
 	
-					static int authenticator_code;
+					static int authenticator_code_;
 
 			};
 

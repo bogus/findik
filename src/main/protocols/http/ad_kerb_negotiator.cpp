@@ -31,8 +31,8 @@ namespace findik
 		namespace http
 		{
 			// initialization of logger
-			log4cxx::LoggerPtr ad_kerb_negotiator::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.ad_kerb_negotiator"));	
-			int ad_kerb_negotiator::authenticator_code = 101;
+			log4cxx::LoggerPtr ad_kerb_negotiator::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.ad_kerb_negotiator"));	
+			int ad_kerb_negotiator::authenticator_code_ = 101;
 			// constructor definition of filter service registration inner class
 			ad_kerb_negotiator::initializer::initializer()
                         {
@@ -45,7 +45,7 @@ namespace findik
 
 			boost::tuple<bool, findik::authenticator::authentication_result_ptr> ad_kerb_negotiator::authenticate(findik::io::connection_ptr connection_) 
 			{
-				LOG4CXX_DEBUG(debug_logger, "AD Kerberos v5 Negotiator entered"); // log for filter entrance
+				LOG4CXX_DEBUG(debug_logger_, "AD Kerberos v5 Negotiator entered"); // log for filter entrance
 						
 				// get request object from current data
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
@@ -58,7 +58,7 @@ namespace findik
 					}
 				}
 				if( auth == "")
-					return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", authenticator_code, false, findik::io::http));	
+					return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code_,"Proxy authorization required", authenticator_code_, false, findik::io::http));	
 				else {
 					OM_uint32 major_status, minor_status, minor_status2;
 					gss_buffer_desc input_token = GSS_C_EMPTY_BUFFER;
@@ -94,14 +94,14 @@ namespace findik
 					memset(&token, 0, sizeof(token));
 
 					if (GSS_ERROR(major_status)) {
-						LOG4CXX_ERROR(debug_logger, "GSS API could not import server name");
+						LOG4CXX_ERROR(debug_logger_, "GSS API could not import server name");
 						goto end;
 					}
 			
 					major_status = gss_display_name(&minor_status, server_name, &token, NULL);
 
 					if (GSS_ERROR(major_status)) {
-						LOG4CXX_ERROR(debug_logger, "GSS API could not get display name for server");
+						LOG4CXX_ERROR(debug_logger_, "GSS API could not get display name for server");
 						goto end;
                                         }
 			
@@ -114,7 +114,7 @@ namespace findik
 					gss_release_name(&minor_status2, &server_name);
 	
 					if (GSS_ERROR(major_status)) {
-						LOG4CXX_ERROR(debug_logger, "GSS API could not acquire creds for server");
+						LOG4CXX_ERROR(debug_logger_, "GSS API could not acquire creds for server");
 						goto end;
                                         }
 			
@@ -129,10 +129,10 @@ namespace findik
 
 					if (GSS_ERROR(major_status)) {
 						if (input_token.length > 7 && memcmp(input_token.value, "NTLMSSP", 7) == 0) {
-							LOG4CXX_ERROR(debug_logger, "Warning: received token seems to be NTLM, which isn't supported by the Kerberos module. Check your IE configuration.");
+							LOG4CXX_ERROR(debug_logger_, "Warning: received token seems to be NTLM, which isn't supported by the Kerberos module. Check your IE configuration.");
 							goto end;
 						}
-						LOG4CXX_ERROR(debug_logger, "GSS API did not accept security context for SPNEGO");
+						LOG4CXX_ERROR(debug_logger_, "GSS API did not accept security context for SPNEGO");
 						goto end;
 					}
 					
@@ -142,11 +142,11 @@ namespace findik
 
 					major_status = gss_display_name(&minor_status, client_name, &output_token, NULL);
 					if (GSS_ERROR(major_status)) {
-						LOG4CXX_ERROR(debug_logger, "GSS API could not get display name for client");
+						LOG4CXX_ERROR(debug_logger_, "GSS API could not get display name for client");
 						goto end;
 					}
 					gss_release_name(&minor_status, &client_name);
-                                        LOG4CXX_DEBUG(debug_logger, "User authenticated: " + std::string((char *)output_token.value));
+                                        LOG4CXX_DEBUG(debug_logger_, "User authenticated: " + std::string((char *)output_token.value));
 					gss_release_buffer(&minor_status, &output_token);
 					gss_release_cred(&minor_status, &delegated_cred);
 					gss_release_cred(&minor_status, &server_creds);
@@ -169,7 +169,7 @@ namespace findik
 					if (context != GSS_C_NO_CONTEXT)
 						gss_delete_sec_context(&minor_status, &context, GSS_C_NO_BUFFER);
 
-					return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code,"Proxy authorization required", 407, false, findik::io::http));
+					return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code_,"Proxy authorization required", 407, false, findik::io::http));
 
 				}
 

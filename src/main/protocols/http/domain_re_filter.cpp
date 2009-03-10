@@ -25,41 +25,31 @@ namespace findik
 		namespace http
 		{
 			// initialization of logger
-			log4cxx::LoggerPtr domain_re_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.domain_re_filter"));	
-			int domain_re_filter::filter_code = 402;
+			log4cxx::LoggerPtr domain_re_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.domain_re_filter"));	
+			int domain_re_filter::filter_code_ = 402;
 			// constructor definition of filter service registration inner class
 			domain_re_filter::initializer::initializer()
                         {
                                 domain_re_filter_ptr dfp(new domain_re_filter());
 
-                                FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
+                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
                         }
 
                         domain_re_filter::initializer domain_re_filter::initializer::instance;
 
 			boost::tuple<bool, findik::filter::filter_reason_ptr> domain_re_filter::filter(findik::io::connection_ptr connection_) 
 			{
-				LOG4CXX_DEBUG(debug_logger, "Domain name filter entered"); // log for filter entrance
+				LOG4CXX_DEBUG(debug_logger_, "Domain name filter entered"); // log for filter entrance
 				
 				// get request object from current data
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
-				std::string hostname;
-				
-				// get hostname from request header
-				BOOST_FOREACH( header h, req->get_headers() ) {
-					if (h.name == "Host")
-						hostname = h.value;
-				}
 				
 				// check whether hostname exists in domain blacklist
-				if(FI_SERVICES->util_srv().pcre().matches_predefined(hostname).size() > 0){
-					LOG4CXX_WARN(logging::log_initializer::filter_logger, "Domain name regular expression filter FAILED for domain " + hostname);
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Domain blocked : " + hostname,response::forbidden, true, findik::io::http));
+				if(FI_SERVICES->util_srv().pcre().matches_predefined(req->request_host()).size() > 0){
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"Domain blocked : " + req->request_host(),response::forbidden, true, findik::io::http, req->request_host() + " " + req->request_uri()));
 				} 
-				else {
-				}
 				
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));	
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"",response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));	
 			}
 
                         bool domain_re_filter::is_applicable(findik::io::connection_ptr connection_)

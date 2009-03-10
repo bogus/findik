@@ -26,8 +26,8 @@ namespace findik
 		namespace http
 		{
 			// initialization of logger
-			log4cxx::LoggerPtr clamd_av_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.clamd_av_filter"));	
-			int  clamd_av_filter::filter_code = 503;	
+			log4cxx::LoggerPtr clamd_av_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.clamd_av_filter"));	
+			int  clamd_av_filter::filter_code_ = 503;	
 			// constructor definition of filter service registration inner class
 			clamd_av_filter::initializer::initializer()
 			{
@@ -62,17 +62,17 @@ namespace findik
 						// Check that response is OK.
 						socket.close();
 
-						if(received_data == "PONG") {
-							FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
-							LOG4CXX_DEBUG(debug_logger, "Clamd AV filter is running");
+						if(received_data.substr(0,3) == "PON") {
+							FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
+							LOG4CXX_DEBUG(debug_logger_, "Clamd AV filter is running");
 						}
 						else
-							LOG4CXX_ERROR(debug_logger, "Clamd AV filter is not running");
+							LOG4CXX_ERROR(debug_logger_, "Clamd AV filter is not running");
 
 					}
 					catch (std::exception& e)
 					{
-						LOG4CXX_ERROR(debug_logger, "Clamd AV filter is not running. Exception: " + (std::string)e.what());
+						LOG4CXX_ERROR(debug_logger_, "Clamd AV filter is not running. Exception: " + (std::string)e.what());
 					}
 
 				}
@@ -83,8 +83,10 @@ namespace findik
 
 			boost::tuple<bool, findik::filter::filter_reason_ptr> clamd_av_filter::filter(findik::io::connection_ptr connection_) 
 			{
-				LOG4CXX_DEBUG(debug_logger, "Clamd AV filter entered"); // log for filter entrance
+				LOG4CXX_DEBUG(debug_logger_, "Clamd AV filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
+				request_ptr req = last_request_of(connection_);
+
 				if(resp->content().size() > 0) {
 					try
 					{
@@ -138,27 +140,26 @@ namespace findik
 						// stream: OK
 						av_result = av_result.substr(8);
 						int pos = av_result.find(" FOUND");
+
 						if(pos != std::string::npos) 
 						{
-							request_ptr req = last_request_of(connection_);
-							LOG4CXX_WARN(logging::log_initializer::filter_logger, "VIRUS FOUND : " + av_result.substr(0,pos) + " for URL " + req->request_uri());
-							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Virus Found : " + av_result.substr(0,pos), response::forbidden, true, findik::io::http));		
+							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"Virus Found : " + av_result.substr(0,pos), response::forbidden, true, findik::io::http, req->request_host() + " " + req->request_uri() + " " + av_result.substr(0,pos)));		
 						}	
 						socket.close();
 					}
 					catch (std::exception& e)
 					{
-						LOG4CXX_ERROR(debug_logger, "Clamd AV filter EXCEPTION " + std::string(e.what())); // log for filter entrance
+						LOG4CXX_ERROR(debug_logger_, "Clamd AV filter EXCEPTION " + std::string(e.what())); // log for filter entrance
 						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(0));
 					}
 				}
 				
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));
 			}
 
 			bool clamd_av_filter::is_applicable(findik::io::connection_ptr connection_)
 			{
-				// set this filter to be used in request only
+				// set this filter to be used in response only
 				return connection_->proto() == findik::io::http 
 					&& connection_->current_data()->is_remote()
 					&& connection_->current_data()->has_content();	

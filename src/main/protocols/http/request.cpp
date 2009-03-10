@@ -29,7 +29,8 @@ namespace findik
 		{
 			request::request(bool is_https) :
 				request_path_(""),
-				request_uri_("")
+				request_uri_(""),
+				request_host_("")
 			{
 				is_local_ = true;
 				is_https_ = is_https;
@@ -119,6 +120,16 @@ namespace findik
 
 				return request_path_;
 			}
+
+			const std::string & request::request_host()
+                        {
+				if(request_host_ == "")
+					BOOST_FOREACH( header h, get_headers() )
+        	                        	if ( h.name == "Host")
+                	                        	request_host_ = h.value;
+
+				return request_host_;
+                        }
 
 			void request::reset_uri_and_path()
 			{

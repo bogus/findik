@@ -136,13 +136,13 @@ namespace findik
 					expecting_newline_2 = 501,
 					expecting_newline_3 = 502,
 					content = 600,
-					content_eof = 610,
 					chunked_size_start = 700,
 					chunked_size = 701,
 					chunked_newline_1 = 750,
 					chunked_line = 710,
 					chunked_newline_2 = 751,
-					chunked_newline_3 = 752
+					chunked_newline_3 = 752,
+					content_eof = 800
 				};
 
 				/*!
