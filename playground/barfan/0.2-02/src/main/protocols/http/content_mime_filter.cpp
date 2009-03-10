@@ -25,31 +25,30 @@ namespace findik
 		namespace http
 		{
 			// initialization of logger
-			log4cxx::LoggerPtr content_mime_filter::debug_logger(log4cxx::Logger::getLogger("findik.protocols.http.content_mime_filter"));	
-			int  content_mime_filter::filter_code = 501;	
+			log4cxx::LoggerPtr content_mime_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.content_mime_filter"));	
+			int  content_mime_filter::filter_code_ = 501;	
 			// constructor definition of filter service registration inner class
 			content_mime_filter::initializer::initializer()
                         {
                                 content_mime_filter_ptr dfp(new content_mime_filter());
 
-                                FI_SERVICES->filter_srv().register_filter(filter_code,dfp);
+                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
                         }
 
                         content_mime_filter::initializer content_mime_filter::initializer::instance;
 
 			boost::tuple<bool, findik::filter::filter_reason_ptr> content_mime_filter::filter(findik::io::connection_ptr connection_) 
 			{
-				LOG4CXX_DEBUG(debug_logger, "Content mime-type filter entered"); // log for filter entrance
+				LOG4CXX_DEBUG(debug_logger_, "Content mime-type filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
+				request_ptr req = last_request_of(connection_);
 				std::string content_type;
 				if(!FI_SERVICES->db_srv().mimeTypeQuery(resp->magic_mime_type())) 
 				{
-					request_ptr req = last_request_of(connection_);
-					LOG4CXX_WARN(logging::log_initializer::filter_logger, "Content mime-type filter FAILED for mime-type " + resp->magic_mime_type() + " for url " + req->request_uri());
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code,"Content blocked for mime-type : " + resp->magic_mime_type() + " for URL " + req->request_uri(), response::forbidden, false, findik::io::http));						
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"Content blocked for mime-type : " + resp->magic_mime_type() + " for URL " + req->request_uri(), response::forbidden, false, findik::io::http, req->request_host() + " " + req->request_uri() + " " + resp->magic_mime_type()));						
 				}
 
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(0));
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));
 
 			}
 
