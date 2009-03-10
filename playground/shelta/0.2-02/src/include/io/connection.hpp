@@ -447,10 +447,20 @@ namespace findik
 			virtual void shutdown_remote() = 0;
 
 			/*!
-			Shutdown TCP socket.  
+			Shutdown TCP socket.
 			\param socket to shutdown.
 			*/
 			void shutdown_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket);
+
+			/*!
+			Shutdown local TCP socket.  
+			*/
+			void shutdown_local_socket();
+
+			/*!
+			Shutdown remote TCP socket.  
+			*/
+			void shutdown_remote_socket();
 
 			/*!
 			Pushes current data to queue and sets new_data_ to NULL.

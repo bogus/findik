@@ -117,17 +117,23 @@ namespace findik
 			void update_keepalive_timeout_of(findik::io::connection_ptr connection_, 
 					unsigned int & keepalive_timeout_);
 
+			/*!
+			Remove connection object from remote parser if registered.
+			\param connection_ connection to remove
+			*/
+			void cleanup_remote(findik::io::connection_ptr connection_);
+
+			/*!
+			Remove connection object from local parser if registered.
+			\param connection_ connection to remove
+			*/
+			void cleanup_local(findik::io::connection_ptr connection_);
+
 		protected:
 			/*!
 			Debug logger for server class.
 			*/
                         static log4cxx::LoggerPtr debug_logger;
-
-			/*!
-			Remove connection object from registered parsers.
-			\param connection_ connection to remove
-			*/
-			void cleanup(findik::io::connection_ptr connection_);
 
 			/*!
 			Map to store local parsers in an order. When local parsing operation has been requested

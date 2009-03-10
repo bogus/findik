@@ -43,7 +43,7 @@ namespace findik
 
 		void ssl_connection::shutdown_local()
 		{
-			shutdown_socket(local_socket());
+			shutdown_local_socket();
 /*			local_ssl_socket_.async_shutdown(strand_.wrap(
 					boost::bind(&connection::handle_shutdown_local, 
 						shared_from_this(),
@@ -52,7 +52,7 @@ namespace findik
 
 		void ssl_connection::shutdown_remote()
 		{
-			shutdown_socket(remote_socket());
+			shutdown_remote_socket();
 /*			remote_ssl_socket_.async_shutdown(strand_.wrap(
 					boost::bind(&connection::handle_shutdown_remote,
 						shared_from_this(),
