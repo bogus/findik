@@ -42,6 +42,7 @@ namespace findik
 			std::string separator = " ";
 			boost::tuple<bool, findik::filter::filter_reason_ptr> *remote_result;
 			findik::filter::filter_reason_ptr frp;
+			std::string log_str;			
 
 			for ( it=filter_list_.begin();
 				it != filter_list_.end(); it++)
@@ -61,18 +62,20 @@ namespace findik
 			
 						LOG4CXX_WARN(logging::log_initializer::filter_logger, log_string);			
 						return result;
-					} else {
-						frp = boost::get<1>(result);
+					} else if(connection_->current_data()->is_remote() && connection_->current_data()->has_content()) {
+						log_str = boost::get<1>(result)->log_str();
 					}
 				}
 
 			//TODO: may be return score for greylisting
-			std::string log_string =  boost::lexical_cast<std::string>(connection_->proto()) + separator;
-			log_string += boost::lexical_cast<std::string>(frp->code()) + separator;
-			log_string += "p" + separator;
-			log_string += connection_->local_endpoint() + separator;
-			log_string += frp->log_str();
-			LOG4CXX_INFO(logging::log_initializer::filter_logger, log_string);
+			if(connection_->current_data()->is_remote() && connection_->current_data()->has_content()) {
+				std::string log_string =  boost::lexical_cast<std::string>(connection_->proto()) + separator;
+				log_string += "0" + separator;
+				log_string += "p" + separator;
+				log_string += connection_->local_endpoint() + separator;
+				log_string += log_str;
+				LOG4CXX_INFO(logging::log_initializer::filter_logger, log_string);
+			}
 			return boost::make_tuple(true, frp);
 		}
 	}
