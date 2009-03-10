@@ -40,12 +40,12 @@ namespace findik
 
 		void plain_connection::shutdown_local()
 		{
-			shutdown_socket(local_socket_);
+			shutdown_local_socket();
 		}
 
 		void plain_connection::shutdown_remote()
 		{
-			shutdown_socket(remote_socket_);
+			shutdown_remote_socket();
 		}
 
 		void plain_connection::register_for_local_read_io()
