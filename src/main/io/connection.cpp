@@ -73,6 +73,18 @@ namespace findik
 			}
 		}
 
+		void connection::shutdown_remote_socket()
+		{
+			shutdown_socket(remote_socket());
+			FI_SERVICES->parser_srv().cleanup_remote(shared_from_this());
+		}
+
+		void connection::shutdown_local_socket()
+		{
+			shutdown_socket(local_socket());
+			FI_SERVICES->parser_srv().cleanup_local(shared_from_this());
+		}
+
 		void connection::register_for_local_read()
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Registering connection for local read.");
