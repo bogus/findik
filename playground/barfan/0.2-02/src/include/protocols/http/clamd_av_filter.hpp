@@ -40,6 +40,7 @@
 #include "request.hpp"
 #include "service_container.hpp"
 #include "http_util.hpp"
+#include "http_filter_logger.hpp"
 
 namespace findik
 {

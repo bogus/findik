@@ -47,11 +47,11 @@ namespace findik
 				
 				// check whether hostname exists in domain blacklist
 				if(FI_SERVICES->util_srv().pcre().matches_predefined(url).size() > 0){
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"URL blocked : " + url,response::forbidden, true, findik::io::http, req->request_host() + " " + req->request_uri()));
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"URL blocked : " + url,response::forbidden, true, findik::io::http, boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, false, req->request_uri(), connection_, req))->to_string()));
 				} 
 				else {
 				}
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"",response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"",response::ok, false, findik::io::http, boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, true, "", connection_, req))->to_string()));
 			}
 
                         bool url_re_filter::is_applicable(findik::io::connection_ptr connection_)

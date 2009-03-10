@@ -56,12 +56,12 @@ namespace findik
 					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));
 				
 				if((pos != std::string::npos) && !FI_SERVICES->db_srv().fileExtQuery(url.substr(pos+1))){
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"File blocked : " + url, response::forbidden, false, findik::io::http, req->request_host() + " " + req->request_uri() + " " + url.substr(pos+1)));
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"File blocked : " + url, response::forbidden, false, findik::io::http, boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, false, url, connection_, req))->to_string()));
 				} 
 				else {
 				}
 			
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));	
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, true, "", connection_, req))->to_string()));	
 			}
 
                         bool file_ext_filter::is_applicable(findik::io::connection_ptr connection_)

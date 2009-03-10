@@ -33,6 +33,7 @@
 #include "request.hpp"
 #include "response.hpp"
 #include "service_container.hpp"
+#include "http_filter_logger.hpp"
 
 #include <string>
 

@@ -45,10 +45,10 @@ namespace findik
 				std::string content_type;
 				if(!FI_SERVICES->db_srv().mimeTypeQuery(resp->magic_mime_type())) 
 				{
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"Content blocked for mime-type : " + resp->magic_mime_type() + " for URL " + req->request_uri(), response::forbidden, false, findik::io::http, req->request_host() + " " + req->request_uri() + " " + resp->magic_mime_type()));						
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"Content blocked for mime-type : " + resp->magic_mime_type() + " for URL " + req->request_uri(), response::forbidden, false, findik::io::http, boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, false, resp->magic_mime_type(), connection_, req, resp))->to_string()));						
 				}
 
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, true, "", connection_, req, resp))->to_string()));
 
 			}
 
