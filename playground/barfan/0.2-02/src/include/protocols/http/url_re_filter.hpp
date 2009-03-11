@@ -34,7 +34,7 @@
 #include "response.hpp"
 #include "service_container.hpp"
 #include "pcre_analyzer.hpp"
-#include "http_filter_logger.hpp"
+#include "http_filter_result_generator.hpp"
 
 #include <string>
 

@@ -46,12 +46,13 @@ namespace findik
 				std::string url = req->request_uri();	
 				// check whether hostname exists in domain blacklist
 				if(!FI_SERVICES->db_srv().urlQuery(req->request_uri())){
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"URL blocked : " + url, response::forbidden, true, findik::io::http, boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, false, req->request_uri(), connection_, req))->to_string()));
+					 boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "URL blocked : " + req->request_uri(), req->request_uri(), connection_, req));
+                                        return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(),reply_->log_str()));
 				} 
-				else {
-				}
-			
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, true, "", connection_, req))->to_string()));	
+
+				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, " ", " ", connection_, req));
+
+                                return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 			}
 
                         bool url_filter::is_applicable(findik::io::connection_ptr connection_)

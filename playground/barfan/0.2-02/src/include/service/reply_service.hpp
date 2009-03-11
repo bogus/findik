@@ -90,6 +90,17 @@ namespace findik
 			*/
 			void start();
 
+			/*!
+			Method to retrieve reply_html_
+			*/
+			const std::string & reply_html();
+
+			/*!
+                        Method to retrieve ssl_reply_html_
+                        */
+                        const std::string & ssl_reply_html();
+
+
 		protected:
 			/*!
 			Map to store stock replies.

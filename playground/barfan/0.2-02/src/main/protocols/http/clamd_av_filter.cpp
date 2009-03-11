@@ -143,18 +143,20 @@ namespace findik
 
 						if(pos != std::string::npos) 
 						{
-							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"Virus Found : " + av_result.substr(0,pos), response::forbidden, true, findik::io::http,  boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, false, av_result.substr(0,pos), connection_, req, resp))->to_string()));		
+							boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "Virus Found : " + av_result.substr(0,pos), av_result.substr(0,pos), connection_, req, resp));
+							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(),reply_->log_str()));
 						}	
 						socket.close();
 					}
 					catch (std::exception& e)
 					{
 						LOG4CXX_ERROR(debug_logger_, "Clamd AV filter EXCEPTION " + std::string(e.what())); // log for filter entrance
-						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(0));
+						return boost::make_tuple(false, findik::filter::filter_reason::create_reason());
 					}
 				}
-				
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http,  boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, true, "", connection_, req, resp))->to_string()));
+			
+				 boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, "", "", connection_, req, resp));	
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 			}
 
 			bool clamd_av_filter::is_applicable(findik::io::connection_ptr connection_)
