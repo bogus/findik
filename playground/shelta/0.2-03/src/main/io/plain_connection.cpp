@@ -95,6 +95,15 @@ namespace findik
 						boost::asio::placeholders::error)));
 		}
 
+		void plain_connection::register_for_remote_write_io(char * data_, std::size_t size_)
+		{
+			boost::asio::async_write(remote_socket_, boost::asio::buffer(data_, size_),
+				strand_.wrap(
+					boost::bind(&connection::handle_write_remote,
+						shared_from_this(),
+						boost::asio::placeholders::error)));
+		}
+
 		void plain_connection::start_local()
 		{
 			prepare_socket(local_socket_);

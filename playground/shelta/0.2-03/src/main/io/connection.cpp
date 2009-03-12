@@ -141,6 +141,12 @@ namespace findik
 			register_for_remote_write_io();
 		}
 
+		void connection::register_for_remote_write(char * data_, std::size_t size_)
+		{
+			//LOG4CXX_DEBUG(debug_logger, "Registering connection for local write.");
+			register_for_remote_write_io(data_, size_);
+		}
+
 		void connection::register_for_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
 		{
 			LOG4CXX_DEBUG(debug_logger, "Registering connection for remote connect.");
@@ -322,50 +328,58 @@ namespace findik
 			{
 				//LOG4CXX_DEBUG(debug_logger, "Handling local read: data successfully parsed.");
 
-				bool is_authenticated;
-				findik::authenticator::authentication_result_ptr authentication_result;
-				boost::tie(is_authenticated, authentication_result) =
-					FI_SERVICES->authentication_srv().authenticate(shared_from_this());
-				
-				if (is_authenticated) // authenticated
+				if (current_data()->is_stream())
 				{
-					// TODO: save creditentials.
-
-					bool filter_result;
-					findik::filter::filter_reason_ptr filter_reason;
-					boost::tie(filter_result, filter_reason) =
-						FI_SERVICES->filter_srv().filter(shared_from_this());
+					mark_as_not_streaming(); // if parser had returned true, all request should have been completed. No need for re-read_local.
+					register_for_remote_write(local_read_buffer_.data(), bytes_transferred);
+				}
+				else
+				{
+					bool is_authenticated;
+					findik::authenticator::authentication_result_ptr authentication_result;
+					boost::tie(is_authenticated, authentication_result) =
+						FI_SERVICES->authentication_srv().authenticate(shared_from_this());
 					
-					if (filter_result) // not denied
+					if (is_authenticated) // authenticated
 					{
-						//LOG4CXX_DEBUG(debug_logger, "Accepted local data.");
+						// TODO: save creditentials.
 
-						if (is_keepalive())
+						bool filter_result;
+						findik::filter::filter_reason_ptr filter_reason;
+						boost::tie(filter_result, filter_reason) =
+							FI_SERVICES->filter_srv().filter(shared_from_this());
+						
+						if (filter_result) // not denied
 						{
-							current_data()->into_buffer(remote_write_buffer_);
-							register_for_remote_write();
+							//LOG4CXX_DEBUG(debug_logger, "Accepted local data.");
+
+							if (is_keepalive())
+							{
+								current_data()->into_buffer(remote_write_buffer_);
+								register_for_remote_write();
+							}
+							else
+							{
+								register_for_resolve(remote_hostname(), remote_port());
+							}
 						}
-						else
+						else // denied
 						{
-							register_for_resolve(remote_hostname(), remote_port());
+							LOG4CXX_DEBUG(debug_logger, "Data from local had been rejected.");
+
+							FI_SERVICES->reply_srv().reply(local_write_buffer_,
+									proto(), filter_reason);
+							register_for_local_write();
 						}
 					}
-					else // denied
+					else // not authenticated
 					{
-						LOG4CXX_DEBUG(debug_logger, "Data from local had been rejected.");
+						LOG4CXX_DEBUG(debug_logger, "Local connection is not authenticated.");
 
 						FI_SERVICES->reply_srv().reply(local_write_buffer_,
-								proto(), filter_reason);
+								proto(), authentication_result);
 						register_for_local_write();
 					}
-				}
-				else // not authenticated
-				{
-					LOG4CXX_DEBUG(debug_logger, "Local connection is not authenticated.");
-
-					FI_SERVICES->reply_srv().reply(local_write_buffer_,
-							proto(), authentication_result);
-					register_for_local_write();
 				}
 			}
 			else if (!parser_result) // bad request
@@ -378,7 +392,23 @@ namespace findik
 			}
 			else // more data required
 			{
-				register_for_local_read();
+				if ( current_data().get() != 0 && current_data()->is_stream())
+				{
+					if (is_streaming())
+					{
+						register_for_remote_write(local_read_buffer_.data(), bytes_transferred);
+					}
+					else
+					{
+						mark_as_streaming();
+						current_data()->into_buffer(remote_write_buffer_);
+						register_for_remote_write();
+					}
+				}
+				else
+				{
+	                                register_for_local_read();
+				}
 			}
 		}
 
@@ -433,8 +463,15 @@ namespace findik
 				return;
 			}
 
-			push_current_data_to_queue();
-			register_for_remote_read();
+			if (is_streaming())
+			{
+				register_for_local_read();
+			}
+			else
+			{
+				push_current_data_to_queue();
+				register_for_remote_read();
+			}
 		}
 
 		void connection::handle_read_remote(const boost::system::error_code& err,

@@ -78,11 +78,11 @@ namespace findik
 				pool_index_++;
 				pool_index_ = pool_index_%pool_size_;
 
-				LOG4CXX_DEBUG(debug_logger, "trying to get connection " << pool_index_);
+				//LOG4CXX_DEBUG(debug_logger, "trying to get connection " << pool_index_);
 			}
 			while (!connection->try_lock());
 
-			LOG4CXX_DEBUG(debug_logger, "got connection " << 	pool_index_ << ". returning.");
+			//LOG4CXX_DEBUG(debug_logger, "got connection " << 	pool_index_ << ". returning.");
 
 			return connection;
 		}

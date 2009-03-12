@@ -318,6 +318,21 @@ namespace findik
 			virtual void register_for_local_write_io(char * data_, std::size_t size_) = 0;
 
 			/*!
+			Register to ASIO service to write specified data to remote socket.
+			\param data_ fron iterator of data.
+			\param size_ number of bytes to write
+			*/
+			void register_for_remote_write(char * data_, std::size_t size_);
+
+			/*!
+			Register to ASIO service to write specified data to remote socket.
+			Internal IO operations.
+			\param data_ fron iterator of data.
+			\param size_ number of bytes to write
+			*/
+			virtual void register_for_remote_write_io(char * data_, std::size_t size_) = 0;
+
+			/*!
 			Socket for the remote connection.
 			\returns remote socket
 			*/
