@@ -139,7 +139,14 @@ namespace findik
 								req->method = request::options;
 
 							else if (FIR_TMPSTR_OF(connection_) == "CONNECT")
+							{
+								if (! FI_CONFIG.server_http_run_with_squid())
+								{
+									LOG4CXX_ERROR(debug_logger, "FINDIK does not support HTTP CONNECT without squid.");
+									return false;
+								}
 								req->method = request::connect;
+							}
 							else
 								return false;
 
@@ -466,7 +473,7 @@ namespace findik
 							if (pos_ == std::string::npos)
 								hostname_ = h.value;
 							else
-								hostname_ = h.value.substr(0,pos_);
+								hostname_ = h.value.substr(0, pos_);
 						}
 				}
 			}
@@ -502,7 +509,7 @@ namespace findik
 							else
 							{
 								port_ = boost::lexical_cast< unsigned int >(
-										h.value.substr(pos_)
+										h.value.substr(pos_ + 1)
 									);
 							}
 						}

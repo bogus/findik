@@ -44,6 +44,7 @@ namespace findik
 			remote_hostname_(""),
 			local_endpoint_(""),
 			is_streaming_(false),
+			is_tunnel_(false),
 			local_receive_timer_(FI_SERVICES->io_srv()),
 			remote_receive_timer_(FI_SERVICES->io_srv()),
 			keepalive_timer_(FI_SERVICES->io_srv())
@@ -261,6 +262,16 @@ namespace findik
 			return new_data_;
 		}
 
+		void connection::mark_as_tunnel()
+		{
+			is_tunnel_ = true;
+		}
+
+		bool connection::is_tunnel()
+		{
+			return is_tunnel_;
+		}
+
 		void connection::mark_as_streaming()
 		{
 			is_streaming_ = true;
@@ -315,6 +326,12 @@ namespace findik
 			else
 			{
 				cancel_local_receive_timeout();
+			}
+
+			if (is_tunnel())
+			{
+				register_for_remote_write(local_read_buffer_.data(), bytes_transferred);
+				return;
 			}
 
 			// parsing data.
@@ -471,7 +488,11 @@ namespace findik
 				return;
 			}
 
-			if (is_streaming())
+			if (is_tunnel())
+			{
+				register_for_local_read();
+			}
+			else if (is_streaming())
 			{
 				register_for_local_read();
 			}
@@ -500,6 +521,13 @@ namespace findik
 
 			cancel_remote_receive_timeout();
 
+			if (is_tunnel())
+			{
+				// start tunneling
+				register_for_local_write(remote_read_buffer_.data(), bytes_transferred);
+				return;
+			}
+
                         boost::tribool parser_result;
 
 			if ( err == boost::asio::error::eof && 
@@ -520,6 +548,16 @@ namespace findik
                         if (parser_result) // successfully parsed
                         {
 				//LOG4CXX_DEBUG(debug_logger, "Handling remote read: data successfully parsed.");
+
+				if (is_tunnel())
+				{
+					// start tunneling
+					LOG4CXX_DEBUG(debug_logger, "Starting tunneling operation.");
+					current_data()->into_buffer(local_write_buffer_);
+					register_for_local_write();
+					register_for_local_read();
+					return;
+				}
 
 				if (!is_keepalive()) {
 					LOG4CXX_DEBUG(debug_logger, "Shutting down remote socket.");
@@ -597,7 +635,11 @@ namespace findik
 				return;
 			}
 
-			if (is_streaming())
+			if (is_tunnel())
+			{
+				register_for_remote_read();
+			}
+			else if (is_streaming())
 			{
 				register_for_remote_read();
 			}

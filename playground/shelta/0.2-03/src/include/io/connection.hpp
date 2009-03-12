@@ -181,6 +181,11 @@ namespace findik
 			*/
 			bool is_secure();
 
+			/*!
+			Set is_tunnel to true.
+			*/
+			void mark_as_tunnel();
+
 		protected:
 			/*!
 			Debug logger for server class.
@@ -428,6 +433,18 @@ namespace findik
 			Whether connection is keep alive.
 			*/
 			boost::tribool is_keepalive_;
+
+			/*!
+			Whether connection is a tunnel.
+			This will be used in some io handles.
+			\returns whether connection is in a stream.
+			*/
+			bool is_tunnel();
+
+			/*!
+			Whether connection is a tunnel.
+			*/
+			bool is_tunnel_;
 
 			/*!
 			Whether connection is in a stream.
