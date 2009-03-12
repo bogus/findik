@@ -47,7 +47,9 @@ namespace findik
 			is_tunnel_(false),
 			local_receive_timer_(FI_SERVICES->io_srv()),
 			remote_receive_timer_(FI_SERVICES->io_srv()),
-			keepalive_timer_(FI_SERVICES->io_srv())
+			keepalive_timer_(FI_SERVICES->io_srv()),
+			local_buffer_remaining_(0),
+			local_buffer_resume_point_(NULL)
 		{}
 
 		void connection::prepare_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket)
@@ -90,6 +92,7 @@ namespace findik
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Registering connection for local read.");
 
+			//timeouts
 			if (is_keepalive())
 			{
 				register_for_keepalive_timeout();
@@ -99,7 +102,15 @@ namespace findik
 				register_for_local_receive_timeout();
 			}
 
-			register_for_local_read_io();
+			// local pipelining or not
+			if (local_buffer_resume_point_ == NULL)
+			{
+				register_for_local_read_io();
+			}
+			else
+			{
+				handle_read_local(boost::system::error_code(), local_buffer_remaining_);
+			}
 		}
 
 		void connection::register_for_remote_read()
@@ -334,12 +345,39 @@ namespace findik
 				return;
 			}
 
+			//local pipelining
+			char * start_point;
+			if (local_buffer_resume_point_ == NULL)
+			{
+				start_point = local_read_buffer_.data();
+			}
+			else
+			{
+				start_point = local_buffer_resume_point_;
+			}
+
 			// parsing data.
 			boost::tribool parser_result;
-			boost::tie(parser_result, boost::tuples::ignore) = 
+			char * resume_point;
+
+			boost::tie(parser_result, resume_point) = 
 				FI_SERVICES->parser_srv().parse(
 					shared_from_this(), true,
-					local_read_buffer_.data(), local_read_buffer_.data() + bytes_transferred);
+					start_point, start_point + bytes_transferred);
+
+
+			// whether there are more than one local data (pipelining)
+			if (resume_point == start_point + bytes_transferred)
+			{
+				// no pipelining
+				local_buffer_remaining_ = 0;
+				local_buffer_resume_point_ = NULL;
+			}
+			else
+			{
+				local_buffer_remaining_ = bytes_transferred - (resume_point - start_point)/sizeof(char);
+				local_buffer_resume_point_ = resume_point;
+			}
 
 			if (parser_result) // successfully parsed
 			{
@@ -402,6 +440,10 @@ namespace findik
 			else if (!parser_result) // bad request
 			{
 				LOG4CXX_ERROR(debug_logger, "Handling local read: data can not be parsed.");
+
+				// no pipelining: to ensure connection will not go in to an infinate loop for pipelining read 
+				local_buffer_remaining_ = 0;
+				local_buffer_resume_point_ = NULL;
 
 				FI_SERVICES->reply_srv().reply(local_write_buffer_,
 						proto(), FC_BAD_LOCAL);

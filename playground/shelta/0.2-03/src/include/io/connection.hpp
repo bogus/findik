@@ -250,6 +250,18 @@ namespace findik
 			void prepare_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket);
 
 			/*!
+			Remaining data in local buffer.
+			Will be used in pipeling requests.
+			*/
+			std::size_t local_buffer_remaining_;
+
+			/*!
+			Resume point in local buffer.
+			Will be used in pipeling requests.
+			*/
+			char * local_buffer_resume_point_;
+
+			/*!
 			Local read buffer.
 			*/
 			boost::array<char, 16*1024> local_read_buffer_;
