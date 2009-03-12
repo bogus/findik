@@ -401,8 +401,16 @@ namespace findik
 					else
 					{
 						mark_as_streaming();
-						current_data()->into_buffer(remote_write_buffer_);
-						register_for_remote_write();
+
+						if (is_keepalive())
+						{
+							current_data()->into_buffer(remote_write_buffer_);
+							register_for_remote_write();
+						}
+						else
+						{
+							register_for_resolve(remote_hostname(), remote_port());
+						}
 					}
 				}
 				else
