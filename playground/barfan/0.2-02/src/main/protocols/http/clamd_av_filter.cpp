@@ -144,7 +144,7 @@ namespace findik
 						if(pos != std::string::npos) 
 						{
 							boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "Virus Found : " + av_result.substr(0,pos), av_result.substr(0,pos), connection_, req, resp));
-							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(),reply_->log_str()));
+							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_));
 						}	
 						socket.close();
 					}
@@ -156,7 +156,7 @@ namespace findik
 				}
 			
 				 boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, "", "", connection_, req, resp));	
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));
 			}
 
 			bool clamd_av_filter::is_applicable(findik::io::connection_ptr connection_)

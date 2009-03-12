@@ -48,12 +48,12 @@ namespace findik
 				// check whether hostname exists in domain blacklist
 				if(!FI_SERVICES->db_srv().domainQuery(req->request_host())){
 					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "Domain blocked : " + req->request_host(), req->request_host(), connection_, req));	
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(),reply_->log_str()));	
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_));	
 				} 
 
 				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, "", "", connection_, req));
 	
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));	
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));	
 			}
 
                         bool domain_filter::is_applicable(findik::io::connection_ptr connection_)

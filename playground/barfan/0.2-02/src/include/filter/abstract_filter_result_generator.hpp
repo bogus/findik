@@ -22,8 +22,6 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "filter_reason.hpp"
-#include "service_chain_element.hpp"
 #include "connection.hpp"
 #include "log.hpp"
 #include "protocol.hpp"
@@ -39,8 +37,7 @@ namespace findik
 		@author Burak OGUZ (barfan)
 		*/
 		class abstract_filter_result_generator :
-			public boost::enable_shared_from_this<abstract_filter_result_generator>,
-			public findik::service::service_chain_element
+			public boost::enable_shared_from_this<abstract_filter_result_generator>
 		{
 		public:
 			/*!

@@ -24,6 +24,8 @@
 
 #include <string>
 
+#include "abstract_filter_result_generator.hpp"
+
 namespace findik
 {
 	namespace filter
@@ -50,16 +52,26 @@ namespace findik
 
 			/*
 			Factory method.
-			\param code code of reason.
 			\param reason_str detail of reason.
-			\param return_code response return code
-			\param close_connection CONNECTION : close flag for response
+			\param log_str log of reason.
 			\returns a new filter reason instance
 			*/
 			static boost::shared_ptr<filter_reason> create_reason(
 					const std::string & reply_str, const std::string & log_str)
 			{
 				boost::shared_ptr<filter_reason> p(new filter_reason(reply_str, log_str));
+				return p;
+			}
+
+			/*
+			Factory method.
+			\param reason_str detail of reason.
+			\param log_str log of reason.
+			\returns a new filter reason instance
+			*/
+			static boost::shared_ptr<filter_reason> create_reason(findik::filter::abstract_filter_result_generator_ptr arg)
+			{
+				boost::shared_ptr<filter_reason> p(new filter_reason(arg->reply_str(), arg->log_str()));
 				return p;
 			}
 

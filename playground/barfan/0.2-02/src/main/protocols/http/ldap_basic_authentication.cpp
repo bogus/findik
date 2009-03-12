@@ -110,6 +110,7 @@ namespace findik
 					int msgid;
 					size_t found;
 					BerValue bind_dn_creds;
+					std::map<std::string,std::string>::iterator it;
 
   					found=auth_response.find(":");
 					if (found != std::string::npos)
@@ -118,9 +119,8 @@ namespace findik
 						passwd = auth_response.substr(found+1); 		
 					}
 					if(username == "" ||passwd == "")
-						return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code_,"Proxy authorization required", authenticator_code_, false, findik::io::http));		
+						goto fail;
 					
-					std::map<std::string,std::string>::iterator it;
 					it = auth_cache_.find(username);					
 					if(it != auth_cache_.end()) 
 					{
@@ -138,7 +138,7 @@ namespace findik
 					if (rc != LDAP_SUCCESS)
 					{
 						LOG4CXX_ERROR(debug_logger_, "Could not initiazlize LDAP, reason: " + std::string(ldap_err2string(rc)));				
-						return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code_,"Proxy authorization required", authenticator_code_, false, findik::io::http));
+						goto fail;
 					}
 
 
@@ -149,7 +149,7 @@ namespace findik
 					if (rc != LDAP_SUCCESS)
 					{
 						LOG4CXX_ERROR(debug_logger_, "Could not bind to LDAP server, reason: " + std::string(ldap_err2string(rc)));
-                                                return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code_,"Proxy authorization required", authenticator_code_, false, findik::io::http));
+						goto fail;
 					}
 
 						
@@ -158,7 +158,7 @@ namespace findik
 					if (rc != LDAP_SUCCESS)
 					{
 						LOG4CXX_ERROR(debug_logger_, "Could not search LDAP server, reason: " + std::string(ldap_err2string(rc)));
-                                                return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code_,"Proxy authorization required", authenticator_code_, false, findik::io::http));
+						goto fail;
 					}
 
 					rc=ldap_result(ld, msgid, 0, &tv_, &result);
@@ -199,7 +199,8 @@ namespace findik
 							}
 						}
 					}
-
+					
+					fail:
 					return boost::make_tuple(false, findik::authenticator::authentication_result::create_result(authenticator_code_,"Proxy authorization required", authenticator_code_, false, findik::io::http));	
 				}
 

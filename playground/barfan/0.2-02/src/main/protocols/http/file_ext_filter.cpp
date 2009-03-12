@@ -46,21 +46,21 @@ namespace findik
 				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, " ", " ", connection_, req));
 
 				if(url.find_first_of('?') != std::string::npos) {
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
+					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));
 				}
 
 				int pos = url.find_last_of('.');
 				int pos2 = url.find_last_of('/');
 
 				if((pos != std::string::npos) && (pos2 != std::string::npos) && (pos < pos2))
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));						
+					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));						
 	
 				if((pos != std::string::npos) && !FI_SERVICES->db_srv().fileExtQuery(url.substr(pos+1))){
 					 boost::shared_ptr<http_filter_result_generator> reply_filtered_(new http_filter_result_generator(filter_code_, false, response::forbidden, false, "Extension blocked : " + url, url, connection_, req));
-                                        return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_filtered_->reply_str(),reply_filtered_->log_str()));
+                                        return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_filtered_));
 				} 
 
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));			
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));			
 
 			}
 
