@@ -40,28 +40,28 @@ namespace findik
 			boost::tuple<bool, findik::filter::filter_reason_ptr> file_ext_filter::filter(findik::io::connection_ptr connection_) 
 			{
 				LOG4CXX_DEBUG(debug_logger_, "URL file extension filter entered"); // log for filter entrance
-				
 				// get request object from current data
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 				std::string url = req->request_uri();	
+				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, " ", " ", connection_, req));
 
 				if(url.find_first_of('?') != std::string::npos) {
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));
+					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));
 				}
 
 				int pos = url.find_last_of('.');
 				int pos2 = url.find_last_of('/');
 
 				if((pos != std::string::npos) && (pos2 != std::string::npos) && (pos < pos2))
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));
-				
+					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));						
+	
 				if((pos != std::string::npos) && !FI_SERVICES->db_srv().fileExtQuery(url.substr(pos+1))){
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(filter_code_,"File blocked : " + url, response::forbidden, false, findik::io::http, req->request_host() + " " + req->request_uri() + " " + url.substr(pos+1)));
+					 boost::shared_ptr<http_filter_result_generator> reply_filtered_(new http_filter_result_generator(filter_code_, false, response::forbidden, false, "Extension blocked : " + url, url, connection_, req));
+                                        return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_filtered_));
 				} 
-				else {
-				}
-			
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(filter_code_,"", response::ok, false, findik::io::http, req->request_host() + " " + req->request_uri()));	
+
+				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));			
+
 			}
 
                         bool file_ext_filter::is_applicable(findik::io::connection_ptr connection_)

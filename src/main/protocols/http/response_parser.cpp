@@ -28,6 +28,7 @@
 #include <cctype>
 
 #include "parser_util.hpp"
+#include "http_util.hpp"
 #include "request.hpp"
 #include "service_container.hpp"
 #include "protocol.hpp"
@@ -395,6 +396,14 @@ namespace findik
 						if ( resp->status_code == 304 || resp->status_code == 204 ||
 								(resp->status_code > 99 && resp->status_code < 200) )
 						{
+							return true;
+						}
+						else if (resp->status_code == 200 &&
+							resp->status_line == "Connection established" &&
+							last_request_of(connection_)->method == request::connect
+							)
+						{
+							connection_->mark_as_tunnel();
 							return true;
 						}
 

@@ -47,19 +47,15 @@ namespace findik
 				char* begin, char* end
 			)
 		{
-			boost::tribool parser_result;
 			if (is_local)
-				boost::tie(parser_result, boost::tuples::ignore) = 
-					local_parser_map_[connection_->proto()]->parse(
+				return local_parser_map_[connection_->proto()]->parse(
 						connection_, begin, end
 					);
 			else
-				boost::tie(parser_result, boost::tuples::ignore) = 
-					remote_parser_map_[connection_->proto()]->parse(
+				return remote_parser_map_[connection_->proto()]->parse(
 						connection_, begin, end
 					);
 
-			return parser_result;
 		}
 
 		void parser_service::update_hostname_of(findik::io::connection_ptr connection_,

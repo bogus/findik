@@ -55,6 +55,21 @@ namespace findik
 					char* begin, char* end
 				)
 			{
+				if (connection_->current_data().get() != 0) // if stream, do not parse data just increment size and return
+				{
+					request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
+					if (req->is_stream())
+					{
+						req->add_to_stream_content_size((end - begin)/sizeof(char));
+
+						boost::tribool result = boost::indeterminate;
+						if ( !( req->content_size() < req->content_length() ) )
+							result = true;
+
+						return boost::make_tuple(result, end);
+					}
+				}
+
 				while (begin != end)
 				{
 					boost::tribool result = consume(connection_, *begin++);
@@ -124,7 +139,14 @@ namespace findik
 								req->method = request::options;
 
 							else if (FIR_TMPSTR_OF(connection_) == "CONNECT")
+							{
+								if (! FI_CONFIG.server_http_run_with_squid())
+								{
+									LOG4CXX_ERROR(debug_logger, "FINDIK does not support HTTP CONNECT without squid.");
+									return false;
+								}
 								req->method = request::connect;
+							}
 							else
 								return false;
 
@@ -404,8 +426,12 @@ namespace findik
 							}
 							else
 							{
-							FI_STATE_OF(connection_) = content;
-							return boost::indeterminate;
+								if (req->content_length() > 
+									FI_CONFIG.server_http_max_object_size())
+									req->mark_as_stream();
+
+								FI_STATE_OF(connection_) = content;
+								return boost::indeterminate;
 							}
 						}
 						else
@@ -447,7 +473,7 @@ namespace findik
 							if (pos_ == std::string::npos)
 								hostname_ = h.value;
 							else
-								hostname_ = h.value.substr(0,pos_);
+								hostname_ = h.value.substr(0, pos_);
 						}
 				}
 			}
@@ -483,7 +509,7 @@ namespace findik
 							else
 							{
 								port_ = boost::lexical_cast< unsigned int >(
-										h.value.substr(pos_)
+										h.value.substr(pos_ + 1)
 									);
 							}
 						}

@@ -22,51 +22,23 @@ namespace findik
 {
 	namespace filter
 	{
-		filter_reason::filter_reason(unsigned int code) :
-			code_(code),
-                        reason_str_(" "),
-                        return_code_(0),
-                        close_connection_(false),
-                        protocol_(0),
+		filter_reason::filter_reason() :
+                        reply_str_(" "),
                         log_str_(" ")
 		{}
 
-		filter_reason::filter_reason(unsigned int code, const std::string & reason_str, unsigned int return_code, bool close_connection, unsigned int protocol, const std::string & log_str) :
-			code_(code),
-			reason_str_(reason_str),
-			return_code_(return_code),
-			close_connection_(close_connection_),
-			protocol_(protocol),
+		filter_reason::filter_reason(const std::string & reply_str,const std::string & log_str) :
+			reply_str_(reply_str),
 			log_str_(log_str)
 		{}
 
 		filter_reason::~filter_reason()
 		{}
 
-		const std::string & filter_reason::reason_str()
+		const std::string & filter_reason::reply_str()
 		{
-			return reason_str_;
+			return reply_str_;
 		}
-
-		unsigned int filter_reason::code()
-		{
-			return code_;
-		}
-
-		unsigned int filter_reason::return_code()
-                {
-                        return return_code_;
-                }
-
-		bool filter_reason::close_connection()
-                {
-                        return close_connection_;
-                }
-
-		unsigned int filter_reason::protocol()
-                {
-                        return protocol_;
-                }
 
                 const std::string & filter_reason::log_str()
 		{

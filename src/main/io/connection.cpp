@@ -44,9 +44,12 @@ namespace findik
 			remote_hostname_(""),
 			local_endpoint_(""),
 			is_streaming_(false),
+			is_tunnel_(false),
 			local_receive_timer_(FI_SERVICES->io_srv()),
 			remote_receive_timer_(FI_SERVICES->io_srv()),
-			keepalive_timer_(FI_SERVICES->io_srv())
+			keepalive_timer_(FI_SERVICES->io_srv()),
+			local_buffer_remaining_(0),
+			local_buffer_resume_point_(NULL)
 		{}
 
 		void connection::prepare_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket)
@@ -89,6 +92,7 @@ namespace findik
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Registering connection for local read.");
 
+			//timeouts
 			if (is_keepalive())
 			{
 				register_for_keepalive_timeout();
@@ -98,7 +102,15 @@ namespace findik
 				register_for_local_receive_timeout();
 			}
 
-			register_for_local_read_io();
+			// local pipelining or not
+			if (local_buffer_resume_point_ == NULL)
+			{
+				register_for_local_read_io();
+			}
+			else
+			{
+				handle_read_local(boost::system::error_code(), local_buffer_remaining_);
+			}
 		}
 
 		void connection::register_for_remote_read()
@@ -139,6 +151,12 @@ namespace findik
 		{
 			//LOG4CXX_DEBUG(debug_logger, "Registering connection for remote write.");
 			register_for_remote_write_io();
+		}
+
+		void connection::register_for_remote_write(char * data_, std::size_t size_)
+		{
+			//LOG4CXX_DEBUG(debug_logger, "Registering connection for local write.");
+			register_for_remote_write_io(data_, size_);
 		}
 
 		void connection::register_for_connect(boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
@@ -255,6 +273,16 @@ namespace findik
 			return new_data_;
 		}
 
+		void connection::mark_as_tunnel()
+		{
+			is_tunnel_ = true;
+		}
+
+		bool connection::is_tunnel()
+		{
+			return is_tunnel_;
+		}
+
 		void connection::mark_as_streaming()
 		{
 			is_streaming_ = true;
@@ -311,34 +339,127 @@ namespace findik
 				cancel_local_receive_timeout();
 			}
 
+			if (is_tunnel())
+			{
+				register_for_remote_write(local_read_buffer_.data(), bytes_transferred);
+				return;
+			}
+
+			//local pipelining
+			char * start_point;
+			if (local_buffer_resume_point_ == NULL)
+			{
+				start_point = local_read_buffer_.data();
+			}
+			else
+			{
+				start_point = local_buffer_resume_point_;
+			}
+
 			// parsing data.
 			boost::tribool parser_result;
-			boost::tie(parser_result, boost::tuples::ignore) = 
+			char * resume_point;
+
+			boost::tie(parser_result, resume_point) = 
 				FI_SERVICES->parser_srv().parse(
 					shared_from_this(), true,
-					local_read_buffer_.data(), local_read_buffer_.data() + bytes_transferred);
+					start_point, start_point + bytes_transferred);
+
+
+			// whether there are more than one local data (pipelining)
+			if (resume_point == start_point + bytes_transferred)
+			{
+				// no pipelining
+				local_buffer_remaining_ = 0;
+				local_buffer_resume_point_ = NULL;
+			}
+			else
+			{
+				local_buffer_remaining_ = bytes_transferred - (resume_point - start_point)/sizeof(char);
+				local_buffer_resume_point_ = resume_point;
+			}
 
 			if (parser_result) // successfully parsed
 			{
 				//LOG4CXX_DEBUG(debug_logger, "Handling local read: data successfully parsed.");
 
-				bool is_authenticated;
-				findik::authenticator::authentication_result_ptr authentication_result;
-				boost::tie(is_authenticated, authentication_result) =
-					FI_SERVICES->authentication_srv().authenticate(shared_from_this());
-				
-				if (is_authenticated) // authenticated
+				if (current_data()->is_stream())
 				{
-					// TODO: save creditentials.
-
-					bool filter_result;
-					findik::filter::filter_reason_ptr filter_reason;
-					boost::tie(filter_result, filter_reason) =
-						FI_SERVICES->filter_srv().filter(shared_from_this());
+					mark_as_not_streaming(); // if parser had returned true, all request should have been completed. No need for re-read_local.
+					register_for_remote_write(local_read_buffer_.data(), bytes_transferred);
+				}
+				else
+				{
+					bool is_authenticated;
+					findik::authenticator::authentication_result_ptr authentication_result;
+					boost::tie(is_authenticated, authentication_result) =
+						FI_SERVICES->authentication_srv().authenticate(shared_from_this());
 					
-					if (filter_result) // not denied
+					if (is_authenticated) // authenticated
 					{
-						//LOG4CXX_DEBUG(debug_logger, "Accepted local data.");
+						// TODO: save creditentials.
+
+						bool filter_result;
+						findik::filter::filter_reason_ptr filter_reason;
+						boost::tie(filter_result, filter_reason) =
+							FI_SERVICES->filter_srv().filter(shared_from_this());
+						
+						if (filter_result) // not denied
+						{
+							//LOG4CXX_DEBUG(debug_logger, "Accepted local data.");
+
+							if (is_keepalive())
+							{
+								current_data()->into_buffer(remote_write_buffer_);
+								register_for_remote_write();
+							}
+							else
+							{
+								register_for_resolve(remote_hostname(), remote_port());
+							}
+						}
+						else // denied
+						{
+							LOG4CXX_DEBUG(debug_logger, "Data from local had been rejected.");
+
+							FI_SERVICES->reply_srv().reply(local_write_buffer_,
+									proto(), filter_reason);
+							register_for_local_write();
+						}
+					}
+					else // not authenticated
+					{
+						LOG4CXX_DEBUG(debug_logger, "Local connection is not authenticated.");
+
+						FI_SERVICES->reply_srv().reply(local_write_buffer_,
+								proto(), authentication_result);
+						register_for_local_write();
+					}
+				}
+			}
+			else if (!parser_result) // bad request
+			{
+				LOG4CXX_ERROR(debug_logger, "Handling local read: data can not be parsed.");
+
+				// no pipelining: to ensure connection will not go in to an infinate loop for pipelining read 
+				local_buffer_remaining_ = 0;
+				local_buffer_resume_point_ = NULL;
+
+				FI_SERVICES->reply_srv().reply(local_write_buffer_,
+						proto(), FC_BAD_LOCAL);
+				register_for_local_write();
+			}
+			else // more data required
+			{
+				if ( current_data().get() != 0 && current_data()->is_stream())
+				{
+					if (is_streaming())
+					{
+						register_for_remote_write(local_read_buffer_.data(), bytes_transferred);
+					}
+					else
+					{
+						mark_as_streaming();
 
 						if (is_keepalive())
 						{
@@ -350,35 +471,11 @@ namespace findik
 							register_for_resolve(remote_hostname(), remote_port());
 						}
 					}
-					else // denied
-					{
-						LOG4CXX_DEBUG(debug_logger, "Data from local had been rejected.");
-
-						FI_SERVICES->reply_srv().reply(local_write_buffer_,
-								proto(), filter_reason);
-						register_for_local_write();
-					}
 				}
-				else // not authenticated
+				else
 				{
-					LOG4CXX_DEBUG(debug_logger, "Local connection is not authenticated.");
-
-					FI_SERVICES->reply_srv().reply(local_write_buffer_,
-							proto(), authentication_result);
-					register_for_local_write();
+	                                register_for_local_read();
 				}
-			}
-			else if (!parser_result) // bad request
-			{
-				LOG4CXX_ERROR(debug_logger, "Handling local read: data can not be parsed.");
-
-				FI_SERVICES->reply_srv().reply(local_write_buffer_,
-						proto(), FC_BAD_LOCAL);
-				register_for_local_write();
-			}
-			else // more data required
-			{
-				register_for_local_read();
 			}
 		}
 
@@ -433,8 +530,19 @@ namespace findik
 				return;
 			}
 
-			push_current_data_to_queue();
-			register_for_remote_read();
+			if (is_tunnel())
+			{
+				register_for_local_read();
+			}
+			else if (is_streaming())
+			{
+				register_for_local_read();
+			}
+			else
+			{
+				push_current_data_to_queue();
+				register_for_remote_read();
+			}
 		}
 
 		void connection::handle_read_remote(const boost::system::error_code& err,
@@ -454,6 +562,13 @@ namespace findik
 			}
 
 			cancel_remote_receive_timeout();
+
+			if (is_tunnel())
+			{
+				// start tunneling
+				register_for_local_write(remote_read_buffer_.data(), bytes_transferred);
+				return;
+			}
 
                         boost::tribool parser_result;
 
@@ -475,6 +590,16 @@ namespace findik
                         if (parser_result) // successfully parsed
                         {
 				//LOG4CXX_DEBUG(debug_logger, "Handling remote read: data successfully parsed.");
+
+				if (is_tunnel())
+				{
+					// start tunneling
+					LOG4CXX_DEBUG(debug_logger, "Starting tunneling operation.");
+					current_data()->into_buffer(local_write_buffer_);
+					register_for_local_write();
+					register_for_local_read();
+					return;
+				}
 
 				if (!is_keepalive()) {
 					LOG4CXX_DEBUG(debug_logger, "Shutting down remote socket.");
@@ -552,7 +677,11 @@ namespace findik
 				return;
 			}
 
-			if (is_streaming())
+			if (is_tunnel())
+			{
+				register_for_remote_read();
+			}
+			else if (is_streaming())
 			{
 				register_for_remote_read();
 			}

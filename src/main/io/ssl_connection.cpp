@@ -106,6 +106,15 @@ namespace findik
 						boost::asio::placeholders::error)));
 		}
 
+		void ssl_connection::register_for_remote_write_io(char * data_, std::size_t size_)
+		{
+			boost::asio::async_write(remote_ssl_socket_, boost::asio::buffer(data_, size_),
+				strand_.wrap(
+					boost::bind(&connection::handle_write_remote,
+					shared_from_this(),
+					boost::asio::placeholders::error)));
+		}
+
 		void ssl_connection::start_local()
 		{
 			local_ssl_socket_.async_handshake(boost::asio::ssl::stream_base::server,
