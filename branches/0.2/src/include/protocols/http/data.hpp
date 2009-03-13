@@ -103,6 +103,12 @@ namespace findik
 				*/
 				void add_to_stream_content_size(std::size_t size_);
 
+				/*!
+				Pushes character to raw content vector.
+				\param input char to be pushed.
+				*/
+				void push_to_content(char input);
+
 			protected:
 
 				/*!

@@ -24,6 +24,8 @@
 
 #include <string>
 
+#include "abstract_filter_result_generator.hpp"
+
 namespace findik
 {
 	namespace filter
@@ -42,24 +44,34 @@ namespace findik
 			\param code code of reason.
 			\returns a new filter reason instance
 			*/
-			static boost::shared_ptr<filter_reason> create_reason(unsigned int code)
+			static boost::shared_ptr<filter_reason> create_reason()
 			{
-				boost::shared_ptr<filter_reason> p(new filter_reason(code));
+				boost::shared_ptr<filter_reason> p(new filter_reason());
 				return p;
 			}
 
 			/*
 			Factory method.
-			\param code code of reason.
 			\param reason_str detail of reason.
-			\param return_code response return code
-			\param close_connection CONNECTION : close flag for response
+			\param log_str log of reason.
 			\returns a new filter reason instance
 			*/
 			static boost::shared_ptr<filter_reason> create_reason(
-					unsigned int code, const std::string & reason_str, unsigned int return_code, bool close_connection, unsigned int protocol, const std::string & log_str)
+					const std::string & reply_str, const std::string & log_str)
 			{
-				boost::shared_ptr<filter_reason> p(new filter_reason(code, reason_str, return_code, close_connection, protocol, log_str));
+				boost::shared_ptr<filter_reason> p(new filter_reason(reply_str, log_str));
+				return p;
+			}
+
+			/*
+			Factory method.
+			\param reason_str detail of reason.
+			\param log_str log of reason.
+			\returns a new filter reason instance
+			*/
+			static boost::shared_ptr<filter_reason> create_reason(findik::filter::abstract_filter_result_generator_ptr arg)
+			{
+				boost::shared_ptr<filter_reason> p(new filter_reason(arg->reply_str(), arg->log_str()));
 				return p;
 			}
 
@@ -69,34 +81,10 @@ namespace findik
 			~filter_reason();
 
 			/*!
-			Detail of reason.
+			Reply string which will return to user
 			\returns reason details
 			*/
-			const std::string & reason_str();
-
-			/*!
-			Code of reason. 
-			\returns reason code
-			*/
-			unsigned int code();
-			
-			/*!
-			Code of return. 
-			\returns response return code
-			*/
-			unsigned int return_code();
-
-			/*!
-                        Close connection parameter if this reply should close connection or not. 
-                        \returns close connection parameter
-                        */
-                        bool close_connection();
-
-			/*!
-                        Protocol which reason produced
-                        \returns protocol  
-                        */
-                        unsigned int protocol();
+			const std::string & reply_str();
 
 			/*!
                         Detail of log.
@@ -108,37 +96,17 @@ namespace findik
 			/*!
 			Constructor.
 			*/
-			filter_reason(unsigned int code);
+			filter_reason();
 
 			/*!
 			Constructor.
 			*/
-			filter_reason(unsigned int code, const std::string & reason_str, unsigned int return_code, bool close_connection, unsigned int protocol, const std::string & log_str);
-
-			/*!
-			Reason code.
-			*/
-			unsigned int code_;
-			
-			/*!
-			Response code.
-			*/
-			unsigned int return_code_;
-
-			/*!
-                        Connection close parameter for response header
-                        */
-                        bool close_connection_;
+			filter_reason(const std::string & reply_str, const std::string & log_str);
 
 			/*!
 			Reason detail in a string.
 			*/
-			std::string reason_str_;
-
-			/*!
-			Protocol
-			*/
-			unsigned int protocol_;
+			std::string reply_str_;
 
 			/*!
                         Log string.

@@ -181,6 +181,11 @@ namespace findik
 			*/
 			bool is_secure();
 
+			/*!
+			Set is_tunnel to true.
+			*/
+			void mark_as_tunnel();
+
 		protected:
 			/*!
 			Debug logger for server class.
@@ -243,6 +248,18 @@ namespace findik
 			\param socket ASIO socket to set options.
 			*/
 			void prepare_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket);
+
+			/*!
+			Remaining data in local buffer.
+			Will be used in pipeling requests.
+			*/
+			std::size_t local_buffer_remaining_;
+
+			/*!
+			Resume point in local buffer.
+			Will be used in pipeling requests.
+			*/
+			char * local_buffer_resume_point_;
 
 			/*!
 			Local read buffer.
@@ -316,6 +333,21 @@ namespace findik
 			\param size_ number of bytes to write
 			*/
 			virtual void register_for_local_write_io(char * data_, std::size_t size_) = 0;
+
+			/*!
+			Register to ASIO service to write specified data to remote socket.
+			\param data_ fron iterator of data.
+			\param size_ number of bytes to write
+			*/
+			void register_for_remote_write(char * data_, std::size_t size_);
+
+			/*!
+			Register to ASIO service to write specified data to remote socket.
+			Internal IO operations.
+			\param data_ fron iterator of data.
+			\param size_ number of bytes to write
+			*/
+			virtual void register_for_remote_write_io(char * data_, std::size_t size_) = 0;
 
 			/*!
 			Socket for the remote connection.
@@ -413,6 +445,18 @@ namespace findik
 			Whether connection is keep alive.
 			*/
 			boost::tribool is_keepalive_;
+
+			/*!
+			Whether connection is a tunnel.
+			This will be used in some io handles.
+			\returns whether connection is in a stream.
+			*/
+			bool is_tunnel();
+
+			/*!
+			Whether connection is a tunnel.
+			*/
+			bool is_tunnel_;
 
 			/*!
 			Whether connection is in a stream.

@@ -93,6 +93,13 @@ namespace findik
 				return is_https_;
 			}
 
+			void data::push_to_content(char input)
+			{
+				if (is_stream())
+					stream_content_size_++;
+
+				abstract_data::push_to_content(input);
+			}
 		}
 	}
 }

@@ -39,7 +39,6 @@ namespace findik
 			filter_service::filter(findik::io::connection_ptr connection_)
 		{
 			std::map<int,findik::filter::abstract_filter_ptr>::iterator it;
-			std::string separator = " ";
 			boost::tuple<bool, findik::filter::filter_reason_ptr> *remote_result;
 			findik::filter::filter_reason_ptr frp;
 			std::string log_str;			
@@ -53,14 +52,7 @@ namespace findik
 						it->second->filter(connection_);
 					
 					if (!boost::get<0>(result)) {
-						// Current log string : protocol::reason_code::[f|p]::src_ip::dst_dom dst_url reason
-						std::string log_string =  boost::lexical_cast<std::string>(connection_->proto()) + separator;
-						log_string += boost::lexical_cast<std::string>(boost::get<1>(result)->code()) + separator;
-						log_string += "f" + separator;
-						log_string += connection_->local_endpoint() + separator;
-						log_string += boost::get<1>(result)->log_str();
-			
-						LOG4CXX_WARN(logging::log_initializer::filter_logger, log_string);			
+						LOG4CXX_WARN(logging::log_initializer::filter_logger, boost::get<1>(result)->log_str());			
 						return result;
 					} else if(connection_->current_data()->is_remote() && connection_->current_data()->has_content()) {
 						log_str = boost::get<1>(result)->log_str();
@@ -69,12 +61,7 @@ namespace findik
 
 			//TODO: may be return score for greylisting
 			if(connection_->current_data()->is_remote() && connection_->current_data()->has_content()) {
-				std::string log_string =  boost::lexical_cast<std::string>(connection_->proto()) + separator;
-				log_string += "0" + separator;
-				log_string += "p" + separator;
-				log_string += connection_->local_endpoint() + separator;
-				log_string += log_str;
-				LOG4CXX_INFO(logging::log_initializer::filter_logger, log_string);
+				LOG4CXX_INFO(logging::log_initializer::filter_logger, log_str);
 			}
 			return boost::make_tuple(true, frp);
 		}

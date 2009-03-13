@@ -81,35 +81,7 @@ namespace findik
 		{
 			// TODO: reply generator chain .
 			std::ostream os(&sbuf);
-			std::string resp;
-
-			if(reason->protocol() == findik::io::http)
-			{
-				std::ostringstream stm;
-				std::string reply_str_(reply_html_);
-				time_t rawtime;
-				time(&rawtime);
-
-				resp = "HTTP/1.1 ";
-				if(reason->return_code() == 403) {
-					resp = resp + "403 Forbidden\r\n"; 
-				} else {
-					resp = resp + "404 Not Found\r\n"; 
-				}
-
-				if(reason->close_connection()) {
-					FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_str_);	
-					FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", reason->reason_str() , reply_str_);
-					stm << reply_str_.length();
-					resp = resp + "Content-Type : text/html \r\n";				
-					resp = resp + "Connection : close\r\n\r\n";
-					resp = resp + reply_str_;	
-				} else {
-					resp = resp + "Content-Length : 0\r\n\r\n";	
-				}
-			}
-
-			os << resp;
+			os << reason->reply_str();
 		}
 
 		void reply_service::reply(boost::asio::streambuf & sbuf,
@@ -163,7 +135,17 @@ namespace findik
 
 			os << resp;
 		}
-	
+
+		const std::string & reply_service::reply_html()
+		{
+			return reply_html_;
+		}
+
+		const std::string & reply_service::ssl_reply_html()
+		{
+			return ssl_reply_html_;
+		}
+
 		std::string reply_service::generateGMTDate()
 		{
 			time_t rawtime;
