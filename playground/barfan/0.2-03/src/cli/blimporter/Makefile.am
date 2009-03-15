@@ -11,10 +11,14 @@ importer_SOURCES	= \
 
 LIBS = \
 	-lboost_system \
+	-lboost_thread \
+	-lboost_program_options \
 	-llog4cxx \
 	-lconfig++ \
-	-lmysqlcppconn\
+	-lmysqlpp\
 	-lboost_filesystem
 
 INCLUDES = \
-	-I@top_srcdir@/
+	-I@top_srcdir@/ \ 
+	-I/usr/include/mysql
+

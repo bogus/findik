@@ -1,3 +1,21 @@
+/*
+  Copyright (C) 2008 Burak OGUZ (barfan) <findikmail@gmail.com>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include "mysqldbmanager.hpp"
 
 namespace findik {
@@ -20,211 +38,171 @@ namespace findik {
 
 			void mysqldbmanager::connectDb()
 			{
-				config::configuration_.getConfigValue_String("findik.db.host",this->host);	
-				config::configuration_.getConfigValue_String("findik.db.username",this->username);
-				config::configuration_.getConfigValue_String("findik.db.password",this->password);
-				config::configuration_.getConfigValue_String("findik.db.db",this->db);
-
-			        std::cout<<this->host<<std::endl;
-				std::cout<<this->username<<std::endl;
-				std::cout<<this->password<<std::endl;
-				std::cout<<this->db<<std::endl;
 				try {
-					this->driver = get_driver_instance();			
-					std::auto_ptr< sql::Connection > con1(driver->connect(host, username, password));
+					config::configuration_ptr cptr(new config::configuration());
+			
+					myconn_ = new mysqlpp::Connection(cptr->db().c_str(), cptr->host().c_str(), cptr->username().c_str(), cptr->password().c_str());	
+					category_select = new mysqlpp::Query(myconn_->query("SELECT * from category where catname = %0q"));
+					category_insert = new mysqlpp::Query(myconn_->query("INSERT INTO category VALUES (NULL, %0q)"));
+					domain_select = new mysqlpp::Query(myconn_->query("Select * from domain where domain = %0q"));
+					domain_insert = new mysqlpp::Query(myconn_->query("INSERT INTO domain VALUES (NULL,%0q,%1q)"));
+					url_select = new mysqlpp::Query(myconn_->query("Select * from url where url = %0q"));
+					url_insert = new mysqlpp::Query(myconn_->query("INSERT INTO url VALUES (NULL,%0q,%1q)"));
+					re_select = new mysqlpp::Query(myconn_->query("Select * from content where content = %0q"));
+					re_insert = new mysqlpp::Query(myconn_->query("INSERT INTO content VALUES (NULL,%0q,%1q)"));
+			
+					category_select->parse();
+					category_insert->parse();
+					domain_select->parse();
+					domain_insert->parse();
+					url_select->parse();
+					url_insert->parse();
+					re_select->parse();
+					re_insert->parse();
 
-					this->con = con1;
-					//con1->setSchema(db);
-					std::auto_ptr< sql::Statement > stmt(con->createStatement());
-					stmt->execute("USE " + this->db);
-					//this->con->setSchema(db);
-				} catch (sql::SQLException &e) {
-					std::cerr << "SQL Error: " << e.getSQLState() << std::endl;
+				} catch (const mysqlpp::Exception& e) {
+					std::cerr << "SQL Error" << std::endl;
 				}
 			}
-			
+
 			/**
-			* First checks whether category name is inserted. If inserted returns category_id
-			* Then inserts category and returns newly added category name
-			*/
+			 * First checks whether category name is inserted. If inserted returns category_id
+			 * Then inserts category and returns newly added category name
+			 */
 			int mysqldbmanager::newCategory(std::string category_name)
 			{
-				std::stringstream sql;
-				bool ok;
 				try {
-					std::auto_ptr< sql::Statement > stmt(con->createStatement());
-					sql.str("");
-					sql << "Select * from category where catname = '";
-					sql << category_name << "';";
-					ok = stmt->execute(sql.str());
-					if(ok) 
-					{
-						std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
-						if(res->rowsCount() > 0) {
-							res->next();
-							return res->getInt("id");
-						}
-					}
+					std::cout << "Importing category : " << category_name << std::endl;
+					mysqlpp::StoreQueryResult res = category_select->store(category_name);
+					if(res.num_rows() > 0) 
+						return (int)res[0][0];
 
-					sql.str("");
-					sql << "INSERT INTO category VALUES (NULL,'";
-					sql << category_name << "');";
-					stmt->execute(sql.str());
-					sql.str("");
-					sql << "Select * from category where catname = '";
-					sql << category_name << "';";
-					ok = stmt->execute(sql.str());
-					if(ok) 
-					{
-						std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
-						if(res->rowsCount() > 0) {
-							res->next();
-							return res->getInt("id");
-						}
-					}
-				} catch (sql::SQLException &e) {
-					std::cout << "SQL Error :" << e.getErrorCode() << std::endl;
+					category_insert->store(category_name);
+
+					res.clear();
+					res = category_select->store(category_name);
+
+					if(res.num_rows() > 0)
+						return (int)res[0][0]; 
+
+					res.clear();
+					return 0;
+				} catch (const mysqlpp::BadQuery& e) {
+					std::cout << "Bad Query " <<  e.what() << std::endl;
+					return 0;
 				}
-				return 0;
+				catch (const mysqlpp::BadConversion& e) {
+					std::cout << "Bad Conversion" << std::endl;
+					return 0;
+				}
+				catch (const mysqlpp::Exception& e) {
+					std::cout << "Exception" << std::endl;
+					return 0;
+				}
 			}
-			
+
 			/**
-			* First checks whether domain name is inserted. If inserted returns 0
-			* Then inserts domain name and returns 0 if process true
-			* returns 1 if exception occurs
-			*/
+			 * First checks whether domain name is inserted. If inserted returns 0
+			 * Then inserts domain name and returns 0 if process true
+			 * returns 1 if exception occurs
+			 */
 			int mysqldbmanager::newDomain(std::string domain_name,int category_id)
 			{
-				std::stringstream sql;
-				bool ok;
 				try {
-					std::auto_ptr< sql::Statement > stmt(con->createStatement());
-					sql.str("");
-					sql << "Select * from blacklist_domain where domain = '";
-					sql << domain_name << "';";
-					std::cout << sql.str() << std::endl;
-					ok = stmt->execute(sql.str());
-					if(ok) 
-					{
-						std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
-						if(res->rowsCount() > 0) {
-							return 0;
-						}
-					}
+					mysqlpp::StoreQueryResult res = domain_select->store(domain_name);
+					if(res.num_rows() > 0)
+						return (int)res[0][0];
 
-					sql.str("");
-					sql << "INSERT INTO blacklist_domain VALUES (NULL,'";
-					sql << domain_name << "','1','"<< category_id <<"');";
-					std::cout << sql.str() << std::endl;
-					stmt->execute(sql.str());
+					domain_insert->store(domain_name, category_id);
+					res.clear();
 
-					sql.str("");
-					sql << "Select * from blacklist_domain where domain = '";
-					sql << domain_name << "';";
-					std::cout << sql.str() << std::endl;
-					ok = stmt->execute(sql.str());
-					if(ok) 
-					{
-						std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
-						if(res->rowsCount() > 0) {
-							return 0;
-						}
-					}
-				} catch (sql::SQLException &e) {
-					std::cout << "SQL Error :" << e.getErrorCode() << std::endl;
+					res = domain_select->store(domain_name);
+
+					if(res.num_rows() > 0)
+						return (int)res[0][0];
+
+					res.clear();
+					return 0;
+				} catch (const mysqlpp::BadQuery& e) {
+					std::cout << "Bad Query" << std::endl;
+					return 0;
 				}
-				return 1;
+				catch (const mysqlpp::BadConversion& e) {
+					std::cout << "Bad Conversion" << std::endl;
+					return 0;
+				}
+				catch (const mysqlpp::Exception& e) {
+					std::cout << "Exception" << std::endl;
+					return 0;
+				}
+
 			}
-			
+
 			/**
-			* First checks whether url name is inserted. If inserted returns 0
-			* Then inserts url name and returns 0 if process true
-			*/
-			int mysqldbmanager::newUrl(std::string url_name,int category_id)
+			 * First checks whether url name is inserted. If inserted returns 0
+			 * Then inserts url name and returns 0 if process true
+			 */
+			int mysqldbmanager::newUrl(std::string url_name,int url_id)
 			{
-				std::stringstream sql;
-				bool ok;
 				try {
-					std::auto_ptr< sql::Statement > stmt(con->createStatement());
-					sql.str("");
-					sql << "Select * from blacklist_url where url = '";
-					sql << url_name << "';";
-					std::cout << sql.str() << std::endl;
-					ok = stmt->execute(sql.str());
-					if(ok) 
-					{
-						std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
-						if(res->rowsCount() > 0) {
-							return 0;
-						}
-					}
+					mysqlpp::StoreQueryResult res = url_select->store(url_name);
+                                        if(res.num_rows() > 0)
+                                                return (int)res[0][0];
 
-					sql.str("");
-					sql << "INSERT INTO blacklist_url VALUES (NULL,'";
-					sql << url_name << "','1','"<< category_id <<"');";
-					std::cout << sql.str() << std::endl;
-					stmt->execute(sql.str());
+                                        url_insert->store(url_name, url_id);
+                                        res.clear();
+                                        res = url_select->store(url_name);
 
-					sql.str("");
-					sql << "Select * from blacklist_url where url = '";
-					sql << url_name << "';";
-					std::cout << sql.str() << std::endl;
-					ok = stmt->execute(sql.str());
-					if(ok) 
-					{
-						std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
-						if(res->rowsCount() > 0) {
-							return 0;
-						}
-					}
-				} catch (sql::SQLException &e) {
-					std::cout << "SQL Error :" << e.getErrorCode() << std::endl;
-				}
-				return 1;
+                                        if(res.num_rows() > 0)
+                                                return (int)res[0][0];
+
+                                        res.clear();
+                                        return 0;
+				} catch (const mysqlpp::BadQuery& e) {
+                                        std::cout << "Bad Query" << std::endl;
+                                        return 0;
+                                }
+                                catch (const mysqlpp::BadConversion& e) {
+                                        std::cout << "Bad Conversion" << std::endl;
+                                        return 0;
+                                }
+                                catch (const mysqlpp::Exception& e) {
+                                        std::cout << "Exception" << std::endl;
+                                        return 0;
+                                }
 			}
 
-			int mysqldbmanager::newContent(std::string content_name,int category_id)
-                        {
-                                std::stringstream sql;
-                                bool ok;
-                                try {
-                                        std::auto_ptr< sql::Statement > stmt(con->createStatement());
-                                        sql.str("");
-                                        sql << "Select * from blacklist_content where content = '";
-                                        sql << content_name << "';";
-                                        std::cout << sql.str() << std::endl;
-                                        ok = stmt->execute(sql.str());
-                                        if(ok) 
-                                        {
-                                                std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
-                                                if(res->rowsCount() > 0) {
-                                                        return 0;
-                                                }
-                                        }
+			int mysqldbmanager::newContent(std::string content_name,int content_id)
+			{
+				try {
+                                        mysqlpp::StoreQueryResult res = re_select->store(content_name);
 
-                                        sql.str("");
-                                        sql << "INSERT INTO blacklist_content VALUES (NULL,'";
-                                        sql << content_name << "','1','"<< category_id <<"');";
-                                        std::cout << sql.str() << std::endl;
-                                        stmt->execute(sql.str());
+                                        if(res.num_rows() > 0)
+                                                return (int)res[0][0];
 
-                                        sql.str("");
-                                        sql << "Select * from blacklist_content where content = '";
-                                        sql << content_name << "';";
-                                        std::cout << sql.str() << std::endl;
-                                        ok = stmt->execute(sql.str());
-                                        if(ok) 
-                                        {
-                                                std::auto_ptr< sql::ResultSet > res(stmt->getResultSet());
-                                                if(res->rowsCount() > 0) {
-                                                        return 0;
-                                                }
-                                        }
-                                } catch (sql::SQLException &e) {
-                                        std::cout << "SQL Error :" << e.getErrorCode() << std::endl;
+                                        re_insert->store(content_name, content_id);
+
+                                        res.clear();
+                                        res = re_select->store(content_name);
+
+                                        if(res.num_rows() > 0)
+                                                return (int)res[0][0];
+
+                                        res.clear();
+                                        return 0;
+				} catch (const mysqlpp::BadQuery& e) {
+                                        std::cout << "Bad Query" << std::endl;
+                                        return 0;
                                 }
-                                return 1;
-                        }
+                                catch (const mysqlpp::BadConversion& e) {
+                                        std::cout << "Bad Conversion" << std::endl;
+                                        return 0;
+                                }
+                                catch (const mysqlpp::Exception& e) {
+                                        std::cout << "Exception" << std::endl;
+                                        return 0;
+                                }
+			}
 		}
 	}
 }
