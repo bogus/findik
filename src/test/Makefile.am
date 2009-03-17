@@ -1,6 +1,6 @@
 #SUBDIRS = filter io parser service
 
-bin_PROGRAMS		=	findik_test
+noinst_PROGRAMS			=	findik_test
 
 findik_test_SOURCES		=	findik_test.cpp
 

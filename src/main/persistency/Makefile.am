@@ -1,9 +1,9 @@
 noinst_LTLIBRARIES		=	libfindik_persistency.la
 
-libfindik_persistency_la_SOURCES		= \
+libfindik_persistency_la_SOURCES= \
 	mysqldbmanager.cpp
 
-libfindik_io_la_LIBADD		=	@LTLIBOBJS@
+libfindik_persistency_la_LIBADD	=	@LTLIBOBJS@
 
 INCLUDES 			= \
 	-I@top_srcdir@/src/include/authenticator \

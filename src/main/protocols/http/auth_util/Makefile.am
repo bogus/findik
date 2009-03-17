@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES		=	libfindik_http_auth_util.la
 
-libfindik_http_auth_util_la_SOURCES	= \	
+libfindik_http_auth_util_la_SOURCES	= \
 	accept_sec_context.c \
 	asn1_NegTokenInit.c \
 	der_get.c \
