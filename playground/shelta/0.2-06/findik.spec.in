@@ -4,7 +4,7 @@ Version: @VERSION@
 Release: 1
 License: GPL
 Group: System Environment/Daemons
-Source: %{name}-%{version}.tar.gz
+Source: http://heanet.dl.sourceforge.net/sourceforge/findik/%{name}-%{version}.tar.gz
 URL: http://findikproject.org
 BuildRoot: /var/tmp/%{name}-root
 Packager: H. Kerem Cevahir <kerem@findikproject.org>
