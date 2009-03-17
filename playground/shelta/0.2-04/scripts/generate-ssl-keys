@@ -2,16 +2,40 @@
 
 OPENSSL=/usr/bin/openssl
 
+function usage() {
+	echo "USAGE: $0 [ findik-ssl-confdir [dhparam-size]]"
+	echo "eg.: $0 /etc/findik.ssl 2048"
+	echo
+	
+	exit 1
+}
+
+if [ "$#" -lt "1" -o "$#" -gt "2" ]; then
+	usage
+fi
+	
 if [ -z "$1" ]; then
 	DESTDIR=/etc/findik/ssl
 else
 	DESTDIR=$1
 fi
 
+if [ ! -d "$DESTDIR" ]; then
+	echo "ERROR: \"$DESTDIR\" is not a directory. "
+	echo
+	usage
+fi
+
 if [ -z "$2" ]; then
 	DHSIZE=2048
 else
 	DHSIZE=$2
+fi
+
+if [ "$#" -gt "0" -o "$#" -le "8192" ]; then
+	echo "ERROR: Diffie-Hellman paramaters size should be an integer between 0 and 8192."
+	echo
+	usage
 fi
 
 mkdir -p $DESTDIR || exit 1

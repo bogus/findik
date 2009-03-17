@@ -73,6 +73,9 @@ AC_TYPE_SIZE_T
 
 AC_CONFIG_FILES([
 	Makefile
+	conf/Makefile
+	scripts/Makefile
+	sql/Makefile
 	src/Makefile
 	src/include/Makefile
 	src/main/Makefile
@@ -92,4 +95,6 @@ AC_CONFIG_FILES([
 ])
 
 # Checks for library functions.
-AC_OUTPUT
+AC_OUTPUT([
+	findik.spec
+])
