@@ -36,6 +36,7 @@ namespace findik
 			std::string http_filter_logger::mime_type_identifier_ = "type";
 			std::string http_filter_logger::request_size_identifier_ = "req_size";
 			std::string http_filter_logger::response_size_identifier_ = "resp_size";
+			std::string http_filter_logger::response_code_identifier_ = "resp_code";
 			std::string http_filter_logger::filter_reason_identifier_ = "filter_reason";
 
 			http_filter_logger::http_filter_logger(unsigned int filter_code, bool filter_result, std::string filter_reason, findik::io::connection_ptr connection_, request_ptr request_, response_ptr response_)
@@ -46,9 +47,10 @@ namespace findik
 				local_endpoint_ = connection_->local_endpoint();	
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
-				request_size_ = request_->content_size();
+				request_size_ = request_->content().size();
 				mime_type_ = response_->magic_mime_type();
 				response_size_ = response_->content_size(); 	
+				response_code_ = boost::lexical_cast<std::string>(response_->status_code); 	
 				filter_reason_ = filter_reason;
 			}
 
@@ -60,9 +62,10 @@ namespace findik
 				local_endpoint_ = connection_->local_endpoint();
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
-				request_size_ = request_->content_size();
+				request_size_ = request_->content().size();
 				mime_type_ = "";
 				response_size_ = 0;
+				response_code_ = "403";
                                 filter_reason_ = filter_reason;
                         }
 
@@ -71,11 +74,14 @@ namespace findik
 				std::string log_str;
 				
 				log_str += proto_identifier_ + key_value_connector_ + boost::lexical_cast<std::string>(proto_) + attr_separator_;
-				log_str += filter_code_identifier_ + key_value_connector_ + boost::lexical_cast<std::string>(filter_code_) + attr_separator_;			
-				if(filter_result_)
+				if(filter_result_) {
 					log_str += filter_result_identifier_ + key_value_connector_ + "p" + attr_separator_;
-				else
+					
+				}
+				else {
+					log_str += filter_code_identifier_ + key_value_connector_ + boost::lexical_cast<std::string>(filter_code_) + attr_separator_;			
 					log_str += filter_result_identifier_ + key_value_connector_ + "f" + attr_separator_;
+				}
 
 				log_str += local_endpoint_identifier_ + key_value_connector_ + local_endpoint_ + attr_separator_;
 				log_str += domain_name_identifier_ + key_value_connector_ + domain_name_ + attr_separator_;
@@ -83,6 +89,7 @@ namespace findik
 				log_str += mime_type_identifier_ + key_value_connector_ + mime_type_ + attr_separator_;
 				log_str += request_size_identifier_ + key_value_connector_ + boost::lexical_cast<std::string>(request_size_) + attr_separator_;
 				log_str += response_size_identifier_ + key_value_connector_ + boost::lexical_cast<std::string>(response_size_) + attr_separator_;
+				log_str += response_code_identifier_ + key_value_connector_ + response_code_ + attr_separator_;
 				if(!filter_result_)
                                         log_str += filter_reason_identifier_ + key_value_connector_ + filter_reason_ + attr_separator_;
 				

@@ -101,7 +101,7 @@ namespace findik
 				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))->store(hostname);
 				
 				if(res.num_rows() > 0)
-					return false;
+					return (int)res[0][0];
 
 				res.clear();
 				dbconnection_->unlock();
@@ -159,7 +159,7 @@ namespace findik
 			try {
 				mysqlpp::StoreQueryResult res1 = ((mysqlpp::Query *)dbconnection_->get_object(pcre_query))->store();
 				for (int i = 0 ; i < res1.size() ; i++) {
- 					pcre_map.insert(std::pair<int,std::string>(1,res1[i][0].c_str())); 
+ 					pcre_map.insert(std::pair<int,std::string>((int)res1[i][1],res1[i][0].c_str())); 
 				}
 				res1.clear();
 				dbconnection_->unlock();

@@ -71,6 +71,7 @@ namespace findik
 				static std::string mime_type_identifier_;
 				static std::string request_size_identifier_;
 				static std::string response_size_identifier_;
+				static std::string response_code_identifier_;
 				static std::string filter_reason_identifier_;
 
 			private:
@@ -83,6 +84,7 @@ namespace findik
 				std::string mime_type_;
 				unsigned int request_size_;
 				unsigned int response_size_;
+				std::string response_code_;
 				std::string filter_reason_;
 
 			};
