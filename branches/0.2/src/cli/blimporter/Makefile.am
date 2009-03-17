@@ -1,13 +1,16 @@
-bin_PROGRAMS		= findik_import
+noinst_HEADERS		= \
+	configuration.hpp \
+	dbmanager.hpp \
+	importer_tool.hpp \
+	mysqldbmanager.hpp
 
-	
+bin_PROGRAMS		= findik_import
 
 findik_import_SOURCES	= \
 			main.cpp\
 			importer_tool.cpp\
 			configuration.cpp\
 			mysqldbmanager.cpp
-
 
 LIBS = \
 	-lboost_system \
