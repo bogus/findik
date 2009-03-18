@@ -1,4 +1,4 @@
-SUBDIRS = conf scripts sql src
+SUBDIRS = conf packaging scripts sql src
 
 EXTRA_DIST = \
 	findik.spec \
