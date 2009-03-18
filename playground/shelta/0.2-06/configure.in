@@ -74,6 +74,7 @@ AC_TYPE_SIZE_T
 AC_CONFIG_FILES([
 	Makefile
 	conf/Makefile
+	packaging/Makefile
 	scripts/Makefile
 	sql/Makefile
 	src/Makefile
