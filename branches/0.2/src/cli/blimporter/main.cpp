@@ -22,9 +22,6 @@
 
 int main(int argc, char* argv[])
 {
-	std::string cmd("./");
-        std::string temp("");
-
 	// Declare the supported options.
 	boost::program_options::options_description desc("This program imports urlblacklist.com blcklists into FINDIK compatible database structure.\nHere are the allowed options");
 	desc.add_options()

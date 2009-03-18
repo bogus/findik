@@ -60,11 +60,11 @@ namespace findik
 
 				mysql_dbconnection_ptr dbconnection__(new mysql_dbconnection(myconn_));
 
-				mysqlpp::Query * domain_q = new mysqlpp::Query(myconn_->query("SELECT domain from blacklist_domain where domain = %0q"));
+				mysqlpp::Query * domain_q = new mysqlpp::Query(myconn_->query("SELECT d.id from domain d join blacklist_category bc where d.domain = %0q and d.catid = bc.catid"));
 			        domain_q->parse();
-				mysqlpp::Query * url_q = new mysqlpp::Query(myconn_->query("SELECT url from blacklist_url where url = %0q"));
+				mysqlpp::Query * url_q = new mysqlpp::Query(myconn_->query("SELECT u.id from url u join blacklist_category bc where u.url = %0q and u.catid = bc.catid"));
 			        url_q->parse();
-				mysqlpp::Query * pcre_q = new mysqlpp::Query(myconn_->query("SELECT content,catid from blacklist_content"));
+				mysqlpp::Query * pcre_q = new mysqlpp::Query(myconn_->query("SELECT c.content,c.catid from content c join blacklist_category bc where c.catid = bc.catid"));
 			        pcre_q->parse();
 				mysqlpp::Query * file_ext_q = new mysqlpp::Query(myconn_->query("SELECT file_ext from blacklist_mime where file_ext = %0q"));
 			        file_ext_q->parse();
@@ -101,7 +101,7 @@ namespace findik
 				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))->store(hostname);
 				
 				if(res.num_rows() > 0)
-					return (int)res[0][0];
+					return false;
 
 				res.clear();
 				dbconnection_->unlock();

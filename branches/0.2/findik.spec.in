@@ -4,11 +4,12 @@ Version: @VERSION@
 Release: 1
 License: GPL
 Group: System Environment/Daemons
-Source: %{name}-%{version}.tar.gz
+Source: http://heanet.dl.sourceforge.net/sourceforge/findik/%{name}-%{version}.tar.gz
 URL: http://findikproject.org
 BuildRoot: /var/tmp/%{name}-root
 Packager: H. Kerem Cevahir <kerem@findikproject.org>
 Requires: file boost log4cxx libconfig zlib pcre libtidy mysql++ openssl openldap libgssapi
+BuildRequires: gcc-c++ make file boost-devel log4cxx-devel libconfig-devel zlib-devel pcre-devel libtidy-devel mysql++-devel openssl-devel openldap-devel libgssapi-devel
 
 Summary: A content filtering framework.
 
@@ -34,23 +35,34 @@ rm -rf $RPM_BUILD_ROOT
 
 make prefix=$RPM_BUILD_ROOT/usr sysconfdir=$RPM_BUILD_ROOT/etc install
 
+install -D -m 755 packaging/redhat/findik.init $RPM_BUILD_ROOT/etc/init.d/findik
+install -D -m 755 packaging/redhat/findik.logrotate $RPM_BUILD_ROOT/etc/logrotate.d/findik
+mkdir -p $RPM_BUILD_ROOT/var/log/findik
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -p /sbin/ldconfig
+%post
+/sbin/ldconfig
+/sbin/chkconfig --add findik
+/sbin/chkconfig findik on
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
-/usr/lib/libfindik*
-/usr/bin/findik*
-/usr/share/findik
 /etc/findik/ssl
+/etc/logrotate.d/findik
+/etc/init.d/findik
+/usr/bin/findik*
+/usr/lib/libfindik*
+/usr/share/findik
 %config(noreplace) /etc/findik/findik.cfg
 %config(noreplace) /etc/findik/findik_log.conf
 %config(noreplace) /etc/findik/forbidden_page.htm
 %config(noreplace) /etc/findik/ssl_trust.htm
+%attr(-,daemon,daemon) /var/log/findik
 
 %changelog
 * Tue Mar 17 2009 H. Kerem Cevahir <kerem@findikproject.org>
