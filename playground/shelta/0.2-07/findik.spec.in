@@ -120,11 +120,11 @@ fi
 %attr(-,daemon,daemon) /var/log/findik
 
 %changelog
-* Tue Mar 17 2009 H. Kerem Cevahir <kerem@findikproject.org>
-- Initial spec file.
-
 * Thu Mar 19 2009 H. Kerem Cevahir <kerem@findikproject.org>
 - Added mysql for dependency.
 - Added MySQL auto import support.
 - Added auto key generation.
+
+* Tue Mar 17 2009 H. Kerem Cevahir <kerem@findikproject.org>
+- Initial spec file.
 
