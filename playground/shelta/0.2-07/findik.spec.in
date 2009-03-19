@@ -58,13 +58,15 @@ if (echo|mysql); then
 		echo "|   A problem occured while importing schema.   |"; \
 		echo "|   Please create a database and import         |"; \
 		echo "|   /usr/share/findik/sql/schema.sql manually.  |"; \
-		echo "================================================="; )
+		echo "================================================="; \
+		echo; )
 	else
 		echo "================================================="
 		echo "|   A database named 'findik' exists on MySQL.  |"
 		echo "|   Please create a database and import         |"
 		echo "|   /usr/share/findik/sql/schema.sql manually.  |"
 		echo "================================================="
+		echo
 	fi
 else
 	echo "================================================="
@@ -74,6 +76,7 @@ else
         echo "|   Also, edit MySQL credentials in             |"
 	echo "|   /etc/findik/findik.cfg .                    |"
 	echo "================================================="
+	echo
 fi
 
 # Generating SSL keys.
@@ -86,6 +89,7 @@ if [ ! -f /etc/findik/ssl/public.pem -a ! -f /etc/findik/ssl/private.pem -a ! -f
 		echo "|   you can call                                |"
 		echo "|   /usr/share/findik/scripts/generate-ssl-keys |"
 		echo "================================================="
+		echo
 	else
 		echo "================================================="
 		echo "|   A problem occured during key generation.    |"
@@ -93,13 +97,16 @@ if [ ! -f /etc/findik/ssl/public.pem -a ! -f /etc/findik/ssl/private.pem -a ! -f
 		echo "|   /usr/share/findik/scripts/generate-ssl-keys |"
 		echo "|   command.                                    |"
 		echo "================================================="
+		echo
 	fi
 else
 	echo "================================================="
-	echo "|   SSL keys found and kept.                    |"
-	echo "|   If you want to recreate them, you can call  |"
+	echo "|   Found SSL keys at /etc/findik/ssl/ and      |"
+	echo "|   didn't changed. If you want to recreate     |"
+	echo "|   them, you can call                          |"
 	echo "|   /usr/share/findik/scripts/generate-ssl-keys |"
 	echo "================================================="
+	echo
 fi
 
 %postun
