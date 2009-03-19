@@ -1,9 +1,7 @@
 findiksqldir = $(datadir)/findik/sql
 
 findiksql_DATA = \
-	schema2.sql \
-	schema.sql \
-	schemaWithData.sql
+	schema.sql
 
 DISTCLEANFILES = \
 	$(findiksql_DATA)

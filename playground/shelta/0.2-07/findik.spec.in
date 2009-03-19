@@ -8,7 +8,7 @@ Source: http://heanet.dl.sourceforge.net/sourceforge/findik/%{name}-%{version}.t
 URL: http://findikproject.org
 BuildRoot: /var/tmp/%{name}-root
 Packager: H. Kerem Cevahir <kerem@findikproject.org>
-Requires: file boost log4cxx libconfig zlib pcre libtidy mysql++ openssl openldap libgssapi
+Requires: file boost log4cxx libconfig zlib pcre libtidy mysql++ openssl openldap libgssapi mysql
 BuildRequires: gcc-c++ make file boost-devel log4cxx-devel libconfig-devel zlib-devel pcre-devel libtidy-devel mysql++-devel openssl-devel openldap-devel libgssapi-devel
 
 Summary: A content filtering framework.
@@ -44,8 +44,37 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/ldconfig
+
+# Add to services
 /sbin/chkconfig --add findik
 /sbin/chkconfig findik on
+
+# Import MySQL schema
+if (echo|mysql); then
+	if [ -z "$(echo 'show databases'|mysql|grep -e '^findik$')" ]; then
+		( mysqladmin create findik && \
+		mysql findik < /usr/share/findik/sql/schema.sql ) || ( \
+		echo "================================================="; \
+		echo "|   A problem occured while importing schema.   |"; \
+		echo "|   Please create a database and import         |"; \
+		echo "|   /usr/share/findik/sql/schema.sql manually.  |"; \
+		echo "================================================="; )
+	else
+		echo "================================================="
+		echo "|   A database named 'findik' exists on MySQL.  |"
+		echo "|   Please create a database and import         |"
+		echo "|   /usr/share/findik/sql/schema.sql manually.  |"
+		echo "================================================="
+	fi
+else
+	echo "================================================="
+	echo "|   Can not access MySQL.                       |"
+	echo "|   Please create a database and import         |"
+	echo "|   /usr/share/findik/sql/schema.sql manually.  |"
+        echo "|   Also, edit MySQL credentials in             |"
+	echo "|   /etc/findik/findik.cfg .                    |"
+	echo "================================================="
+fi
 
 %postun
 /sbin/ldconfig
@@ -67,4 +96,8 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue Mar 17 2009 H. Kerem Cevahir <kerem@findikproject.org>
 - Initial spec file.
+
+* Thu Mar 19 2009 H. Kerem Cevahir <kerem@findikproject.org>
+- Added mysql for dependency.
+- Added MySQL auto import support.
 
