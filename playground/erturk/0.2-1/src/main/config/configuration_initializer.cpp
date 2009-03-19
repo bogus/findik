@@ -42,7 +42,14 @@ namespace findik {
 				LOG4CXX_FATAL(debug_logger, "IOException in config file read");
 			} 
 			catch(libconfig::ParseException & e) 
-			{
+			{				
+				std::ostringstream e_stream;
+				e_stream << "Parse error at line: " << e.getLine() << '\n' ;
+				std::string parse_debug(e_stream.str());
+				printf("%s",  e_stream.str().data());
+				LOG4CXX_ERROR(debug_logger, e_stream.str().data());
+				//LOG4CXX_DEBUG(debug_logger, e.getError());
+				printf("debug\n");
 				LOG4CXX_FATAL(debug_logger, "ParseException in config file read");
 			}
 		}
