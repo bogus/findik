@@ -49,6 +49,11 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/chkconfig --add findik
 /sbin/chkconfig findik on
 
+# If mysql-server is installed and not running, start mysql-server.
+[ -n "$(rpm -q mysql-server)" ] && \
+	(/sbin/service mysqld status) || \
+	(/sbin/service mysqld start)
+
 # Import MySQL schema
 if (echo|mysql); then
 	if [ -z "$(echo 'show databases'|mysql|grep -e '^findik$')" ]; then
@@ -102,12 +107,17 @@ if [ ! -f /etc/findik/ssl/public.pem -a ! -f /etc/findik/ssl/private.pem -a ! -f
 else
 	echo "================================================="
 	echo "|   Found SSL keys at /etc/findik/ssl/ and      |"
-	echo "|   didn't changed. If you want to recreate     |"
+	echo "|   kept unchanged. If you want to recreate     |"
 	echo "|   them, you can call                          |"
 	echo "|   /usr/share/findik/scripts/generate-ssl-keys |"
 	echo "================================================="
 	echo
 fi
+
+/sbin/service findik start
+
+%preun
+/sbin/service findik stop
 
 %postun
 /sbin/ldconfig

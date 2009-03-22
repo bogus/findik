@@ -28,7 +28,7 @@ start() {
 
 stop() {
 	echo -n $"Stopping $prog: "
-	killproc -d SIGTERM $findik
+	killproc $findik
 	RETVAL=$?
 	echo
 	[ $RETVAL = 0 ] && rm -f ${lockfile}
