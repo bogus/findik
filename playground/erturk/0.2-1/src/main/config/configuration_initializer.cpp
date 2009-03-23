@@ -25,12 +25,22 @@
 namespace findik {
 	namespace config {
 
-                log4cxx::LoggerPtr configuration_initializer::debug_logger(log4cxx::Logger::getLogger("findik.config.configuration_initializer"));
+		log4cxx::LoggerPtr configuration_initializer::debug_logger(log4cxx::Logger::getLogger("findik.config.configuration_initializer"));
 
 		configuration_initializer::configuration_initializer(void)
 		{
+			// logger not initialized without this line
+			// but appender must be congfigured
+		        log4cxx::LoggerPtr debug_logger(log4cxx::Logger::getLogger("findik.config.configuration_initializer"));
+
 			try 
 			{
+				// for debugging
+				if (debug_logger->isDebugEnabled())
+					printf("DebugEnabled\n");
+				if (debug_logger->isFatalEnabled())
+                                        printf("FatalEnabled\n");
+
 #if defined(_WIN32)
 				config_.readFile("c:/findik.cfg");
 #else
@@ -43,14 +53,14 @@ namespace findik {
 			} 
 			catch(libconfig::ParseException & e) 
 			{				
-				std::ostringstream e_stream;
-				e_stream << "Parse error at line: " << e.getLine() << '\n' ;
-				std::string parse_debug(e_stream.str());
-				printf("%s",  e_stream.str().data());
-				LOG4CXX_ERROR(debug_logger, e_stream.str().data());
-				//LOG4CXX_DEBUG(debug_logger, e.getError());
-				printf("debug\n");
+				std::ostringstream exception_stream;
+				exception_stream << "Parse error at line: " << e.getLine() << std::endl ;
+				printf("%s",  exception_stream.str().c_str());
+				LOG4CXX_DEBUG(debug_logger, exception_stream.str().c_str());
+				// for debugging
+				printf("Beyond log4cxx_debug\n");
 				LOG4CXX_FATAL(debug_logger, "ParseException in config file read");
+				printf("Beyond log4cxx_fatal\n");
 			}
 		}
 
