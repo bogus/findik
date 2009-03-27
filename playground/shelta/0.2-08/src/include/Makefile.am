@@ -6,7 +6,7 @@ noinst_HEADERS = \
 	config/configuration_initializer.hpp \
 	filter/abstract_filter.hpp \
 	filter/filter_reason.hpp \
-	filter/abstract_filter_result_generator.hpp \
+	filter/abstract_filter_reason_factory.hpp \
 	io/session.hpp \
 	io/plain_connection.hpp \
 	io/server.hpp \
@@ -35,6 +35,9 @@ noinst_HEADERS = \
 	protocols/http/ldap_basic_authentication.hpp \
 	protocols/http/https_authenticator.hpp \
 	protocols/http/http_session_manager.hpp \
+	protocols/http/http_filter_result_generator.hpp \
+	protocols/http/http_filter_reason_factory.hpp \
+	protocols/http/http_filter_logger.hpp \
 	protocols/http/domain_filter.hpp \
 	protocols/http/request_parser.hpp \
 	protocols/http/response_parser.hpp \

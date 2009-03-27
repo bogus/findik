@@ -48,10 +48,11 @@ namespace findik
 			If method returns true for decision, service will execute other filters too,
 			otherwise it will stop execution and return false with reason of this operation.
                         \param connection_ connection contains new data to be inspected.
+			\param param optional parameter passed to filter.
                         \returns a tuple containing whether content should be filter or not and reason of this decision.
                         */
                         virtual boost::tuple<bool, filter_reason_ptr> 
-				filter(findik::io::connection_ptr connection_) = 0;
+				filter(findik::io::connection_ptr connection_, unsigned int param = 0) = 0;
 
 			/*!
 			Filter should return whether current data of connection applicable for self or not.

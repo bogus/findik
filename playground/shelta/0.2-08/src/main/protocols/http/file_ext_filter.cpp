@@ -26,7 +26,7 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr file_ext_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.file_ext_filter"));	
-			int file_ext_filter::filter_code_ = 405;
+			std::string file_ext_filter::filter_code_ = "mime_ext";
 			// constructor definition of filter service registration inner class
 			file_ext_filter::initializer::initializer()
                         {
@@ -37,31 +37,37 @@ namespace findik
 
                         file_ext_filter::initializer file_ext_filter::initializer::instance;
 
-			boost::tuple<bool, findik::filter::filter_reason_ptr> file_ext_filter::filter(findik::io::connection_ptr connection_) 
+			boost::tuple<bool, findik::filter::filter_reason_ptr> 
+					file_ext_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 
 			{
 				LOG4CXX_DEBUG(debug_logger_, "URL file extension filter entered"); // log for filter entrance
 				// get request object from current data
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
-				std::string url = req->request_uri();	
-				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, " ", " ", connection_, req));
+				std::string url = req->request_uri();
+				int pos = 0;
+				int pos2 = 0;
 
-				if(url.find_first_of('?') != std::string::npos) {
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));
+				if(url.find_first_of('?') != std::string::npos) 
+				{
+					goto accept_and_return;
 				}
 
-				int pos = url.find_last_of('.');
-				int pos2 = url.find_last_of('/');
+				pos = url.find_last_of('.');
+				pos2 = url.find_last_of('/');
 
 				if((pos != std::string::npos) && (pos2 != std::string::npos) && (pos < pos2))
-					return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));						
+				{
+					goto accept_and_return;
+				}
 	
 				if((pos != std::string::npos) && !FI_SERVICES->db_srv().fileExtQuery(url.substr(pos+1))){
-					 boost::shared_ptr<http_filter_result_generator> reply_filtered_(new http_filter_result_generator(filter_code_, false, response::forbidden, false, "Extension blocked : " + url, url, connection_, req));
-                                        return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_filtered_));
+					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, false, "Extension blocked : " + url, url, connection_, req));
+                                        return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 				} 
 
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));			
-
+			accept_and_return:
+				findik::filter::filter_reason_ptr frp_;
+				return boost::make_tuple(true, frp_);			
 			}
 
                         bool file_ext_filter::is_applicable(findik::io::connection_ptr connection_)

@@ -26,7 +26,7 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr content_mime_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.content_mime_filter"));	
-			int  content_mime_filter::filter_code_ = 501;	
+			std::string content_mime_filter::filter_code_ = "mime_magic";	
 			// constructor definition of filter service registration inner class
 			content_mime_filter::initializer::initializer()
                         {
@@ -37,7 +37,8 @@ namespace findik
 
                         content_mime_filter::initializer content_mime_filter::initializer::instance;
 
-			boost::tuple<bool, findik::filter::filter_reason_ptr> content_mime_filter::filter(findik::io::connection_ptr connection_) 
+			boost::tuple<bool, findik::filter::filter_reason_ptr> 
+					content_mime_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 
 			{
 				LOG4CXX_DEBUG(debug_logger_, "Content mime-type filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
@@ -54,11 +55,11 @@ namespace findik
 							resp->magic_mime_type(), 
 							connection_, req, resp
 						));
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_));
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 				}
 				
-				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, "", "", connection_, req, resp));
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));
+				findik::filter::filter_reason_ptr frp_;
+				return boost::make_tuple(true, frp_);
 			}
 
 			bool content_mime_filter::is_applicable(findik::io::connection_ptr connection_)

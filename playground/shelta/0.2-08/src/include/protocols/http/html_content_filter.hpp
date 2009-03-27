@@ -58,7 +58,9 @@ namespace findik
                         {
 			
 			public:
-				boost::tuple<bool, findik::filter::filter_reason_ptr> filter(findik::io::connection_ptr connection_);	
+				boost::tuple<bool, findik::filter::filter_reason_ptr> 
+						filter(findik::io::connection_ptr connection_, unsigned int param = 0);	
+
 				bool is_applicable(findik::io::connection_ptr connection_);
 
 				class initializer
@@ -79,7 +81,7 @@ namespace findik
 			
 			protected:
 				static log4cxx::LoggerPtr debug_logger_;		
-				static int filter_code_;	
+				static std::string filter_code_;	
 			};
 
 			typedef boost::shared_ptr<html_content_filter> html_content_filter_ptr;

@@ -1,17 +1,73 @@
--- phpMyAdmin SQL Dump
--- version 2.11.9.4
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Mar 18, 2009 at 09:40 PM
--- Server version: 5.0.45
--- PHP Version: 5.1.6
+-- MySQL Dump
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 --
 -- Database: `findik`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `acl_filter_param`
+--
+
+CREATE TABLE IF NOT EXISTS `acl_filter_param` (
+  `id` int(11) NOT NULL auto_increment,
+  `rule_id` int(11) NOT NULL,
+  `filter_key` varchar(32) NOT NULL,
+  `param` int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `rule_id` (`rule_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `acl_match_ip`
+--
+
+CREATE TABLE IF NOT EXISTS `acl_match_ip` (
+  `id` int(11) NOT NULL auto_increment,
+  `rule_id` int(11) NOT NULL,
+  `local_ip` bigint(20) unsigned NOT NULL default '0',
+  `local_mask` bigint(20) unsigned NOT NULL default '0',
+  `local_masked_ip` bigint(20) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `local_masked_ip` (`local_masked_ip`),
+  KEY `rule_id` (`rule_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `acl_match_time`
+--
+
+CREATE TABLE IF NOT EXISTS `acl_match_time` (
+  `id` int(11) NOT NULL auto_increment,
+  `rule_id` int(11) NOT NULL,
+  `start` time NOT NULL default '00:00:00',
+  `end` time NOT NULL default '23:59:59',
+  `day_of_week` tinyint(3) unsigned NOT NULL default '254',
+  PRIMARY KEY  (`id`),
+  KEY `start` (`start`),
+  KEY `end` (`end`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `acl_rule`
+--
+
+CREATE TABLE IF NOT EXISTS `acl_rule` (
+  `id` int(11) NOT NULL auto_increment,
+  `deny` tinyint(1) NOT NULL default '0',
+  `name` varchar(128) default NULL,
+  `desc` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 

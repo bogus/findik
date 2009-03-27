@@ -24,6 +24,7 @@
 
 #include "service_container.hpp"
 #include "request.hpp"
+#include "response.hpp"
 
 namespace findik {
 	namespace protocols {
@@ -38,15 +39,47 @@ namespace findik {
 			static request_ptr last_request_of(findik::io::connection_ptr connection_)
                         {
                                 request_ptr req;
-                                BOOST_FOREACH(findik::io::abstract_data_ptr data_, connection_->data_queue())
-                                        if (data_->is_local())
-                                        {
-                                                req = boost::static_pointer_cast<request>(data_);
-                                        }
+
+				if (connection_->current_data().get() != 0 && connection_->current_data()->is_local())
+				{
+					req = boost::static_pointer_cast<request>(connection_->current_data());
+				}
+				else
+				{
+					BOOST_REVERSE_FOREACH(findik::io::abstract_data_ptr data_, connection_->data_queue())
+						if (data_->is_local())
+						{
+							req = boost::static_pointer_cast<request>(data_);
+						}
+				}
 
                                 return req;
                         }
 
+			/*!
+                        Iterates over data_queue of connection and returns most recent remote data.
+                        \param connection_
+                        \returns most recent remote data.
+                        */		
+			static response_ptr last_response_of(findik::io::connection_ptr connection_)
+                        {
+                                response_ptr resp;
+
+				if (connection_->current_data().get() != 0 && connection_->current_data()->is_remote())
+				{
+					resp = boost::static_pointer_cast<response>(connection_->current_data());
+				}
+				else
+				{
+					BOOST_REVERSE_FOREACH(findik::io::abstract_data_ptr data_, connection_->data_queue())
+						if (data_->is_remote())
+						{
+							resp = boost::static_pointer_cast<response>(data_);
+						}
+				}
+
+                                return resp;
+                        }
 			
 		}
 	}

@@ -27,7 +27,8 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr clamd_av_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.clamd_av_filter"));	
-			int  clamd_av_filter::filter_code_ = 503;	
+			std::string clamd_av_filter::filter_code_ = "clamd_av";	
+
 			// constructor definition of filter service registration inner class
 			clamd_av_filter::initializer::initializer()
 			{
@@ -81,7 +82,8 @@ namespace findik
 
 			clamd_av_filter::initializer clamd_av_filter::initializer::instance;
 
-			boost::tuple<bool, findik::filter::filter_reason_ptr> clamd_av_filter::filter(findik::io::connection_ptr connection_) 
+			boost::tuple<bool, findik::filter::filter_reason_ptr> 
+					clamd_av_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 
 			{
 				LOG4CXX_DEBUG(debug_logger_, "Clamd AV filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
@@ -144,7 +146,7 @@ namespace findik
 						if(pos != std::string::npos) 
 						{
 							boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "Virus Found : " + av_result.substr(0,pos), av_result.substr(0,pos), connection_, req, resp));
-							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_));
+							return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 						}	
 						socket.close();
 					}
@@ -155,8 +157,8 @@ namespace findik
 					}
 				}
 			
-				 boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, "", "", connection_, req, resp));	
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));
+				findik::filter::filter_reason_ptr frp_;
+				return boost::make_tuple(true, frp_);
 			}
 
 			bool clamd_av_filter::is_applicable(findik::io::connection_ptr connection_)

@@ -36,11 +36,19 @@ namespace findik {
 
 			void connect();
 
-			bool domainQuery(std::string hostname);
-			bool urlQuery(std::string url);
+			bool domainQuery(const std::string & hostname);
+
+			bool urlQuery(const std::string & url);
+
 			bool pcreQuery(std::map<int,std::string> &pcre_map);
-			bool fileExtQuery(std::string file_ext);
-			bool mimeTypeQuery(std::string mime_type);
+
+			bool fileExtQuery(const std::string & file_ext);
+
+			bool mimeTypeQuery(const std::string & mime_type);
+
+			void aclQuery(
+				std::list< boost::tuple<std::string, int, bool> > & filter_list, 
+				unsigned long local_ip);
 
 		protected:
 			static log4cxx::LoggerPtr debug_logger;
@@ -60,7 +68,8 @@ namespace findik {
 				url_query = 101,
 				pcre_query = 102,
 				file_ext_query = 103,
-				mime_type_query = 104
+				mime_type_query = 104,
+				acl_query = 105
 			};
 
 		};

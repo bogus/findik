@@ -23,7 +23,10 @@
 #include <boost/enable_shared_from_this.hpp>
 
 #include <map>
+#include <list>
 #include <string>
+
+#include <boost/tuple/tuple.hpp>
 
 namespace findik {
 	namespace persistency {
@@ -32,9 +35,14 @@ namespace findik {
 		{
 
 		public:
-			virtual bool domainQuery(std::string hostname) = 0;
-			virtual bool urlQuery(std::string url) = 0;
-			virtual bool pcreQuery(std::map<int, std::string> &pcre_map) = 0;
+			virtual bool domainQuery(const std::string & hostname) = 0;
+			virtual bool urlQuery(const std::string & url) = 0;
+			virtual bool pcreQuery(std::map<int, std::string> & pcre_map) = 0;
+			virtual bool fileExtQuery(const std::string & file_ext) = 0;
+			virtual bool mimeTypeQuery(const std::string & mime_type) = 0;
+			virtual void aclQuery(
+				std::list< boost::tuple<std::string, int, bool> > & filter_list, 
+				unsigned long local_ip) = 0;
 
 		protected:
 			std::string host;

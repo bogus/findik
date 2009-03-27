@@ -55,9 +55,24 @@ namespace findik
                         {
 			
 			public:
-				http_filter_logger(unsigned int filter_code, bool filter_result, std::string filter_reason, findik::io::connection_ptr connection_, request_ptr request_, response_ptr response_);
-				http_filter_logger(unsigned int filter_code, bool filter_result, std::string filter_reason, findik::io::connection_ptr connection_, request_ptr request_);
-				std::string to_string();
+				http_filter_logger(
+					const std::string & filter_code, 
+					bool filter_result, 
+					const std::string & filter_reason, 
+					findik::io::connection_ptr connection_, 
+					request_ptr request_, 
+					response_ptr response_
+				);
+
+				http_filter_logger(
+					const std::string & filter_code, 
+					bool filter_result, 
+					const std::string & filter_reason, 
+					findik::io::connection_ptr connection_, 
+					request_ptr request_
+				);
+
+				const std::string & to_string();
 
 			protected:
 				static std::string attr_separator_;
@@ -76,7 +91,7 @@ namespace findik
 
 			private:
 				findik::io::protocol proto_;
-				unsigned int filter_code_;
+				std::string filter_code_;
 				bool filter_result_;
 				std::string local_endpoint_;
 				std::string domain_name_;
@@ -87,6 +102,7 @@ namespace findik
 				std::string response_code_;
 				std::string filter_reason_;
 
+				std::string log_str_;
 			};
 
 			typedef boost::shared_ptr<http_filter_logger> http_filter_logger_ptr;

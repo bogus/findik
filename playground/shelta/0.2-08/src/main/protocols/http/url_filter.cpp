@@ -26,7 +26,7 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr url_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.url_filter"));	
-			int url_filter::filter_code_ = 404;
+			std::string url_filter::filter_code_ = "content_url";
 			// constructor definition of filter service registration inner class
 			url_filter::initializer::initializer()
                         {
@@ -37,7 +37,8 @@ namespace findik
 
                         url_filter::initializer url_filter::initializer::instance;
 
-			boost::tuple<bool, findik::filter::filter_reason_ptr> url_filter::filter(findik::io::connection_ptr connection_) 
+			boost::tuple<bool, findik::filter::filter_reason_ptr> 
+					url_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 
 			{
 				LOG4CXX_DEBUG(debug_logger_, "URL filter entered"); // log for filter entrance
 				
@@ -46,13 +47,12 @@ namespace findik
 				std::string url = req->request_uri();	
 				// check whether hostname exists in domain blacklist
 				if(!FI_SERVICES->db_srv().urlQuery(req->request_uri())){
-					 boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "URL blocked : " + req->request_uri(), req->request_uri(), connection_, req));
-                                        return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_));
+					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "URL blocked : " + req->request_uri(), req->request_uri(), connection_, req));
+                                        return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 				} 
 
-				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, " ", " ", connection_, req));
-
-                                return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));
+				findik::filter::filter_reason_ptr frp_;
+                                return boost::make_tuple(true, frp_);
 			}
 
                         bool url_filter::is_applicable(findik::io::connection_ptr connection_)

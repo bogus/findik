@@ -48,7 +48,7 @@ namespace findik
 			Logger to_string method
 			\return string representation of log 
 			*/
-			virtual std::string to_string() = 0;
+			virtual const std::string & to_string() = 0;
 
 		protected:
 
