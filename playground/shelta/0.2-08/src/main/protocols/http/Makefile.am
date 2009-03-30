@@ -4,11 +4,13 @@ noinst_LTLIBRARIES		=	libfindik_http.la
 libfindik_http_la_SOURCES	= \
 	ad_kerb_negotiator.cpp \
 	clamd_av_filter.cpp \
+	content_filter_group.cpp \
 	content_mime_filter.cpp \
 	data.cpp \
 	domain_filter.cpp \
 	domain_re_filter.cpp \
 	file_ext_filter.cpp \
+	filetype_filter_group.cpp \
 	html_content_filter.cpp \
 	http_filter_logger.cpp \
 	http_filter_reason_factory.cpp \

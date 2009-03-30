@@ -16,60 +16,56 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_FILTER_ABSTRACT_FILTER_HPP
-#define FINDIK_FILTER_ABSTRACT_FILTER_HPP
+#ifndef FINDIK_FILTER_FILTER_GROUP_HPP
+#define FINDIK_FILTER_FILTER_GROUP_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <boost/tuple/tuple.hpp>
+#include "abstract_filter.hpp"
 
-#include "filter_reason.hpp"
-#include "service_chain_element.hpp"
-#include "connection.hpp"
-#include "log.hpp"
-#include "protocol.hpp"
+#include <list>
 
 namespace findik
 {
 	namespace filter
 	{
 		/*!
-		Abstract filter object to inherit in order to implement filters for findik.
-		\extends boost::enable_shared_from_this<abstract_filter> to use boost shared pointers.
+		Decorator object to group several filters.
+		\extends boost::enable_shared_from_this<filter_group> to use boost shared pointers.
 		\extends findik::service::service_chain_element to be used in service chains.
 		@author H. Kerem Cevahir (shelta)
 		*/
-		class abstract_filter :
-			public boost::enable_shared_from_this<abstract_filter>,
-			public findik::service::service_chain_element
+		class filter_group :
+			public boost::enable_shared_from_this<filter_group>,
+			public abstract_filter
 		{
 		public:
                         /*!
-                        Examines new_data of connection by using filters in filter_list_.
-			If method returns true for decision, service will execute other filters too,
-			otherwise it will stop execution and return false with reason of this operation.
+			Function to execute registered filters' filter methods if filter is applicable.
                         \param connection_ connection contains new data to be inspected.
 			\param param optional parameter passed to filter.
                         \returns a tuple containing whether content should be filter or not and reason of this decision.
                         */
-                        virtual boost::tuple<bool, filter_reason_ptr> 
-				filter(findik::io::connection_ptr connection_, unsigned int param = 0) = 0;
+                        boost::tuple<bool, filter_reason_ptr> filter(findik::io::connection_ptr connection_, unsigned int param = 0);
 
 			/*!
-			Filter should return whether current data of connection applicable for self or not.
-			For example a filter designed to analysis content is not applicable for dat objects without content or
-			a filter designed for local data is not applicable for remote data.
+			Simply returns true.
 			\param connection_ to test applicability
 			\return whether filter is applicable
 			*/
-			virtual bool is_applicable(findik::io::connection_ptr connection_) = 0;
+			bool is_applicable(findik::io::connection_ptr connection_);
 
 		protected:
 
+			/*!
+			List to store filters.
+			*/
+			std::list<abstract_filter_ptr> filter_list_;
+
 		};
 		
-		typedef boost::shared_ptr<abstract_filter> abstract_filter_ptr;
+		typedef boost::shared_ptr<group_filter> group_filter_ptr;
 	}
 }
 

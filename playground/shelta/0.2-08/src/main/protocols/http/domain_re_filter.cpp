@@ -27,15 +27,6 @@ namespace findik
 			// initialization of logger
 			log4cxx::LoggerPtr domain_re_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.domain_re_filter"));	
 			std::string domain_re_filter::filter_code_ = "content_domain_re";
-			// constructor definition of filter service registration inner class
-			domain_re_filter::initializer::initializer()
-                        {
-                                domain_re_filter_ptr dfp(new domain_re_filter());
-
-                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
-                        }
-
-                        domain_re_filter::initializer domain_re_filter::initializer::instance;
 
 			boost::tuple<bool, findik::filter::filter_reason_ptr> 
 					domain_re_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 

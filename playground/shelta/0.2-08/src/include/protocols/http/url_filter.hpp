@@ -61,25 +61,9 @@ namespace findik
 
 				bool is_applicable(findik::io::connection_ptr connection_);
 
-				class initializer
-                                {
-                                protected:
-                                        /*!
-                                        Default constructor.
-                                        Construction of this object will register a url_filter instance to filter_service.
-                                        */
-                                        initializer();
-
-                                        /*!
-                                        Instance to create initializer once.
-                                        */
-                                        static initializer instance;
-                                };
-
-			
 			protected:
 				static log4cxx::LoggerPtr debug_logger_;			
-				static std::string filter_code_;
+				static std::string filter_code_;	
 			};
 
 			typedef boost::shared_ptr<url_filter> url_filter_ptr;

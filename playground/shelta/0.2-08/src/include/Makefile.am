@@ -5,6 +5,7 @@ noinst_HEADERS = \
 	config/configuration_object.hpp \
 	config/configuration_initializer.hpp \
 	filter/abstract_filter.hpp \
+	filter/filter_group.hpp \
 	filter/filter_reason.hpp \
 	filter/abstract_filter_reason_factory.hpp \
 	io/session.hpp \
@@ -26,6 +27,8 @@ noinst_HEADERS = \
 	persistency/pooled_dbmanager.hpp \
 	persistency/dbconnection.hpp \
 	persistency/dbmanager.hpp \
+	protocols/http/content_filter_group.hpp \
+	protocols/http/filetype_filter_group.hpp \
 	protocols/http/clamd_av_filter.hpp \
 	protocols/http/data.hpp \
 	protocols/http/file_ext_filter.hpp \

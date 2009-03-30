@@ -63,22 +63,6 @@ namespace findik
 
 				bool is_applicable(findik::io::connection_ptr connection_);
 
-				class initializer
-                                {
-                                protected:
-                                        /*!
-                                        Default constructor.
-                                        Construction of this object will register a html_content_filter instance to filter_service.
-                                        */
-                                        initializer();
-
-                                        /*!
-                                        Instance to create initializer once.
-                                        */
-                                        static initializer instance;
-                                };
-
-			
 			protected:
 				static log4cxx::LoggerPtr debug_logger_;		
 				static std::string filter_code_;	

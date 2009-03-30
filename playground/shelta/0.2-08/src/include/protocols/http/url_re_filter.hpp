@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_PROTOCOLS_HTTP_DOMAIN_RE_FILTER_HPP
-#define FINDIK_PROTOCOLS_HTTP_DOMAIN_RE_FILTER_HPP
+#ifndef FINDIK_PROTOCOLS_HTTP_URL_RE_FILTER_HPP
+#define FINDIK_PROTOCOLS_HTTP_URL_RE_FILTER_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
@@ -62,22 +62,6 @@ namespace findik
 
 				bool is_applicable(findik::io::connection_ptr connection_);
 
-				class initializer
-                                {
-                                protected:
-                                        /*!
-                                        Default constructor.
-                                        Construction of this object will register a url_re_filter instance to filter_service.
-                                        */
-                                        initializer();
-
-                                        /*!
-                                        Instance to create initializer once.
-                                        */
-                                        static initializer instance;
-                                };
-
-			
 			protected:
 				static log4cxx::LoggerPtr debug_logger_;		
 				static std::string filter_code_;	

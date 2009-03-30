@@ -27,15 +27,6 @@ namespace findik
 			// initialization of logger
 			log4cxx::LoggerPtr html_content_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.html_content_filter"));	
 			std::string html_content_filter::filter_code_ = "content_html";	
-			// constructor definition of filter service registration inner class
-			html_content_filter::initializer::initializer()
-                        {
-                                html_content_filter_ptr dfp(new html_content_filter());
-
-                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
-                        }
-
-                        html_content_filter::initializer html_content_filter::initializer::instance;
 
 			boost::tuple<bool, findik::filter::filter_reason_ptr> 
 					html_content_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 

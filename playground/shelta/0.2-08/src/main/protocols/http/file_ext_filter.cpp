@@ -26,16 +26,8 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr file_ext_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.file_ext_filter"));	
+
 			std::string file_ext_filter::filter_code_ = "mime_ext";
-			// constructor definition of filter service registration inner class
-			file_ext_filter::initializer::initializer()
-                        {
-                                file_ext_filter_ptr dfp(new file_ext_filter());
-
-                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
-                        }
-
-                        file_ext_filter::initializer file_ext_filter::initializer::instance;
 
 			boost::tuple<bool, findik::filter::filter_reason_ptr> 
 					file_ext_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 

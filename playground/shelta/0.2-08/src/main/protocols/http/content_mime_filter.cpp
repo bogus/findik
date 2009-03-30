@@ -27,15 +27,6 @@ namespace findik
 			// initialization of logger
 			log4cxx::LoggerPtr content_mime_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.content_mime_filter"));	
 			std::string content_mime_filter::filter_code_ = "mime_magic";	
-			// constructor definition of filter service registration inner class
-			content_mime_filter::initializer::initializer()
-                        {
-                                content_mime_filter_ptr dfp(new content_mime_filter());
-
-                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
-                        }
-
-                        content_mime_filter::initializer content_mime_filter::initializer::instance;
 
 			boost::tuple<bool, findik::filter::filter_reason_ptr> 
 					content_mime_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 
