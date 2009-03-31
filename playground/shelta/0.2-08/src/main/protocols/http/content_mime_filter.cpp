@@ -35,7 +35,7 @@ namespace findik
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 				request_ptr req = last_request_of(connection_);
 				std::string content_type;
-				if(!FI_SERVICES->db_srv().mimeTypeQuery(resp->magic_mime_type())) 
+				if(!FI_SERVICES->db_srv().mimeTypeQuery(resp->magic_mime_type(), param)) 
 				{
 					boost::shared_ptr<http_filter_result_generator> reply_(
 						new http_filter_result_generator(

@@ -39,7 +39,7 @@ std::cout << "vololo : " << param << std::endl;
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 				
 				// check whether hostname exists in domain blacklist
-				if(!FI_SERVICES->db_srv().domainQuery(req->request_host())){
+				if(!FI_SERVICES->db_srv().domainQuery(req->request_host(), param)){
 					boost::shared_ptr<http_filter_result_generator> reply_(
 						new http_filter_result_generator(
 							filter_code_, false, 

@@ -36,15 +36,15 @@ namespace findik {
 
 			void connect();
 
-			bool domainQuery(const std::string & hostname);
+			bool domainQuery(const std::string & hostname, unsigned int group);
 
-			bool urlQuery(const std::string & url);
+			bool urlQuery(const std::string & url, unsigned int group);
 
 			bool pcreQuery(std::map<int,std::string> &pcre_map);
 
-			bool fileExtQuery(const std::string & file_ext);
+			bool fileExtQuery(const std::string & file_ext, unsigned int group);
 
-			bool mimeTypeQuery(const std::string & mime_type);
+			bool mimeTypeQuery(const std::string & mime_type, unsigned int group);
 
 			void aclQuery(
 				std::list< boost::tuple<std::string, int, bool> > & filter_list, 

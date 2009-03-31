@@ -52,7 +52,7 @@ namespace findik
 					goto accept_and_return;
 				}
 	
-				if((pos != std::string::npos) && !FI_SERVICES->db_srv().fileExtQuery(url.substr(pos+1))){
+				if((pos != std::string::npos) && !FI_SERVICES->db_srv().fileExtQuery(url.substr(pos+1), param)){
 					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, false, "Extension blocked : " + url, url, connection_, req));
                                         return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 				} 

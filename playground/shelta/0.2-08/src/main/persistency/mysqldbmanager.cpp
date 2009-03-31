@@ -63,13 +63,13 @@ namespace findik
 				mysql_dbconnection_ptr dbconnection__(new mysql_dbconnection(myconn_));
 
 				mysqlpp::Query * domain_q = new mysqlpp::Query(
-					myconn_->query("SELECT d.id from domain d join blacklist_category "
-						"bc where d.domain = %0q and d.catid = bc.catid"));
+					myconn_->query("SELECT d.id from domain d "
+						"where d.domain = %0q and d.catid = %1"));
 			        domain_q->parse();
 
 				mysqlpp::Query * url_q = new mysqlpp::Query(
-					myconn_->query("SELECT u.id from url u join blacklist_category bc "
-						"where u.url = %0q and u.catid = bc.catid"));
+					myconn_->query("SELECT u.id from url u "
+						"where u.url = %0q and u.catid = %1"));
 			        url_q->parse();
 
 				mysqlpp::Query * pcre_q = new mysqlpp::Query(
@@ -78,36 +78,40 @@ namespace findik
 			        pcre_q->parse();
 
 				mysqlpp::Query * file_ext_q = new mysqlpp::Query(
-					myconn_->query("SELECT file_ext from blacklist_mime "
-						"where file_ext = %0q"));
+					myconn_->query("SELECT mt.file_ext from mime_type_cross mtc "
+						"left outer join mime_type mt ON mt.id = mtc.mime_type_id "
+						"where file_ext = %0q and mtc.mime_group_id = %1"));
 			        file_ext_q->parse();
 
 				mysqlpp::Query * mime_type_q = new mysqlpp::Query(
-					myconn_->query("SELECT mime_type from blacklist_mime "
-						"where mime_type = %0q"));
+					myconn_->query("SELECT mt.mime_type from mime_type_cross mtc "
+						"left outer join mime_type mt ON mt.id = mtc.mime_type_id "
+						"where file_ext = %0q and mtc.mime_group_id = %1"));
                                 mime_type_q->parse();
 
 				mysqlpp::Query * acl_q = new mysqlpp::Query(
 					myconn_->query(
 						"SELECT af.filter_key,af.param,ar.deny "
-								"FROM acl_rule AS ar "
-							"LEFT OUTER JOIN acl_match_ip AS an ON ar.id = an.rule_id "
-							"LEFT OUTER JOIN acl_match_time AS at ON ar.id = at.rule_id "
-							"LEFT OUTER JOIN acl_filter_param AS af ON ar.id = af.rule_id "
+						"FROM acl_rule AS ar "
+						"LEFT OUTER JOIN acl_ip_cross AS acn ON ar.id = acn.rule_id "
+						"LEFT OUTER JOIN acl_time_cross AS act ON ar.id = act.rule_id "
+						"LEFT OUTER JOIN ip_table AS an ON an.id = acn.acl_id "
+						"LEFT OUTER JOIN time_table AS at ON at.id = act.acl_id "
+						"LEFT OUTER JOIN acl_filter_param AS af ON ar.id = af.rule_id "
 						"WHERE ( "
 							"an.local_masked_ip IS NULL "
 							"OR "
 							"an.local_masked_ip = %0 & an.local_mask "
 						") "
 						"AND ( "
-							"at.start IS NULL "
+							"at.start_time IS NULL "
 							"OR "
-							"at.start < CURTIME( ) "
+							"at.start_time < CURTIME( ) "
 						") "
 						"AND ( "
-							"at.end IS NULL "
+							"at.end_time IS NULL "
 							"OR "
-							"at.end > CURTIME( ) "
+							"at.end_time > CURTIME( ) "
 						") "
 						"AND ( "
 							"at.day_of_week IS NULL "
@@ -143,12 +147,13 @@ namespace findik
 			}
 		}
 
-		bool mysqldbmanager::domainQuery(const std::string & hostname) 
+		bool mysqldbmanager::domainQuery(const std::string & hostname, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 
 			try {
-				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))->store(hostname);
+				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))
+					->store(hostname, boost::lexical_cast<std::string>(group));
 				
 				if(res.num_rows() > 0)
 					return false;
@@ -172,12 +177,13 @@ namespace findik
 			return true;
 		}
 
-		bool mysqldbmanager::urlQuery(const std::string & url) 
+		bool mysqldbmanager::urlQuery(const std::string & url, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 			
 			try {
-                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(url_query))->store(url);
+                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(url_query))
+					->store(url, boost::lexical_cast<std::string>(group));
 
                                 if(res.num_rows() > 0)
                                         return false;
@@ -270,12 +276,13 @@ namespace findik
                         }
 		}
 		
-		bool mysqldbmanager::fileExtQuery(const std::string & file_ext) 
+		bool mysqldbmanager::fileExtQuery(const std::string & file_ext, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 			
 			try {
-                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(file_ext_query))->store(file_ext);
+                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(file_ext_query))
+					->store(file_ext, boost::lexical_cast<std::string>(group));
 
                                 if(res.num_rows() > 0)
                                         return false;
@@ -299,12 +306,13 @@ namespace findik
                         return true;
 		}
 		
-		bool mysqldbmanager::mimeTypeQuery(const std::string & mime_type) 
+		bool mysqldbmanager::mimeTypeQuery(const std::string & mime_type, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 			
 			try {
-                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(mime_type_query))->store(mime_type);
+                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(mime_type_query))
+					->store(mime_type, boost::lexical_cast<std::string>(group));
 
                                 if(res.num_rows() > 0)
                                         return false;
