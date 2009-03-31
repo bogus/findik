@@ -283,7 +283,7 @@ CREATE TABLE `time_table` (
   `name` varchar(128) NOT NULL,
   `start_time` time NOT NULL,
   `end_time` time NOT NULL,
-  `day_of_week` tinyint(4) NOT NULL,
+  `day_of_week` tinyint(4) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 
