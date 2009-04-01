@@ -58,8 +58,7 @@ namespace findik
 			
 			\param character vector which mime-type will be found
 			*/
-			std::string get_magic_number(std::vector<char> data, std::string & mime_type);
-			
+			void get_magic_number(const std::vector<char> & data, std::string & mime_type);
 
 		protected:
 

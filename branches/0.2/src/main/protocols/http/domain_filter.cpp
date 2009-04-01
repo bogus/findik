@@ -27,33 +27,31 @@ namespace findik
 			// initialization of logger
 			log4cxx::LoggerPtr domain_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.domain_filter"));	
 	
-			int domain_filter::filter_code_ = 401;
-			// constructor definition of filter service registration inner class
-			domain_filter::initializer::initializer()
-                        {
-                                domain_filter_ptr dfp(new domain_filter());
+			std::string domain_filter::filter_code_ = "content_domain";
 
-                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
-                        }
-
-                        domain_filter::initializer domain_filter::initializer::instance;
-
-			boost::tuple<bool, findik::filter::filter_reason_ptr> domain_filter::filter(findik::io::connection_ptr connection_) 
+			boost::tuple<bool, findik::filter::filter_reason_ptr> 
+					domain_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 
 			{
+std::cout << "vololo : " << param << std::endl;
 				LOG4CXX_DEBUG(debug_logger_, "Domain name filter entered"); // log for filter entrance
 				
 				// get request object from current data
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 				
 				// check whether hostname exists in domain blacklist
-				if(!FI_SERVICES->db_srv().domainQuery(req->request_host())){
-					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "Domain blocked : " + req->request_host(), req->request_host(), connection_, req));	
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_));	
+				if(!FI_SERVICES->db_srv().domainQuery(req->request_host(), param)){
+					boost::shared_ptr<http_filter_result_generator> reply_(
+						new http_filter_result_generator(
+							filter_code_, false, 
+							response::forbidden, true, 
+							"Domain blocked : " + req->request_host(), 
+							req->request_host(), connection_, req
+						));	
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));	
 				} 
 
-				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, "", "", connection_, req));
-	
-				return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));	
+				findik::filter::filter_reason_ptr frp_;
+				return boost::make_tuple(true, frp_);	
 			}
 
                         bool domain_filter::is_applicable(findik::io::connection_ptr connection_)

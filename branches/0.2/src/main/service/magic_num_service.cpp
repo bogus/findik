@@ -34,21 +34,26 @@ namespace findik
 			if( !magic_mime ){
 				magic_close(magic_mime);
 			}
-			int rc = magic_load( magic_mime, 0 );
+			int rc = magic_load( magic_mime, NULL );
 			if( rc == -1) {
 				magic_close(magic_mime);
 			}
 		}
 
-		std::string magic_num_service::get_magic_number(std::vector<char> data, std::string & mime_type)
+		void magic_num_service::get_magic_number(const std::vector<char> & data, std::string & mime_type)
 		{
 			if(data.size() > 0)
 			{
-				mime_type = magic_buffer( magic_mime, &data[0], data.size()-1 );
+				const char * result_magic_ = magic_buffer( magic_mime, &(data[0]), data.size() );
+				if ( result_magic_ != NULL )
+				{
+					mime_type = result_magic_;
+				}
+				else
+				{
+					mime_type = "application/x-unknown";
+				}
 			}
-
-			return mime_type;
-
 		}
 
 	}

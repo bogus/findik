@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2008 Burak OGUZ (barfan) <findikmail@gmail.com>
+  Copyright (C) 2008 H. Kerem Cevahir (shelta) <findikmail@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,31 +16,13 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef FINDIK_PROTOCOLS_HTTP_CLAMD_AV_FILTER_HPP
-#define FINDIK_PROTOCOLS_HTTP_CLAMD_AV_FILTER_HPP
+#ifndef FINDIK_PROTOCOLS_HTTP_FILTER_REASON_FACTORY_HPP
+#define FINDIK_PROTOCOLS_HTTP_FILTER_REASON_FACTORY_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
-
-#include <boost/logic/tribool.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/asio.hpp>
-
-#include <iostream>
-#include <istream>
-#include <ostream>
-#include <string>
-
-#include "abstract_filter.hpp"
-#include "reply_service.hpp"
-#include "response.hpp"
-#include "request.hpp"
-#include "service_container.hpp"
-#include "http_util.hpp"
-#include "http_filter_result_generator.hpp"
+#include "abstract_filter_reason_factory.hpp"
 
 namespace findik
 {
@@ -50,28 +32,41 @@ namespace findik
 		{
 			
 			/*!
-                        HTML content filter for HTTP protocol.
+                        Filter logger for HTTP protocol.
                         \extends boost::enable_shared_from_this<data> to use boost shared pointers.
                         \extends findik::filter::abstract_filter because this is a filter for FINDIK HTTP subsystem.
-                        @author Burak OGUZ (barfan)
+                        @author H. Kerem Cevahir (shelta)
                         */
-			class clamd_av_filter:
-				public boost::enable_shared_from_this<clamd_av_filter>,
-                                public findik::filter::abstract_filter
+			class http_filter_reason_factory :
+				public boost::enable_shared_from_this<http_filter_reason_factory>,
+				public findik::filter::abstract_filter_reason_factory
                         {
 			
 			public:
-				boost::tuple<bool, findik::filter::filter_reason_ptr> 
-						filter(findik::io::connection_ptr connection_, unsigned int param = 0);	
+				/*!
+				Default c-tor.
+				*/
+				http_filter_reason_factory();
 
-				bool is_applicable(findik::io::connection_ptr connection_);
+				/*!
+				Default d-tor.
+				*/
+				~http_filter_reason_factory();
+
+				/*!
+				Creates a filter_reason object for given connection and code.
+				\param connection_ connection
+				\param code reason code
+				*/
+				findik::filter::filter_reason_ptr create_filter_reason(
+					findik::io::connection_ptr connection_, unsigned int code = 0);
 
 				class initializer
                                 {
                                 protected:
                                         /*!
                                         Default constructor.
-                                        Construction of this object will register a clamd_av_filter instance to filter_service.
+                                        Construction of this object will register a http_filter_reason_factory instance to filter_service.
                                         */
                                         initializer();
 
@@ -80,14 +75,9 @@ namespace findik
                                         */
                                         static initializer instance;
                                 };
-
-			
-			protected:
-				static log4cxx::LoggerPtr debug_logger_;		
-				static std::string filter_code_;	
 			};
 
-			typedef boost::shared_ptr<clamd_av_filter> clamd_av_filter_ptr;
+			typedef boost::shared_ptr<http_filter_reason_factory> http_filter_reason_factory_ptr;
 
 		}
 	}

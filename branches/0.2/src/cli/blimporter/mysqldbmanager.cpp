@@ -42,7 +42,7 @@ namespace findik {
 					config::configuration_ptr cptr(new config::configuration());
 			
 					myconn_ = new mysqlpp::Connection(cptr->db().c_str(), cptr->host().c_str(), cptr->username().c_str(), cptr->password().c_str());	
-					category_select = new mysqlpp::Query(myconn_->query("SELECT * from category where catname = %0q"));
+					category_select = new mysqlpp::Query(myconn_->query("SELECT * from category where name = %0q"));
 					category_insert = new mysqlpp::Query(myconn_->query("INSERT INTO category VALUES (NULL, %0q)"));
 					domain_select = new mysqlpp::Query(myconn_->query("Select * from domain where domain = %0q"));
 					domain_insert = new mysqlpp::Query(myconn_->query("INSERT INTO domain VALUES (NULL,%0q,%1q)"));

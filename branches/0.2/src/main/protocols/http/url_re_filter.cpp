@@ -26,18 +26,11 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr url_re_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.url_re_filter"));	
-			int url_re_filter::filter_code_ = 403;
-			// constructor definition of filter service registration inner class
-			url_re_filter::initializer::initializer()
-                        {
-                                url_re_filter_ptr dfp(new url_re_filter());
 
-                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
-                        }
+			std::string url_re_filter::filter_code_ = "content_url_re";
 
-                        url_re_filter::initializer url_re_filter::initializer::instance;
-
-			boost::tuple<bool, findik::filter::filter_reason_ptr> url_re_filter::filter(findik::io::connection_ptr connection_) 
+			boost::tuple<bool, findik::filter::filter_reason_ptr> 
+					url_re_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 
 			{
 				LOG4CXX_DEBUG(debug_logger_, "URL RE filter entered"); // log for filter entrance
 				
@@ -48,11 +41,11 @@ namespace findik
 				// check whether hostname exists in domain blacklist
 				if(FI_SERVICES->util_srv().pcre().matches_predefined(url).size() > 0){
 					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "URL blocked : " + req->request_uri(), req->request_uri(), connection_, req));					
-					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_));
+					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 				} 
-				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, "", "", connection_, req));
 
-                                return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));
+				findik::filter::filter_reason_ptr frp_;
+                                return boost::make_tuple(true, frp_);
 				
 			}
 

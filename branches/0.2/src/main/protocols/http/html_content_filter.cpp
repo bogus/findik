@@ -26,18 +26,10 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr html_content_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.html_content_filter"));	
-			int  html_content_filter::filter_code_ = 502;	
-			// constructor definition of filter service registration inner class
-			html_content_filter::initializer::initializer()
-                        {
-                                html_content_filter_ptr dfp(new html_content_filter());
+			std::string html_content_filter::filter_code_ = "content_html";	
 
-                                FI_SERVICES->filter_srv().register_filter(filter_code_,dfp);
-                        }
-
-                        html_content_filter::initializer html_content_filter::initializer::instance;
-
-			boost::tuple<bool, findik::filter::filter_reason_ptr> html_content_filter::filter(findik::io::connection_ptr connection_) 
+			boost::tuple<bool, findik::filter::filter_reason_ptr> 
+					html_content_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 
 			{
 				LOG4CXX_DEBUG(debug_logger_, "HTML content filter entered"); // log for filter entrance
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
@@ -48,14 +40,12 @@ namespace findik
 					std::vector<findik::util::pcre_analyzer> pcre_analyze = FI_SERVICES->util_srv().pcre().matches_predefined(&(resp->content_hr())[0]); 
 					if(pcre_analyze.size() > 0){
 						boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "Content blocked for URL : "  + req->request_uri(), "content", connection_, req, resp));
-						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_));
-					}
-					else {
+						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 					}
 				}
 		
-				boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, true, 200, false, "", "", connection_, req, resp));
-                                return boost::make_tuple(true, findik::filter::filter_reason::create_reason(reply_));		
+				findik::filter::filter_reason_ptr frp_;
+                                return boost::make_tuple(true, frp_);
 			}
 
 			bool html_content_filter::is_applicable(findik::io::connection_ptr connection_)

@@ -28,7 +28,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
-#include "abstract_filter_result_generator.hpp"
 #include "http_filter_logger.hpp"
 #include "reply_service.hpp"
 #include "request.hpp"
@@ -51,22 +50,42 @@ namespace findik
                         @author Burak OGUZ (barfan)
                         */
 			class http_filter_result_generator :
-				public boost::enable_shared_from_this<http_filter_result_generator>,
-                                public findik::filter::abstract_filter_result_generator
+				public boost::enable_shared_from_this<http_filter_result_generator>
                         {
 			
 			public:
-				http_filter_result_generator(unsigned int filter_code, bool filter_result, unsigned int return_code, bool is_close_connection, std::string reply_str, std::string filter_reason, findik::io::connection_ptr connection_, request_ptr request_, response_ptr response_);
-				http_filter_result_generator(unsigned int filter_code, bool filter_result, unsigned int return_code, bool is_close_connection, std::string reply_str, std::string filter_reason, findik::io::connection_ptr connection_, request_ptr request_);
-				std::string log_str();
-				std::string reply_str();
+				http_filter_result_generator(
+					const std::string & filter_code, 
+					bool filter_result, 
+					unsigned int return_code, 
+					bool is_close_connection, 
+					const std::string & reply_str, 
+					const std::string & filter_reason, 
+					findik::io::connection_ptr connection_, 
+					request_ptr request_, 
+					response_ptr response_
+				);
+
+				http_filter_result_generator(
+					const std::string & filter_code, 
+					bool filter_result, 
+					unsigned int return_code, 
+					bool is_close_connection, 
+					const std::string & reply_str, 
+					const std::string & filter_reason, 
+					findik::io::connection_ptr connection_, 
+					request_ptr request_
+				);
+
+				const std::string & log_str();
+				const std::string & reply_str();
 
 			protected:
-				std::string generateGMTDate();
+				const std::string generateGMTDate();
 
 			private:
 				findik::io::protocol proto_;
-				unsigned int filter_code_;
+				std::string filter_code_;
 				bool filter_result_;
 				unsigned int return_code_;
 				bool is_close_connection_;
@@ -79,6 +98,8 @@ namespace findik
 				unsigned int response_size_;
 				std::string filter_reason_;
 				std::string log_str_;
+
+				std::string return_resp_;
 			};
 
 			typedef boost::shared_ptr<http_filter_result_generator> http_filter_result_generator_ptr;
