@@ -85,7 +85,7 @@ namespace findik
 			{
 				if (connection_->current_data().get() == 0)
 				{
-					LOG4CXX_DEBUG(debug_logger, "Creating new state entry for connection.");
+//					LOG4CXX_DEBUG(debug_logger, "Creating new state entry for connection.");
 					FI_STATE_OF(connection_) = method_start;
 					request_ptr p(new request(connection_->is_secure()));
 					connection_->update_current_data(p);

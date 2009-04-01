@@ -19,6 +19,8 @@
 #include "mysqldbmanager.hpp"
 #include "service_container.hpp"
 
+#include <boost/lexical_cast.hpp>
+
 #include <boost/scoped_ptr.hpp>
 #include <vector>
 
@@ -60,16 +62,66 @@ namespace findik
 
 				mysql_dbconnection_ptr dbconnection__(new mysql_dbconnection(myconn_));
 
-				mysqlpp::Query * domain_q = new mysqlpp::Query(myconn_->query("SELECT d.id from domain d join blacklist_category bc where d.domain = %0q and d.catid = bc.catid"));
+				mysqlpp::Query * domain_q = new mysqlpp::Query(
+					myconn_->query("SELECT d.id from domain d "
+						"where d.domain = %0q and d.catid = %1"));
 			        domain_q->parse();
-				mysqlpp::Query * url_q = new mysqlpp::Query(myconn_->query("SELECT u.id from url u join blacklist_category bc where u.url = %0q and u.catid = bc.catid"));
+
+				mysqlpp::Query * url_q = new mysqlpp::Query(
+					myconn_->query("SELECT u.id from url u "
+						"where u.url = %0q and u.catid = %1"));
 			        url_q->parse();
-				mysqlpp::Query * pcre_q = new mysqlpp::Query(myconn_->query("SELECT c.content,c.catid from content c join blacklist_category bc where c.catid = bc.catid"));
+
+				mysqlpp::Query * pcre_q = new mysqlpp::Query(
+					myconn_->query("SELECT c.content,c.catid from content c join blacklist_category bc "
+						"where c.catid = bc.catid"));
 			        pcre_q->parse();
-				mysqlpp::Query * file_ext_q = new mysqlpp::Query(myconn_->query("SELECT file_ext from blacklist_mime where file_ext = %0q"));
+
+				mysqlpp::Query * file_ext_q = new mysqlpp::Query(
+					myconn_->query("SELECT mt.file_ext from mime_type_cross mtc "
+						"left outer join mime_type mt ON mt.id = mtc.mime_type_id "
+						"where file_ext = %0q and mtc.mime_group_id = %1"));
 			        file_ext_q->parse();
-				mysqlpp::Query * mime_type_q = new mysqlpp::Query(myconn_->query("SELECT mime_type from blacklist_mime where mime_type = %0q"));
+
+				mysqlpp::Query * mime_type_q = new mysqlpp::Query(
+					myconn_->query("SELECT mt.mime_type from mime_type_cross mtc "
+						"left outer join mime_type mt ON mt.id = mtc.mime_type_id "
+						"where file_ext = %0q and mtc.mime_group_id = %1"));
                                 mime_type_q->parse();
+
+				mysqlpp::Query * acl_q = new mysqlpp::Query(
+					myconn_->query(
+						"SELECT af.filter_key,af.param,ar.deny "
+						"FROM acl_rule AS ar "
+						"LEFT OUTER JOIN acl_ip_cross AS acn ON ar.id = acn.rule_id "
+						"LEFT OUTER JOIN acl_time_cross AS act ON ar.id = act.rule_id "
+						"LEFT OUTER JOIN ip_table AS an ON an.id = acn.acl_id "
+						"LEFT OUTER JOIN time_table AS at ON at.id = act.acl_id "
+						"LEFT OUTER JOIN acl_filter_param AS af ON ar.id = af.rule_id "
+						"WHERE ( "
+							"an.local_masked_ip IS NULL "
+							"OR "
+							"an.local_masked_ip = %0 & an.local_mask "
+						") "
+						"AND ( "
+							"at.start_time IS NULL "
+							"OR "
+							"at.start_time < CURTIME( ) "
+						") "
+						"AND ( "
+							"at.end_time IS NULL "
+							"OR "
+							"at.end_time > CURTIME( ) "
+						") "
+						"AND ( "
+							"at.day_of_week IS NULL "
+							"OR "
+							"at.day_of_week & POW(2, DAYOFWEEK(CURDATE())) > 0 "
+						") "
+						"ORDER BY ar.id "
+						"ASC "
+					));
+                                acl_q->parse();
 
 
 				dbconnection__->set_object(domain_query, domain_q);
@@ -82,7 +134,9 @@ namespace findik
 				
 				dbconnection__->set_object(mime_type_query, mime_type_q);
 				
+				dbconnection__->set_object(acl_query, acl_q);
 				
+
 				return dbconnection__;
 			}
 			catch (const mysqlpp::Exception& e)
@@ -93,12 +147,13 @@ namespace findik
 			}
 		}
 
-		bool mysqldbmanager::domainQuery(std::string hostname) 
+		bool mysqldbmanager::domainQuery(const std::string & hostname, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 
 			try {
-				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))->store(hostname);
+				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))
+					->store(hostname, boost::lexical_cast<std::string>(group));
 				
 				if(res.num_rows() > 0)
 					return false;
@@ -122,12 +177,13 @@ namespace findik
 			return true;
 		}
 
-		bool mysqldbmanager::urlQuery(std::string url) 
+		bool mysqldbmanager::urlQuery(const std::string & url, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 			
 			try {
-                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(url_query))->store(url);
+                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(url_query))
+					->store(url, boost::lexical_cast<std::string>(group));
 
                                 if(res.num_rows() > 0)
                                         return false;
@@ -151,14 +207,15 @@ namespace findik
                         return true;
 		}
 
-		bool mysqldbmanager::pcreQuery(std::map<int,std::string> &pcre_map) 
+		bool mysqldbmanager::pcreQuery(std::map<int,std::string> & pcre_map) 
 		{
 
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 
 			try {
 				mysqlpp::StoreQueryResult res1 = ((mysqlpp::Query *)dbconnection_->get_object(pcre_query))->store();
-				for (int i = 0 ; i < res1.size() ; i++) {
+				for (std::size_t i = 0 ; i < res1.size() ; i++) 
+				{
  					pcre_map.insert(std::pair<int,std::string>((int)res1[i][1],res1[i][0].c_str())); 
 				}
 				res1.clear();
@@ -179,13 +236,53 @@ namespace findik
 
 			return true;
 		}
+
+		void mysqldbmanager::aclQuery(
+				std::list< boost::tuple<std::string, int, bool> > & filter_list, 
+				unsigned long local_ip)
+		{
+			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+
+			try {
+				mysqlpp::StoreQueryResult res = 
+					((mysqlpp::Query *)dbconnection_->get_object(acl_query))->
+						store(boost::lexical_cast<std::string>(local_ip));
+				for (std::size_t i = 0 ; i < res.size() ; i++) 
+				{
+					std::string filter_key("");
+					if (! res[i][0].is_null() )
+						filter_key = res[i][0].c_str();
+
+					unsigned int filter_param = 0;
+					if (! res[i][1].is_null() )
+						filter_param = (unsigned int)( res[i][1] );
+
+					bool deny_if_filtered = (bool) res[i][2];
+
+ 					filter_list.push_back(boost::make_tuple(filter_key, filter_param, deny_if_filtered)); 
+				}
+				res.clear();
+				dbconnection_->unlock();
+
+			}  
+			catch (const mysqlpp::BadQuery& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR " << e.what());
+                        }
+                        catch (const mysqlpp::BadConversion& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR " << e.what());
+                        }
+                        catch (const mysqlpp::Exception& e) {
+                                LOG4CXX_ERROR(debug_logger, "ERROR " << e.what());
+                        }
+		}
 		
-		bool mysqldbmanager::fileExtQuery(std::string file_ext) 
+		bool mysqldbmanager::fileExtQuery(const std::string & file_ext, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 			
 			try {
-                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(file_ext_query))->store(file_ext);
+                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(file_ext_query))
+					->store(file_ext, boost::lexical_cast<std::string>(group));
 
                                 if(res.num_rows() > 0)
                                         return false;
@@ -209,12 +306,13 @@ namespace findik
                         return true;
 		}
 		
-		bool mysqldbmanager::mimeTypeQuery(std::string mime_type) 
+		bool mysqldbmanager::mimeTypeQuery(const std::string & mime_type, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 			
 			try {
-                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(mime_type_query))->store(mime_type);
+                                mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(mime_type_query))
+					->store(mime_type, boost::lexical_cast<std::string>(group));
 
                                 if(res.num_rows() > 0)
                                         return false;

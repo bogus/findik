@@ -5,8 +5,9 @@ noinst_HEADERS = \
 	config/configuration_object.hpp \
 	config/configuration_initializer.hpp \
 	filter/abstract_filter.hpp \
+	filter/filter_group.hpp \
 	filter/filter_reason.hpp \
-	filter/abstract_filter_result_generator.hpp \
+	filter/abstract_filter_reason_factory.hpp \
 	io/session.hpp \
 	io/plain_connection.hpp \
 	io/server.hpp \
@@ -26,6 +27,8 @@ noinst_HEADERS = \
 	persistency/pooled_dbmanager.hpp \
 	persistency/dbconnection.hpp \
 	persistency/dbmanager.hpp \
+	protocols/http/content_filter_group.hpp \
+	protocols/http/filetype_filter_group.hpp \
 	protocols/http/clamd_av_filter.hpp \
 	protocols/http/data.hpp \
 	protocols/http/file_ext_filter.hpp \
@@ -35,6 +38,9 @@ noinst_HEADERS = \
 	protocols/http/ldap_basic_authentication.hpp \
 	protocols/http/https_authenticator.hpp \
 	protocols/http/http_session_manager.hpp \
+	protocols/http/http_filter_result_generator.hpp \
+	protocols/http/http_filter_reason_factory.hpp \
+	protocols/http/http_filter_logger.hpp \
 	protocols/http/domain_filter.hpp \
 	protocols/http/request_parser.hpp \
 	protocols/http/response_parser.hpp \

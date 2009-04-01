@@ -243,8 +243,18 @@ namespace findik
 			std::string hname_(hostname_);
 			std::transform(hname_.begin(), hname_.end(), hname_.begin(), ::tolower);
 
+			//char one_line_buffer_[256];
+			char * one_line_buffer_;
 			std::string cname_("");
-			cname_ += X509_NAME_oneline(X509_get_subject_name(cert_),0,0);
+			one_line_buffer_ = X509_NAME_oneline(X509_get_subject_name(cert_),0,0);
+			//cname_ += X509_NAME_oneline(X509_get_subject_name(cert_),0,0);
+			//X509_NAME_oneline(
+			//	X509_get_subject_name(cert_), 
+			//	one_line_buffer_, 
+			//	sizeof(one_line_buffer_)/sizeof(char)
+			//	);
+			cname_ += one_line_buffer_;
+			delete one_line_buffer_;
 			cname_ = cname_.substr(cname_.find("/CN=") + 4 );
 			cname_ = cname_.substr(0, cname_.find("/"));
 			std::transform(cname_.begin(), cname_.end(), cname_.begin(), ::tolower);

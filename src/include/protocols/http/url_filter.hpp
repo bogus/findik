@@ -56,28 +56,14 @@ namespace findik
                         {
 			
 			public:
-				boost::tuple<bool, findik::filter::filter_reason_ptr> filter(findik::io::connection_ptr connection_);	
+				boost::tuple<bool, findik::filter::filter_reason_ptr> 
+						filter(findik::io::connection_ptr connection_, unsigned int param = 0);	
+
 				bool is_applicable(findik::io::connection_ptr connection_);
 
-				class initializer
-                                {
-                                protected:
-                                        /*!
-                                        Default constructor.
-                                        Construction of this object will register a url_filter instance to filter_service.
-                                        */
-                                        initializer();
-
-                                        /*!
-                                        Instance to create initializer once.
-                                        */
-                                        static initializer instance;
-                                };
-
-			
 			protected:
 				static log4cxx::LoggerPtr debug_logger_;			
-				static int filter_code_;
+				static std::string filter_code_;	
 			};
 
 			typedef boost::shared_ptr<url_filter> url_filter_ptr;

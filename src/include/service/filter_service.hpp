@@ -19,6 +19,10 @@
 #ifndef FINDIK_SERVICE_FILTER_SERVICE_HPP
 #define FINDIK_SERVICE_FILTER_SERVICE_HPP
 
+
+#define FI_GET_ACCEPT_REASON(conn) filter_reason_factory_map_[conn->proto()]->create_filter_reason(conn)
+#define FI_GET_DENY_REASON(conn) filter_reason_factory_map_[conn->proto()]->create_filter_reason(conn,FC_ACL_DENY)
+
 #include <boost/tuple/tuple.hpp>
 #include <boost/noncopyable.hpp>
 
@@ -26,6 +30,7 @@
 
 #include "connection.hpp"
 #include "abstract_filter.hpp"
+#include "abstract_filter_reason_factory.hpp"
 #include "filter_reason.hpp"
 
 namespace findik
@@ -54,7 +59,16 @@ namespace findik
 			Registers a filter for filter service in order to filter with that.
 			\param filter_ filter to register
 			*/
-			void register_filter(int code, findik::filter::abstract_filter_ptr filter_);
+			void register_filter(const std::string & code, findik::filter::abstract_filter_ptr filter_);
+
+			/*!
+			Registers filter reason factory for specified protocol in order to
+			generate filter reasons within filter_service.
+			\param proto protocol
+			\param afrfp filter reason factory to use.
+			*/
+			void register_filter_reason_factory(findik::io::protocol proto,
+				findik::filter::abstract_filter_reason_factory_ptr afrfp);
 
 			/*!
 			Examines new_data of connection by using filters in filter_list_.
@@ -66,10 +80,16 @@ namespace findik
 
 		protected:
 			/*!
-			List to store filters in an order. When filter operation has been requested
+			Map to store filters in an order. When filter operation has been requested
 			filters in this list will be started to be executed in order.
 			*/
-			std::map<int,findik::filter::abstract_filter_ptr> filter_list_;
+			std::map<std::string ,findik::filter::abstract_filter_ptr> filter_map_;
+
+			/*!
+			Map to store filter reason generators.
+			*/
+			std::map<findik::io::protocol, findik::filter::abstract_filter_reason_factory_ptr> 
+					filter_reason_factory_map_;
 		};
 	}
 }
