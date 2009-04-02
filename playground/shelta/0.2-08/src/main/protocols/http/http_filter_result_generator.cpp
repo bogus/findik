@@ -42,7 +42,7 @@ namespace findik
 				return_code_ = return_code;
 				is_close_connection_ = is_close_connection;
 				reply_str_ = reply_str;
-				local_endpoint_ = connection_->local_endpoint();	
+				local_endpoint_ = connection_->local_endpoint().to_string();
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
 				request_size_ = request_->content_size();
@@ -70,7 +70,7 @@ namespace findik
 				return_code_ = return_code;
                                 is_close_connection_ = is_close_connection;
                                 reply_str_ = reply_str;
-				local_endpoint_ = connection_->local_endpoint();
+				local_endpoint_ = connection_->local_endpoint().to_string();
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
 				request_size_ = request_->content_size();

@@ -10,7 +10,8 @@ libfindik_service_la_SOURCES	= \
 	service_chain_element.cpp \
 	service_container.cpp \
 	session_service.cpp \
-	util_service.cpp
+	util_service.cpp \
+	tracker_service.cpp
 
 libfindik_service_la_LIBADD	=	@LTLIBOBJS@
 

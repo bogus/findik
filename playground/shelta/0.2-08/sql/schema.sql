@@ -115,9 +115,9 @@ CREATE TABLE `domain` (
 CREATE TABLE `ip_table` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(128) NOT NULL,
-  `local_ip` bigint(20) NOT NULL,
-  `local_mask` bigint(20) NOT NULL,
-  `local_masked_ip` bigint(20) NOT NULL,
+  `local_ip` bigint(20) unsigned NOT NULL,
+  `local_mask` bigint(20) unsigned NOT NULL,
+  `local_masked_ip` bigint(20) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 

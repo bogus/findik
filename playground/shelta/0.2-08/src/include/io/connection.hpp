@@ -57,6 +57,11 @@ namespace findik
 			explicit connection( protocol proto );
 
 			/*!
+			Default d-tor.
+			*/
+			~connection();
+
+			/*!
 			Start processing connection.
 			After constructor has been called connection instance will wait till this 
 			method has been called. After this method called connection will register 
@@ -92,7 +97,7 @@ namespace findik
 			Endpoint of local connection.
 			\returns local endpoint
 			*/
-			const std::string & local_endpoint();
+			const boost::asio::ip::address & local_endpoint();
 
 			/*!
 			Remote hostname.
@@ -185,6 +190,12 @@ namespace findik
 			Set is_tunnel to true.
 			*/
 			void mark_as_tunnel();
+
+			/*!
+			Ends connection.
+			Generally called by timers;
+			*/
+			void close();
 
 		protected:
 			/*!
@@ -436,12 +447,6 @@ namespace findik
 			void handle_socket_timeout(const boost::system::error_code& err);
 
 			/*!
-			Ends connection.
-			Generally called by timers;
-			*/
-			void close();
-
-			/*!
 			Whether connection is keep alive.
 			*/
 			boost::tribool is_keepalive_;
@@ -519,7 +524,7 @@ namespace findik
 			/*!
 			Local endpoint.
 			*/
-			std::string local_endpoint_;
+			boost::asio::ip::address local_endpoint_;
 
 		};
 		

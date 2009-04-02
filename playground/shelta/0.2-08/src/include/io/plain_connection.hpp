@@ -45,11 +45,6 @@ namespace findik
 			explicit plain_connection( protocol proto );
 
 			/*!
-			Destructor.
-			*/
-			~plain_connection();
-
-			/*!
 			Socket for the local connection.
 			\returns local socket
 			*/

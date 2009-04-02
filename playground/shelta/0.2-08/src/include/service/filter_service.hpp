@@ -22,6 +22,7 @@
 
 #define FI_GET_ACCEPT_REASON(conn) filter_reason_factory_map_[conn->proto()]->create_filter_reason(conn)
 #define FI_GET_DENY_REASON(conn) filter_reason_factory_map_[conn->proto()]->create_filter_reason(conn,FC_ACL_DENY)
+#define FI_GET_NA_REASON(conn) filter_reason_factory_map_[conn->proto()]->create_filter_reason(conn,FC_ACL_NA)
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/noncopyable.hpp>

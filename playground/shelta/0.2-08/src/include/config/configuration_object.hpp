@@ -89,6 +89,10 @@ namespace findik
 
 			unsigned int server_max_connection_per_session();
 
+			unsigned int server_max_concurrent_connections();
+
+			unsigned int server_max_concurrent_connections_per_user();
+
 			bool use_clamd();
 
                         const std::string & clamd_host();
@@ -164,6 +168,10 @@ namespace findik
 			unsigned int server_max_session_;
 
 			unsigned int server_max_connection_per_session_;
+
+			unsigned int server_max_concurrent_connections_;
+
+			unsigned int server_max_concurrent_connections_per_user_;
 
 			bool use_clamd_;
 			

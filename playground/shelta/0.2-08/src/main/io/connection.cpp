@@ -42,7 +42,6 @@ namespace findik
 			is_keepalive_(boost::indeterminate),
 			remote_port_(0),
 			remote_hostname_(""),
-			local_endpoint_(""),
 			is_streaming_(false),
 			is_tunnel_(false),
 			local_receive_timer_(FI_SERVICES->io_srv()),
@@ -51,6 +50,14 @@ namespace findik
 			local_buffer_remaining_(0),
 			local_buffer_resume_point_(NULL)
 		{}
+
+		connection::~connection()
+		{
+			FI_SERVICES->tracker_srv().closing_connection(
+				local_endpoint().to_v4().to_ulong(),
+				(unsigned int) this
+				);
+		}
 
 		void connection::prepare_socket(boost::asio::ip::tcp::socket::lowest_layer_type & socket)
 		{
@@ -218,7 +225,7 @@ namespace findik
 
 		void connection::start_processing()
 		{
-			local_endpoint_ = local_socket().remote_endpoint().address().to_string();
+			local_endpoint_ = local_socket().remote_endpoint().address();
 			start_local();
 		}
 
@@ -227,6 +234,8 @@ namespace findik
 			LOG4CXX_DEBUG(debug_logger, "Closing connection.");
 			shutdown_local();
 			shutdown_remote();
+
+			FI_SERVICES->tracker_srv().closing_connection(shared_from_this());
 		}
 
                 bool connection::is_keepalive()
@@ -250,8 +259,12 @@ namespace findik
 			return remote_port_;
 		}
 
-		const std::string & connection::local_endpoint()
+		const boost::asio::ip::address & connection::local_endpoint()
 		{
+			if (local_endpoint_.to_v4().to_ulong() == 0)
+			{
+				local_endpoint_ = local_socket().remote_endpoint().address();
+			}
 			return local_endpoint_;
 		}
 
