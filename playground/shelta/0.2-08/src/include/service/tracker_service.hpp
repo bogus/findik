@@ -66,7 +66,7 @@ namespace findik
 			Stops tracking connection.
 			\param connection_address_ address of connection to stop tracking.
 			*/
-			void closing_connection(unsigned long ip_, unsigned int connection_);
+			void closing_connection(unsigned long ip_, findik::io::connection * connection_);
 
 		protected:
 
@@ -78,7 +78,7 @@ namespace findik
 			/*!
 			Map to store connections in an order.
 			*/
-			std::map<unsigned long, std::set<unsigned int> > tracker_map_;
+			std::map<unsigned long, std::set<findik::io::connection *> > tracker_map_;
 
 		};
 	}

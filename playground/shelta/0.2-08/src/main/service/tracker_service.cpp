@@ -35,8 +35,8 @@ namespace findik
 			boost::mutex::scoped_lock tracker_map_lock_(tracker_map_mutex_);
 
 			unsigned long ip_ = connection_->local_endpoint().to_v4().to_ulong();
-			std::set<unsigned int> & ip_set_ = tracker_map_[ip_];
-			ip_set_.insert((unsigned int)(connection_.get()));
+			std::set<findik::io::connection *> & ip_set_ = tracker_map_[ip_];
+			ip_set_.insert(connection_.get());
 
 			if ( ip_set_.size() > FI_CONFIG.server_max_concurrent_connections_per_user() )
 			{
@@ -44,7 +44,7 @@ namespace findik
 			}
 
 			std::size_t total_ = 0;
-			std::map<unsigned long, std::set<unsigned int> >::iterator it;
+			std::map<unsigned long, std::set<findik::io::connection *> >::iterator it;
 
 			for (it = tracker_map_.begin();
 				it != tracker_map_.end(); it++)
@@ -64,20 +64,20 @@ namespace findik
 		{
 			closing_connection(
 				connection_->local_endpoint().to_v4().to_ulong(),
-				(unsigned int)(connection_.get())
+				connection_.get()
 				);
 		}
 
-		void tracker_service::closing_connection(unsigned long ip_, unsigned int connection_)
+		void tracker_service::closing_connection(unsigned long ip_, findik::io::connection * connection_)
 		{
 			boost::mutex::scoped_lock tracker_map_lock_(tracker_map_mutex_);
 
-			std::map<unsigned long, std::set<unsigned int> >::iterator it;
+			std::map<unsigned long, std::set<findik::io::connection *> >::iterator it;
 			it = tracker_map_.find(ip_);
 
 			if ( it != tracker_map_.end() )
 			{
-				std::set<unsigned int> & ip_set_ = (*it).second;
+				std::set<findik::io::connection *> & ip_set_ = (*it).second;
 
 				ip_set_.erase(connection_);
 

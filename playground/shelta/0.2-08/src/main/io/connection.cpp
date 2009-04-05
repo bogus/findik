@@ -55,7 +55,7 @@ namespace findik
 		{
 			FI_SERVICES->tracker_srv().closing_connection(
 				local_endpoint().to_v4().to_ulong(),
-				(unsigned int) this
+				this
 				);
 		}
 
