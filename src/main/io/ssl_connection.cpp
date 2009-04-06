@@ -38,9 +38,6 @@ namespace findik
 			is_secure_ = true;
 		}
 
-		ssl_connection::~ssl_connection()
-		{}
-
 		void ssl_connection::shutdown_local()
 		{
 			shutdown_local_socket();

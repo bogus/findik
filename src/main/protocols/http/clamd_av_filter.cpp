@@ -27,7 +27,7 @@ namespace findik
 		{
 			// initialization of logger
 			log4cxx::LoggerPtr clamd_av_filter::debug_logger_(log4cxx::Logger::getLogger("findik.protocols.http.clamd_av_filter"));	
-			std::string clamd_av_filter::filter_code_ = "clamd_av";	
+			std::string clamd_av_filter::filter_code_ = "av";	
 
 			// constructor definition of filter service registration inner class
 			clamd_av_filter::initializer::initializer()

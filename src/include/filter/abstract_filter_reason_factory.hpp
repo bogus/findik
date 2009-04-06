@@ -20,6 +20,7 @@
 #define FINDIK_LOGGER_ABSTRACT_FILTER_REASON_FACTORY_HPP
 
 #define FC_ACL_DENY 3001
+#define FC_ACL_NA 3002
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>

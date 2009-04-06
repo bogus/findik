@@ -123,6 +123,11 @@ namespace findik
 		{
 			return db_srv_;
 		}
+
+		tracker_service & service_container::tracker_srv()
+		{
+			return tracker_srv_;
+		}
 	}
 }
 

@@ -44,7 +44,9 @@ namespace findik
 			ssl_local_dh_parameters_("/etc/findik/ssl/dh.pem"),
 			ssl_remote_ca_("/etc/findik/ssl/ca.pem"),
 			server_max_session_(32),
-			server_max_connection_per_session_(4)
+			server_max_connection_per_session_(4),
+			server_max_concurrent_connections_(150),
+			server_max_concurrent_connections_per_user_(150)
 		{
 			config_.getConfigValue_Bool("findik.server.http.run_with_squid", server_http_run_with_squid_);
 			config_.getConfigValue_String("findik.server.http.squid_host", server_http_squid_host_);
@@ -67,6 +69,8 @@ namespace findik
 			config_.getConfigValue_String("findik.ssl.remote.ca", ssl_remote_ca_);
 			config_.getConfigValue_UInt("findik.server.max_session", server_max_session_);
 			config_.getConfigValue_UInt("findik.server.max_connection_per_session", server_max_connection_per_session_);
+			config_.getConfigValue_UInt("findik.server.max_concurrent_connections", server_max_concurrent_connections_);
+			config_.getConfigValue_UInt("findik.server.max_concurrent_connections_per_user", server_max_concurrent_connections_per_user_);
 			config_.getConfigValue_Bool("findik.filters.http.use_clamd", use_clamd_);
 			config_.getConfigValue_String("findik.filters.http.clamd_host", clamd_host_);
 			config_.getConfigValue_String("findik.filters.http.clamd_port", clamd_port_);
@@ -198,6 +202,16 @@ namespace findik
 		unsigned int configuration_object::server_max_connection_per_session()
 		{
 			return server_max_connection_per_session_;
+		}
+
+		unsigned int configuration_object::server_max_concurrent_connections()
+		{
+			return server_max_concurrent_connections_;
+		}
+
+		unsigned int configuration_object::server_max_concurrent_connections_per_user()
+		{
+			return server_max_concurrent_connections_per_user_;
 		}
 
 		bool configuration_object::use_clamd()

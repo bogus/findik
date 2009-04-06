@@ -77,6 +77,21 @@ namespace findik
 
 					return findik::filter::filter_reason::create_reason(generator_->reply_str(), generator_->log_str());
 				}
+				else if (code == FC_ACL_NA)
+				{
+					http_filter_result_generator_ptr generator_;
+					request_ptr req = last_request_of(connection_);
+
+					generator_.reset(
+						new http_filter_result_generator(
+							"N/A", false, 
+							response::forbidden, true, 
+							"ACL deny : " + req->request_host(), 
+							req->request_host(), connection_, req
+						));
+
+					return findik::filter::filter_reason::create_reason(generator_->reply_str(), generator_->log_str());
+				}
 				else
 				{
 					findik::filter::filter_reason_ptr p;
