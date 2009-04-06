@@ -35,6 +35,7 @@
 #include "parser_service.hpp"
 #include "reply_service.hpp"
 #include "util_service.hpp"
+#include "tracker_service.hpp"
 #include "configuration_initializer.hpp"
 #include "configuration_object.hpp"
 #include "mysqldbmanager.hpp"
@@ -158,6 +159,12 @@ namespace findik
 			*/
 			findik::persistency::mysqldbmanager & db_srv();
 
+			/*!
+			Tracker service instance. To track connections.
+			\returns tracker service instance.
+			*/
+			tracker_service & tracker_srv();
+
 		protected:
 
 			/*!
@@ -234,6 +241,11 @@ namespace findik
 			DB Manager to access database via findik specific interface.
 			*/
 			findik::persistency::mysqldbmanager db_srv_;
+
+			/*!
+			Tracker service instance. To track connections.
+			*/
+			tracker_service tracker_srv_;
 		};
 		
 		typedef boost::shared_ptr<service_container> service_container_ptr;

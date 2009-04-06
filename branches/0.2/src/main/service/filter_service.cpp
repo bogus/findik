@@ -81,6 +81,14 @@ namespace findik
 
 				findik::filter::abstract_filter_ptr filter_ = filter_map_[filter_key];
 
+				if ( filter_.get() == 0 )
+				{
+					findik::filter::filter_reason_ptr deny_reason_ = FI_GET_NA_REASON(connection_);
+					LOG4CXX_WARN(logging::log_initializer::filter_logger, deny_reason_->log_str());
+					return boost::make_tuple(false, deny_reason_);
+				}
+					
+
 				if (filter_->is_applicable(connection_))
 				{
 					boost::tuple<bool, findik::filter::filter_reason_ptr> result = 

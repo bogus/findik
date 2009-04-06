@@ -35,9 +35,6 @@ namespace findik
 			is_secure_ = false;
 		}
 
-		plain_connection::~plain_connection()
-		{}
-
 		void plain_connection::shutdown_local()
 		{
 			shutdown_local_socket();

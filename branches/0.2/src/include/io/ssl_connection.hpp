@@ -47,11 +47,6 @@ namespace findik
 			explicit ssl_connection( protocol proto );
 
 			/*!
-			Destructor.
-			*/
-			~ssl_connection();
-
-			/*!
 			Socket for the local connection.
 			\returns local socket
 			*/

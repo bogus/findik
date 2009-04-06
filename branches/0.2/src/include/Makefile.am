@@ -74,6 +74,7 @@ noinst_HEADERS = \
 	service/reply_service.hpp \
 	service/parser_service.hpp \
 	service/util_service.hpp \
+	service/tracker_service.hpp \
 	util/zlib_util.hpp \
 	util/base64.hpp \
 	util/tidy_html_parser.hpp \

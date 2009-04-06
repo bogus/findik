@@ -50,7 +50,7 @@ namespace findik
 				proto_ = connection_->proto();
 				filter_code_ = filter_code;
 				filter_result_ = filter_result;
-				local_endpoint_ = connection_->local_endpoint();	
+				local_endpoint_ = connection_->local_endpoint().to_string();	
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
 				request_size_ = request_->content_size();
@@ -71,7 +71,7 @@ namespace findik
                                 proto_ = connection_->proto();
                                 filter_code_ = filter_code;
                                 filter_result_ = filter_result;
-				local_endpoint_ = connection_->local_endpoint();
+				local_endpoint_ = connection_->local_endpoint().to_string();
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
 				request_size_ = request_->content_size();
