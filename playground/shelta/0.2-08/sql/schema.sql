@@ -189,3 +189,6 @@ CREATE TABLE `users` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
+INSERT INTO `users` values('', 'admin', sha1('findik'));
+
+
