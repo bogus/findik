@@ -78,14 +78,7 @@ namespace findik
 
 		void server::handle_accept(const boost::system::error_code& e)
 		{
-			if ( FI_SERVICES->tracker_srv().accepting_connection(new_connection_) ) // accept connection
-			{
-				new_connection_->start_processing();
-			}
-			else // reject connection, limit reached.
-			{ // TODO: log and respond with protocol reject (eg. HTTP 501).
-				new_connection_->close();
-			}
+			new_connection_->start_processing();
 			create_new_connection_and_register();
 		}
 

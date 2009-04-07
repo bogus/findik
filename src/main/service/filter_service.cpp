@@ -130,6 +130,7 @@ namespace findik
 				}
 				LOG4CXX_INFO(logging::log_initializer::filter_logger, frp->log_str());
 			}
+
 			return boost::make_tuple(true, frp);
 		}
 	}
