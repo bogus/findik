@@ -32,7 +32,6 @@ namespace findik
 			boost::tuple<bool, findik::filter::filter_reason_ptr> 
 					domain_filter::filter(findik::io::connection_ptr connection_, unsigned int param) 
 			{
-std::cout << "vololo : " << param << std::endl;
 				LOG4CXX_DEBUG(debug_logger_, "Domain name filter entered"); // log for filter entrance
 				
 				// get request object from current data
