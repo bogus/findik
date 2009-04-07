@@ -23,6 +23,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <map>
 
+#include <boost/thread/mutex.hpp>
+
 namespace findik
 {
 	namespace persistency
@@ -53,6 +55,7 @@ namespace findik
 			T * connection_;
 
 			bool lock_; // TODO: should be reimplemented with mutexes
+			boost::mutex mutex_;
 
 			std::map<unsigned int, void *> dbc_objects;
 		};
@@ -78,30 +81,36 @@ namespace findik
 		template <class T>
 		void dbconnection<T>::lock()
 		{
+			boost::mutex::scoped_lock lock1(mutex_);
 			lock_ = true;
 		}
 
 		template <class T>
 		void dbconnection<T>::unlock()
 		{
+			boost::mutex::scoped_lock lock1(mutex_);
 			lock_ = false;
 		}
 
 		template <class T>
 		bool dbconnection<T>::is_locked()
 		{
+			boost::mutex::scoped_lock lock1(mutex_);
 			return lock_;
 		}
 
 		template <class T>
 		T * dbconnection<T>::connection()
 		{
+			boost::mutex::scoped_lock lock1(mutex_);
 			return connection_;
 		}
 
 		template <class T>
 		bool dbconnection<T>::try_lock()
 		{
+			boost::mutex::scoped_lock lock1(mutex_);
+
 			if (lock_ == true)
 				return false;
 			else
@@ -114,12 +123,14 @@ namespace findik
 		template <class T>
 		void * dbconnection<T>::get_object(unsigned int key)
 		{
+			boost::mutex::scoped_lock lock1(mutex_);
 			return dbc_objects[key];
 		}
 
 		template <class T>
 		void dbconnection<T>::set_object(unsigned int key, void * object)
 		{
+			boost::mutex::scoped_lock lock1(mutex_);
 			dbc_objects[key] = object;
 		}
 

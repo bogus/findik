@@ -225,8 +225,15 @@ namespace findik
 
 		void connection::start_processing()
 		{
-			local_endpoint_ = local_socket().remote_endpoint().address();
-			start_local();
+			if ( FI_SERVICES->tracker_srv().accepting_connection(shared_from_this()) ) // accept connection
+			{
+				local_endpoint_ = local_socket().remote_endpoint().address();
+				start_local();
+			}
+			else // reject connection, limit reached.
+			{ // TODO: log and respond with protocol reject (eg. HTTP 501).
+				close();
+			}
 		}
 
 		void connection::close()

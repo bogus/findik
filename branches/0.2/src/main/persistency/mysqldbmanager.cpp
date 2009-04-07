@@ -150,67 +150,74 @@ namespace findik
 		bool mysqldbmanager::domainQuery(const std::string & hostname, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+			bool return_ = true;
 
 			try {
 				mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(domain_query))
 					->store(hostname, boost::lexical_cast<std::string>(group));
 				
 				if(res.num_rows() > 0)
-					return false;
+					return_ = false;
 
 				res.clear();
-				dbconnection_->unlock();
 
 			} catch (const mysqlpp::BadQuery& e) {
 				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-				return false;
+				return_ = false;
 			}
 			catch (const mysqlpp::BadConversion& e) {
 				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-				return false;
+				return_ = false;
 			}
 			catch (const mysqlpp::Exception& e) {
 				LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-				return false;
+				return_ = false;
 			}
 
-			return true;
+			dbconnection_->unlock();
+
+			return return_;
 		}
 
 		bool mysqldbmanager::urlQuery(const std::string & url, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+
+			bool return_ = true;
 			
 			try {
                                 mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(url_query))
 					->store(url, boost::lexical_cast<std::string>(group));
 
                                 if(res.num_rows() > 0)
-                                        return false;
+                                        return_ = false;
 				
 				res.clear();
-                                dbconnection_->unlock();
 
                         } catch (const mysqlpp::BadQuery& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
                         catch (const mysqlpp::BadConversion& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
                         catch (const mysqlpp::Exception& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
 
-                        return true;
+			dbconnection_->unlock();
+
+                        return return_;
 		}
 
 		bool mysqldbmanager::pcreQuery(std::map<int,std::string> & pcre_map) 
 		{
 
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+
+			bool return_ = true;
 
 			try {
 				mysqlpp::StoreQueryResult res1 = ((mysqlpp::Query *)dbconnection_->get_object(pcre_query))->store();
@@ -219,22 +226,23 @@ namespace findik
  					pcre_map.insert(std::pair<int,std::string>((int)res1[i][1],res1[i][0].c_str())); 
 				}
 				res1.clear();
-				dbconnection_->unlock();
 
 			}  catch (const mysqlpp::BadQuery& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
                         catch (const mysqlpp::BadConversion& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
                         catch (const mysqlpp::Exception& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
 
-			return true;
+			dbconnection_->unlock();
+
+			return return_;
 		}
 
 		void mysqldbmanager::aclQuery(
@@ -262,7 +270,6 @@ namespace findik
  					filter_list.push_back(boost::make_tuple(filter_key, filter_param, deny_if_filtered)); 
 				}
 				res.clear();
-				dbconnection_->unlock();
 
 			}  
 			catch (const mysqlpp::BadQuery& e) {
@@ -274,66 +281,74 @@ namespace findik
                         catch (const mysqlpp::Exception& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR " << e.what());
                         }
+
+			dbconnection_->unlock();
 		}
 		
 		bool mysqldbmanager::fileExtQuery(const std::string & file_ext, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+
+			bool return_ = true;
 			
 			try {
                                 mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(file_ext_query))
 					->store(file_ext, boost::lexical_cast<std::string>(group));
 
                                 if(res.num_rows() > 0)
-                                        return false;
+                                        return_ = false;
 
 				res.clear();
-                                dbconnection_->unlock();
 
                         } catch (const mysqlpp::BadQuery& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
                         catch (const mysqlpp::BadConversion& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
                         catch (const mysqlpp::Exception& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
 
-                        return true;
+			dbconnection_->unlock();
+
+                        return return_;
 		}
 		
 		bool mysqldbmanager::mimeTypeQuery(const std::string & mime_type, unsigned int group) 
 		{
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
+
+			bool return_ = true;
 			
 			try {
                                 mysqlpp::StoreQueryResult res = ((mysqlpp::Query *)dbconnection_->get_object(mime_type_query))
 					->store(mime_type, boost::lexical_cast<std::string>(group));
 
                                 if(res.num_rows() > 0)
-                                        return false;
+                                        return_ = false;
 
 				res.clear();
-                                dbconnection_->unlock();
 
                         } catch (const mysqlpp::BadQuery& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
                         catch (const mysqlpp::BadConversion& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
                         catch (const mysqlpp::Exception& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return false;
+                                return_ = false;
                         }
 
-                        return true;
+			dbconnection_->unlock();
+
+                        return return_;
 		}
 	}
 }

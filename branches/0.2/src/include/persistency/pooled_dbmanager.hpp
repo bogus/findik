@@ -24,6 +24,8 @@
 
 #include <vector>
 
+#include <boost/thread/mutex.hpp>
+
 #include "dbmanager.hpp"
 #include "dbconnection.hpp"
 #include "log.hpp"
@@ -55,6 +57,8 @@ namespace findik
 
 			dbconnection_ptr get_dbconnection();
 
+			boost::mutex mutex_;
+
 			static log4cxx::LoggerPtr debug_logger;
 		};
 
@@ -70,6 +74,8 @@ namespace findik
 		template <class T>
 		typename pooled_dbmanager<T>::dbconnection_ptr pooled_dbmanager<T>::get_dbconnection()
 		{
+			boost::mutex::scoped_lock lock1(mutex_);
+
 			dbconnection_ptr connection;
 
 			do
