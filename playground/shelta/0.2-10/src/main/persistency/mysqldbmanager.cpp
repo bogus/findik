@@ -73,8 +73,9 @@ namespace findik
 			        url_q->parse();
 
 				mysqlpp::Query * pcre_q = new mysqlpp::Query(
-					myconn_->query("SELECT c.content,c.catid from content c join blacklist_category bc "
-						"where c.catid = bc.catid"));
+					myconn_->query("SELECT c.content,c.catid from content c"));
+				//	myconn_->query("SELECT c.content,c.catid from content c join blacklist_category bc "
+				//		"where c.catid = bc.catid"));
 			        pcre_q->parse();
 
 				mysqlpp::Query * file_ext_q = new mysqlpp::Query(
@@ -212,37 +213,33 @@ namespace findik
                         return return_;
 		}
 
-		bool mysqldbmanager::pcreQuery(std::map<int,std::string> & pcre_map) 
+		void mysqldbmanager::pcreQuery(std::list<boost::tuple<int,std::string> > & pcre_map) 
 		{
 
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
-
-			bool return_ = true;
 
 			try {
 				mysqlpp::StoreQueryResult res1 = ((mysqlpp::Query *)dbconnection_->get_object(pcre_query))->store();
 				for (std::size_t i = 0 ; i < res1.size() ; i++) 
 				{
- 					pcre_map.insert(std::pair<int,std::string>((int)res1[i][1],res1[i][0].c_str())); 
+ 					pcre_map.push_back( boost::make_tuple(
+								(int)res1[i][1],
+								res1[i][0].c_str()
+							)); 
 				}
 				res1.clear();
 
 			}  catch (const mysqlpp::BadQuery& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return_ = false;
                         }
                         catch (const mysqlpp::BadConversion& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return_ = false;
                         }
                         catch (const mysqlpp::Exception& e) {
                                 LOG4CXX_ERROR(debug_logger, "ERROR" << e.what());
-                                return_ = false;
                         }
 
 			dbconnection_->unlock();
-
-			return return_;
 		}
 
 		void mysqldbmanager::aclQuery(

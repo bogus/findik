@@ -29,7 +29,7 @@ namespace findik
 		{
 		}
 
-		void pcre_analyzer::set_word(std::string word)
+		void pcre_analyzer::set_word(const std::string & word)
 		{
 			this->word = word;
                 }

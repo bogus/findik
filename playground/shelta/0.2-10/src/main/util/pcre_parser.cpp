@@ -28,7 +28,7 @@ namespace findik
 		pcre_parser::~pcre_parser()
 		{
 		}
-		pcre_parser::pcre_parser(int category_id_, std::string & pattern_) 
+		pcre_parser::pcre_parser(int category_id_, const std::string & pattern_) 
 		{
 			options_ = new pcrecpp::RE_Options();
 			options_->set_caseless(true);
