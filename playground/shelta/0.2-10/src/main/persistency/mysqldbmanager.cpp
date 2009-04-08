@@ -81,13 +81,13 @@ namespace findik
 				mysqlpp::Query * file_ext_q = new mysqlpp::Query(
 					myconn_->query("SELECT mt.file_ext from mime_type_cross mtc "
 						"left outer join mime_type mt ON mt.id = mtc.mime_type_id "
-						"where file_ext = %0q and mtc.mime_group_id = %1"));
+						"where mt.file_ext = %0q and mtc.mime_group_id = %1"));
 			        file_ext_q->parse();
 
 				mysqlpp::Query * mime_type_q = new mysqlpp::Query(
 					myconn_->query("SELECT mt.mime_type from mime_type_cross mtc "
 						"left outer join mime_type mt ON mt.id = mtc.mime_type_id "
-						"where file_ext = %0q and mtc.mime_group_id = %1"));
+						"where mt.mime_type = %0q and mtc.mime_group_id = %1"));
                                 mime_type_q->parse();
 
 				mysqlpp::Query * acl_q = new mysqlpp::Query(
