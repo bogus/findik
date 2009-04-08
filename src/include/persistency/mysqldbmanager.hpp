@@ -22,6 +22,8 @@
 
 #include <mysql++/mysql++.h>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <list>
 
 namespace findik {
 	namespace persistency {
@@ -40,7 +42,7 @@ namespace findik {
 
 			bool urlQuery(const std::string & url, unsigned int group);
 
-			bool pcreQuery(std::map<int,std::string> &pcre_map);
+			void pcreQuery(std::list<boost::tuple<int,std::string> > &pcre_map);
 
 			bool fileExtQuery(const std::string & file_ext, unsigned int group);
 

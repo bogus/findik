@@ -36,7 +36,7 @@ namespace findik
 				pcre_analyzer();
 				~pcre_analyzer();
 				
-				void set_word(std::string word);
+				void set_word(const std::string & word);
 				std::string get_word();
 				void set_count(int count);
 				int get_count();
