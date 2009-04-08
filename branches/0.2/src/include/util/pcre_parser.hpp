@@ -42,7 +42,7 @@ namespace findik
 			public:
 				pcre_parser();
 				~pcre_parser();
-				pcre_parser(int category_id_, std::string & pattern_);
+				pcre_parser(int category_id_, const std::string & pattern_);
 				pcre_parser(pcre_parser const &pcre_parser_);
 				pcrecpp::RE * get_re();
 				void set_re(pcrecpp::RE *re_);

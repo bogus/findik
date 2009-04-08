@@ -37,8 +37,8 @@ namespace findik
 				std::string content_type;
 				if((resp->magic_mime_type() == "text/html") || (resp->content_type() == "text/html" && resp->magic_mime_type().compare(0,10,"text/plain") == 0)) 
 				{
-					std::vector<findik::util::pcre_analyzer> pcre_analyze = FI_SERVICES->util_srv().pcre().matches_predefined(&(resp->content_hr())[0]); 
-					if(pcre_analyze.size() > 0){
+					if (FI_SERVICES->util_srv().pcre().matches_predefined( &(resp->content_hr())[0] , param) )
+					{
 						boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "Content blocked for URL : "  + req->request_uri(), "content", connection_, req, resp));
 						return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 					}

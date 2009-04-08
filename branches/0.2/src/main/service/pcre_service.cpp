@@ -32,49 +32,45 @@ namespace findik
 
 		void pcre_service::start()
 		{
-			std::map<int,std::string> pcre_map;
+			std::list<boost::tuple<int,std::string> > pcre_map;
                         FI_SERVICES->db_srv().pcreQuery(pcre_map);
-                        for(std::map<int,std::string>::iterator iter = pcre_map.begin(); iter != pcre_map.end(); iter++)
+                        for(std::list<boost::tuple<int,std::string> >::iterator iter = pcre_map.begin(); 
+				iter != pcre_map.end(); iter++)
                         {
-                                re_vector.push_back(new findik::util::pcre_parser(iter->first,iter->second));
+				int catid;
+				std::string regex;
+				boost::tie(catid, regex) = *iter;
+                                re_vector.push_back(new findik::util::pcre_parser(catid, regex));
                         }
 
 		}
 
-		std::vector<findik::util::pcre_analyzer> pcre_service::matches_predefined(std::string data)
+		bool pcre_service::matches_predefined(const std::string & data, unsigned int category)
 		{
-			bool isOk = true;
+			bool result = false;
 			
 			pcrecpp::StringPiece *input = new pcrecpp::StringPiece(data);
 			std::string match;
-			std::vector<findik::util::pcre_analyzer> results;
 
-			for( int i = 0, j = 0; i < re_vector.size(); i++ ) {
-				while(re_vector[i]->get_re()->FindAndConsume(input,&match)) {
-					std::transform(match.begin(), match.end(), match.begin(), tolower);
-					for(j = 0; j < results.size(); j++) {
-						if(results[j].get_word() == match) {
-							results[j].set_count(results[j].get_count()+1);
-							break;
-						}	
-					}
-					if(j == results.size()) {
-						findik::util::pcre_analyzer analyzer;
-						analyzer.set_word(match);
-						analyzer.set_count(1);
-						analyzer.set_catid(re_vector[i]->get_category_id());
-						results.push_back(analyzer);
+			for( int i = 0, j = 0; i < re_vector.size(); i++ ) 
+			{
+				if (re_vector[i]->get_category_id() == category)
+				{
+					if (re_vector[i]->get_re()->FindAndConsume(input,&match))
+					{
+						result = true;
+						break;
 					}
 				}
 			}
 
 			delete input;
 			
-			return results;
+			return result;
 
 		}
 
-		std::vector<findik::util::pcre_analyzer> pcre_service::matches_custom(std::string pattern, std::string data)
+		std::vector<findik::util::pcre_analyzer> pcre_service::matches_custom(const std::string & pattern, const std::string & data)
 		{	
 			pcrecpp::StringPiece *input = new pcrecpp::StringPiece(data);
 			std::string match;
@@ -104,7 +100,7 @@ namespace findik
 			return results;
 		}
 
-		void pcre_service::global_replace(std::string pattern, std::string replace, std::string & data)
+		void pcre_service::global_replace( const std::string & pattern, const std::string & replace, std::string & data)
 		{
                         findik::util::pcre_parser_ptr pcre(new findik::util::pcre_parser(0, pattern));
 			pcrecpp::StringPiece *replace_piece = new pcrecpp::StringPiece(replace);

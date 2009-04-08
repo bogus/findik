@@ -17,6 +17,7 @@
 */
 
 #include "http_filter_result_generator.hpp"
+#include <boost/lexical_cast.hpp>
 #include <time.h>
 
 namespace findik
@@ -101,16 +102,22 @@ namespace findik
 						return_resp_ = return_resp_ + "404 Not Found\r\n";
 					}
 
-					if(is_close_connection_) {
-						FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_html_);
-						FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", reply_str_ , reply_html_);
-						stm << reply_html_.length();
-						return_resp_ = return_resp_ + "Content-Type : text/html \r\n";
-						return_resp_ = return_resp_ + "Connection : close\r\n\r\n";
-						return_resp_ = return_resp_ + reply_html_;
-					} else {
-						return_resp_ = return_resp_ + "Content-Length : 0\r\n\r\n";
+					FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_html_);
+					FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", reply_str_ , reply_html_);
+					stm << reply_html_.length();
+					return_resp_ = return_resp_ + "Content-Type: text/html; charset=UTF-8\r\n";
+					return_resp_ = return_resp_ + "Content-Length: " + 
+							boost::lexical_cast<std::string>(reply_html_.size()) + "\r\n";
+					if(is_close_connection_) 
+					{
+						return_resp_ = return_resp_ + "Connection : close\r\n";
 					}
+					else
+					{
+						return_resp_ = return_resp_ + "Connection : keep-alive\r\n";
+					}
+					return_resp_ = return_resp_ + "\r\n";
+					return_resp_ = return_resp_ + reply_html_;
 				}
 
 				return return_resp_;

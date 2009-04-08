@@ -36,24 +36,30 @@ namespace findik
 				// get request object from current data
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
 				std::string url = req->request_uri();
-				int pos = 0;
-				int pos2 = 0;
+				std::size_t pos = 0;
+				std::size_t pos2 = 0;
+				std::size_t pos3 = 0;
+				std::string extension;
 
-				if(url.find_first_of('?') != std::string::npos) 
-				{
-					goto accept_and_return;
-				}
-
-				pos = url.find_last_of('.');
-				pos2 = url.find_last_of('/');
+				pos3 = url.find_first_of('?'); 
+				pos = url.find_last_of('.', pos3);
+				pos2 = url.find_last_of('/', pos3);
 
 				if((pos != std::string::npos) && (pos2 != std::string::npos) && (pos < pos2))
 				{
 					goto accept_and_return;
 				}
-	
-				if((pos != std::string::npos) && !FI_SERVICES->db_srv().fileExtQuery(url.substr(pos+1), param)){
-					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, false, "Extension blocked : " + url, url, connection_, req));
+
+				extension = url.substr( pos + 1, 
+					(pos3 == std::string::npos) ? pos3 : pos3 - pos - 1);
+
+				if( (pos != std::string::npos) && 
+					!FI_SERVICES->db_srv().fileExtQuery( extension, param))
+				{
+					boost::shared_ptr<http_filter_result_generator> reply_(
+							new http_filter_result_generator(
+								filter_code_, false, response::forbidden, false, 
+								"Extension blocked : " + url, url, connection_, req));
                                         return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 				} 
 

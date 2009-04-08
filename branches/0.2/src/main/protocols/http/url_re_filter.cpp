@@ -39,7 +39,7 @@ namespace findik
 				std::string url = req->request_uri();	
 				
 				// check whether hostname exists in domain blacklist
-				if(FI_SERVICES->util_srv().pcre().matches_predefined(url).size() > 0){
+				if(FI_SERVICES->util_srv().pcre().matches_predefined(url, param)){
 					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "URL blocked : " + req->request_uri(), req->request_uri(), connection_, req));					
 					return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 				} 
