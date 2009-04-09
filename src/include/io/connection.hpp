@@ -23,11 +23,14 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <boost/thread/mutex.hpp>
+
 #include <boost/asio.hpp>
 
 #include <boost/logic/tribool.hpp>
 
 #include <deque>
+#include <map>
 
 #include "log.hpp"
 
@@ -196,6 +199,16 @@ namespace findik
 			Generally called by timers;
 			*/
 			void close();
+
+			/*!
+			String map
+			*/
+			std::map<unsigned int, std::string> str_map;
+
+			/*!
+			UInt map
+			*/
+			std::map<unsigned int, unsigned int> uint_map;
 
 		protected:
 			/*!

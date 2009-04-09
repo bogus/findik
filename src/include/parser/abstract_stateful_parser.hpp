@@ -19,53 +19,16 @@
 #ifndef FINDIK_PARSER_ABSTRACT_STATEFUL_PARSER_HPP
 #define FINDIK_PARSER_ABSTRACT_STATEFUL_PARSER_HPP
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
+#include "connection.hpp"
 
-#include <boost/thread/mutex.hpp>
+#define FC_LPARSER_STATE 1001
+#define FC_RPARSER_STATE 1002
 
-#include <map>
+#define FIR_LSTATE_OF(conn) conn->uint_map[FC_LPARSER_STATE]
+#define FI_LSTATE_OF(conn) FIR_LSTATE_OF(conn)
 
-#define FI_STATE_OF(conn) boost::mutex::scoped_lock parser_state_map_lock(parser_state_map_mutex_);parser_state_map_[conn]
-#define FIR_STATE_OF(conn) parser_state_map_[conn]
-
-namespace findik
-{
-	namespace parser
-	{
-
-		/*!
-		Abstract stateful parser object to inherit in order to implement stateful parsers for findik.
-		\extends boost::enable_shared_from_this<abstract_stateful_parser> to use boost shared pointers.
-		\extends findik::parser::abstract_parser to be used in parser service.
-		@author H. Kerem Cevahir (shelta)
-		*/
-		class abstract_stateful_parser :
-			public boost::enable_shared_from_this<abstract_stateful_parser>
-		{
-		public:
-
-		protected:
-			/*!
-			Type for parser states.
-			*/
-			typedef unsigned int parser_state;
-			
-			/*!
-			A map to store parser states per connection.
-			*/
-			std::map<findik::io::connection_ptr, parser_state> parser_state_map_;
-
-			/*!
-			Mutex for threadsafe access to parser_state_map_
-			*/
-			boost::mutex parser_state_map_mutex_;
-
-		};
-		
-		typedef boost::shared_ptr<abstract_stateful_parser> abstract_stateful_parser_ptr;
-	}
-}
+#define FIR_RSTATE_OF(conn) conn->uint_map[FC_RPARSER_STATE]
+#define FI_RSTATE_OF(conn) FIR_RSTATE_OF(conn)
 
 #endif
 

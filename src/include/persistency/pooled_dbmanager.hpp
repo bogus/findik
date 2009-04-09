@@ -74,16 +74,16 @@ namespace findik
 		template <class T>
 		typename pooled_dbmanager<T>::dbconnection_ptr pooled_dbmanager<T>::get_dbconnection()
 		{
-			boost::mutex::scoped_lock lock1(mutex_);
-
 			dbconnection_ptr connection;
 
 			do
 			{
 				connection = pool_[pool_index_];
-				pool_index_++;
-				pool_index_ = pool_index_%pool_size_;
-
+				{
+					boost::mutex::scoped_lock lock1(mutex_);
+					pool_index_++;
+					pool_index_ = pool_index_%pool_size_;
+				}
 				//LOG4CXX_DEBUG(debug_logger, "trying to get connection " << pool_index_);
 			}
 			while (!connection->try_lock());

@@ -117,18 +117,6 @@ namespace findik
 			void update_keepalive_timeout_of(findik::io::connection_ptr connection_, 
 					unsigned int & keepalive_timeout_);
 
-			/*!
-			Remove connection object from remote parser if registered.
-			\param connection_ connection to remove
-			*/
-			void cleanup_remote(findik::io::connection_ptr connection_);
-
-			/*!
-			Remove connection object from local parser if registered.
-			\param connection_ connection to remove
-			*/
-			void cleanup_local(findik::io::connection_ptr connection_);
-
 		protected:
 			/*!
 			Debug logger for server class.

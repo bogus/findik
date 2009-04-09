@@ -83,11 +83,7 @@ namespace findik
 					response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 					if ( ! resp->is_stream() )
 					{
-						enum states current_state_;
-						{
-							boost::mutex::scoped_lock parser_state_map_lock(parser_state_map_mutex_);
-							current_state_ = (states) FIR_STATE_OF(connection_);
-						}
+						states current_state_ = (states) FIR_RSTATE_OF(connection_);
 
 						if (current_state_ > 699 && current_state_ < 899) // chunked or content_eof
 						{
@@ -105,25 +101,19 @@ namespace findik
 			{
 				if (connection_->current_data().get() == 0)
 				{
-					FI_STATE_OF(connection_) = http_version_start;
+					FI_RSTATE_OF(connection_) = http_version_start;
 					response_ptr p(new response(connection_->is_secure()));
 					connection_->update_current_data(p);
 				}
 
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 
-				enum states current_state_;
-				{
-					boost::mutex::scoped_lock parser_state_map_lock(parser_state_map_mutex_);
-					current_state_ = (states) FIR_STATE_OF(connection_);
-				}
-
-				switch (current_state_)
+				switch (FIR_RSTATE_OF(connection_))
 				{
 					case http_version_start:
 						if (input == 'H')
 						{
-							FI_STATE_OF(connection_) = http_version_t_1;
+							FI_RSTATE_OF(connection_) = http_version_t_1;
 							return boost::indeterminate;
 						}
 						else
@@ -131,7 +121,7 @@ namespace findik
 					case http_version_t_1:
 						if (input == 'T')
 						{
-							FI_STATE_OF(connection_) = http_version_t_2;
+							FI_RSTATE_OF(connection_) = http_version_t_2;
 							return boost::indeterminate;
 						}
 						else
@@ -141,7 +131,7 @@ namespace findik
 					case http_version_t_2:
 						if (input == 'T')
 						{
-							FI_STATE_OF(connection_) = http_version_p;
+							FI_RSTATE_OF(connection_) = http_version_p;
 							return boost::indeterminate;
 						}
 						else
@@ -151,7 +141,7 @@ namespace findik
 					case http_version_p:
 						if (input == 'P')
 						{
-							FI_STATE_OF(connection_) = http_version_slash;
+							FI_RSTATE_OF(connection_) = http_version_slash;
 							return boost::indeterminate;
 						}
 						else
@@ -163,7 +153,7 @@ namespace findik
 						{
 							resp->http_version_major = 0;
 							resp->http_version_minor = 0;
-							FI_STATE_OF(connection_) = http_version_major_start;
+							FI_RSTATE_OF(connection_) = http_version_major_start;
 							return boost::indeterminate;
 						}
 						else
@@ -174,7 +164,7 @@ namespace findik
 						if (is_digit(input))
 						{
 							resp->http_version_major = resp->http_version_major * 10 + input - '0';
-							FI_STATE_OF(connection_) = http_version_major;
+							FI_RSTATE_OF(connection_) = http_version_major;
 							return boost::indeterminate;
 						}
 						else
@@ -184,7 +174,7 @@ namespace findik
 					case http_version_major:
 						if (input == '.')
 						{
-							FI_STATE_OF(connection_) = http_version_minor_start;
+							FI_RSTATE_OF(connection_) = http_version_minor_start;
 							return boost::indeterminate;
 						}
 						else if (is_digit(input))
@@ -201,7 +191,7 @@ namespace findik
 						if (is_digit(input))
 						{
 							resp->http_version_minor = resp->http_version_minor * 10 + input - '0';
-							FI_STATE_OF(connection_) = http_version_minor;
+							FI_RSTATE_OF(connection_) = http_version_minor;
 							return boost::indeterminate;
 						}
 						else
@@ -211,7 +201,7 @@ namespace findik
 					case http_version_minor:
 						if (input == ' ')
 						{
-							FI_STATE_OF(connection_) = status_code_start;
+							FI_RSTATE_OF(connection_) = status_code_start;
 							return boost::indeterminate;
 						}
 						else if (is_digit(input))
@@ -227,7 +217,7 @@ namespace findik
 					case status_code_start:
 						if (is_digit(input))
 						{
-							FI_STATE_OF(connection_) = status_code;
+							FI_RSTATE_OF(connection_) = status_code;
 							FI_TMPINT_OF(connection_) = 0;
 							FIR_TMPINT_OF(connection_) = FIR_TMPINT_OF(connection_) * 10 + input - '0';
 							return boost::indeterminate;
@@ -237,11 +227,10 @@ namespace findik
 					case status_code:
 						if (input == ' ')
 						{
-							boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);
 							resp->status_code = (response::status_type) FIR_TMPINT_OF(connection_);
 							FIR_TMPINT_OF(connection_) = 0;
 
-							FI_STATE_OF(connection_) = status_line_start;
+							FI_RSTATE_OF(connection_) = status_line_start;
 							return boost::indeterminate;
 						}
 						else if (is_digit(input))
@@ -255,7 +244,7 @@ namespace findik
 					case status_line_start:
 						if (isalpha(input))
 						{
-							FI_STATE_OF(connection_) = status_line;
+							FI_RSTATE_OF(connection_) = status_line;
 							resp->status_line.push_back(input);
 							return boost::indeterminate;
 						}
@@ -270,7 +259,7 @@ namespace findik
 						}
 						else if (input == '\r')
 						{
-							FI_STATE_OF(connection_) = expecting_newline_1;
+							FI_RSTATE_OF(connection_) = expecting_newline_1;
 							return boost::indeterminate;
 						}
 						else
@@ -278,7 +267,7 @@ namespace findik
 					case expecting_newline_1:
 						if (input == '\n')
 						{
-							FI_STATE_OF(connection_) = header_line_start;
+							FI_RSTATE_OF(connection_) = header_line_start;
 							return boost::indeterminate;
 						}
 						else
@@ -288,12 +277,12 @@ namespace findik
 					case header_line_start:
 						if (input == '\r')
 						{
-							FI_STATE_OF(connection_) = expecting_newline_3;
+							FI_RSTATE_OF(connection_) = expecting_newline_3;
 							return boost::indeterminate;
 						}
 						else if (!resp->get_headers().empty() && (input == ' ' || input == '\t'))
 						{
-							FI_STATE_OF(connection_) = header_lws;
+							FI_RSTATE_OF(connection_) = header_lws;
 							return boost::indeterminate;
 						}
 						else if (!is_char(input) || is_ctl(input) || is_tspecial(input))
@@ -305,13 +294,13 @@ namespace findik
 							resp->add_blank_header();
 							FI_CHECK_VCTR(resp->get_headers());
 							resp->last_header().name.push_back(input);
-							FI_STATE_OF(connection_) = header_name;
+							FI_RSTATE_OF(connection_) = header_name;
 							return boost::indeterminate;
 						}
 					case header_lws:
 						if (input == '\r')
 						{
-							FI_STATE_OF(connection_) = expecting_newline_2;
+							FI_RSTATE_OF(connection_) = expecting_newline_2;
 							return boost::indeterminate;
 						}
 						else if (input == ' ' || input == '\t')
@@ -324,7 +313,7 @@ namespace findik
 						}
 						else
 						{
-							FI_STATE_OF(connection_) = header_value;
+							FI_RSTATE_OF(connection_) = header_value;
 							resp->last_header().value.push_back(input);
 							return boost::indeterminate;
 						}
@@ -332,7 +321,7 @@ namespace findik
 						if (input == ':')
 						{
 							trim_spaces(resp->last_header().name);
-							FI_STATE_OF(connection_) = space_before_header_value;
+							FI_RSTATE_OF(connection_) = space_before_header_value;
 							return boost::indeterminate;
 						}
 						else if (!is_char(input) || is_ctl(input) || is_tspecial(input))
@@ -348,7 +337,7 @@ namespace findik
 					case space_before_header_value:
 						if (input == ' ')
 						{
-							FI_STATE_OF(connection_) = header_value;
+							FI_RSTATE_OF(connection_) = header_value;
 							return boost::indeterminate;
 						}
 						else
@@ -359,7 +348,7 @@ namespace findik
 						if (input == '\r')
 						{
 							trim_spaces(resp->last_header().value);
-							FI_STATE_OF(connection_) = expecting_newline_2;
+							FI_RSTATE_OF(connection_) = expecting_newline_2;
 							return boost::indeterminate;
 						}
 						else if (is_ctl(input))
@@ -382,7 +371,7 @@ namespace findik
 					case expecting_newline_2:
 						if (input == '\n')
 						{
-							FI_STATE_OF(connection_) = header_line_start;
+							FI_RSTATE_OF(connection_) = header_line_start;
 							return boost::indeterminate;
 						}
 						else
@@ -409,7 +398,7 @@ namespace findik
 
 						if (resp->is_chunked()) 
 						{
-							FI_STATE_OF(connection_) = chunked_size_start;
+							FI_RSTATE_OF(connection_) = chunked_size_start;
 							return boost::indeterminate;
 						}
 						else if (resp->http_version_major == 1 &&
@@ -422,7 +411,7 @@ namespace findik
 								FI_CONFIG.server_http_max_object_size())
 								resp->mark_as_stream();
 
-							FI_STATE_OF(connection_) = content;
+							FI_RSTATE_OF(connection_) = content;
 
 							return boost::indeterminate;
 						}
@@ -430,7 +419,7 @@ namespace findik
 						{
 							if (resp->content_length() < 0) 
 							{
-								FI_STATE_OF(connection_) = content_eof;
+								FI_RSTATE_OF(connection_) = content_eof;
 								resp->wait_for_eof();
 							}
 							else if (resp->content_length() == 0)
@@ -443,7 +432,7 @@ namespace findik
 									FI_CONFIG.server_http_max_object_size())
 									resp->mark_as_stream();
 
-								FI_STATE_OF(connection_) = content;
+								FI_RSTATE_OF(connection_) = content;
 							}
 
 							return boost::indeterminate;
@@ -462,7 +451,7 @@ namespace findik
 					case chunked_size_start:
 						if (is_hex(input))
 						{
-							FI_STATE_OF(connection_) = chunked_size;
+							FI_RSTATE_OF(connection_) = chunked_size;
 							FI_TMPSTR_OF(connection_).clear();
 							FIR_TMPSTR_OF(connection_).push_back(input);
 							resp->push_to_content(input); // not chunked
@@ -489,7 +478,7 @@ namespace findik
 							FIR_TMPINT_OF(connection_) =
 								hex2int(FIR_TMPSTR_OF(connection_));
 							FI_TMPSTR_OF(connection_).clear();
-							FI_STATE_OF(connection_) = chunked_newline_1;
+							FI_RSTATE_OF(connection_) = chunked_newline_1;
 							return boost::indeterminate;
 						} 
 						else
@@ -498,10 +487,9 @@ namespace findik
 						if (input == '\n')
 						{
 							resp->push_to_content(input); // not chunked
-							boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);
 							if (FIR_TMPINT_OF(connection_) == 0)
 								return true;
-							FI_STATE_OF(connection_) = chunked_line;
+							FI_RSTATE_OF(connection_) = chunked_line;
 							return boost::indeterminate;
 						}
 						else
@@ -512,10 +500,9 @@ namespace findik
 							FI_TMPINT_OF(connection_)--;
 						}
 						{
-							boost::mutex::scoped_lock parser_temp_int_map_lock(parser_temp_int_map_mutex_);
 							if (FIR_TMPINT_OF(connection_) == 0)
 							{
-								FI_STATE_OF(connection_) = chunked_newline_2;
+								FI_RSTATE_OF(connection_) = chunked_newline_2;
 							}
 						}
 						return boost::indeterminate;
@@ -523,7 +510,7 @@ namespace findik
 						if (input == '\r')
 						{
 							resp->push_to_content(input); // not chunked
-							FI_STATE_OF(connection_) = chunked_newline_3;
+							FI_RSTATE_OF(connection_) = chunked_newline_3;
 							return boost::indeterminate;
 						}
 						else
@@ -532,7 +519,7 @@ namespace findik
 						if (input == '\n')
 						{
 							resp->push_to_content(input); // not chunked
-							FI_STATE_OF(connection_) = chunked_size_start;
+							FI_RSTATE_OF(connection_) = chunked_size_start;
 							return boost::indeterminate;
 						}
 						else
@@ -619,17 +606,6 @@ namespace findik
 							}
 						}
 				}
-			}
-
-			void response_parser::cleanup(findik::io::connection_ptr connection_)
-			{
-				boost::mutex::scoped_lock lock1(parser_state_map_mutex_);
-				boost::mutex::scoped_lock lock2(parser_temp_str_map_mutex_);
-				boost::mutex::scoped_lock lock3(parser_temp_int_map_mutex_);
-
-				parser_state_map_.erase(connection_);
-				parser_temp_str_map_.erase(connection_);
-				parser_temp_int_map_.erase(connection_);
 			}
 
 		}

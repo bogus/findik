@@ -83,7 +83,7 @@ namespace findik
 				static std::string local_endpoint_identifier_;
 				static std::string domain_name_identifier_;
 				static std::string url_identifier_;
-				static std::string mime_type_identifier_;
+//				static std::string mime_type_identifier_;
 				static std::string request_size_identifier_;
 				static std::string response_size_identifier_;
 				static std::string response_code_identifier_;
@@ -96,7 +96,7 @@ namespace findik
 				std::string local_endpoint_;
 				std::string domain_name_;
 				std::string url_;
-				std::string mime_type_;
+//				std::string mime_type_;
 				unsigned int request_size_;
 				unsigned int response_size_;
 				std::string response_code_;
