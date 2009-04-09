@@ -1,0 +1,103 @@
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.59)
+AC_INIT([findik],[0.2g],[findikmail@gmail.com])
+AC_CONFIG_SRCDIR([src/main/findik.cpp])
+AC_CONFIG_HEADERS([config.h])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_LIBTOOL
+AC_PROG_RANLIB
+AC_LANG(C++)
+
+
+DX_HTML_FEATURE(ON)
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_MAN_FEATURE(ON)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(ON)
+DX_PS_FEATURE(OFF)
+DX_INIT_DOXYGEN(findik, doxygen.cfg)
+
+AM_INIT_AUTOMAKE
+
+# Checks for libraries.
+# ex: AC_CHECK_LIB([name],[break])
+AC_CHECK_LIB([pthread],[break])
+AC_CHECK_LIB([boost_thread],[break])
+AC_CHECK_LIB([boost_system],[break])
+AC_CHECK_LIB([crypt],[break])
+AC_CHECK_LIB([crypto],[break])
+AC_CHECK_LIB([log4cxx],[break])
+AC_CHECK_LIB([gssapi],[break])
+AC_CHECK_LIB([config++],[break])
+AC_CHECK_LIB([z],[break])
+AC_CHECK_LIB([tidy],[break])
+AC_CHECK_LIB([magic],[break])
+AC_CHECK_LIB([pcrecpp],[break])
+AC_CHECK_LIB([mysqlpp],[break])
+
+# Checks for header files.
+AC_CHECK_HEADER([pthread.h],[break])
+AC_CHECK_HEADER([boost/asio.hpp],[break])
+AC_CHECK_HEADER([boost/array.hpp],[break])
+AC_CHECK_HEADER([boost/shared_ptr.hpp],[break])
+AC_CHECK_HEADER([boost/bind.hpp],[break])
+AC_CHECK_HEADER([boost/function.hpp],[break])
+AC_CHECK_HEADER([boost/lexical_cast.hpp],[break])
+AC_CHECK_HEADER([boost/logic/tribool.hpp],[break])
+AC_CHECK_HEADER([boost/foreach.hpp],[break])
+AC_CHECK_HEADER([boost/noncopyable.hpp],[break])
+AC_CHECK_HEADER([boost/tuple/tuple.hpp],[break])
+AC_CHECK_HEADER([boost/thread.hpp],[break])
+
+AC_CHECK_HEADER([buffio.h],[break])
+AC_CHECK_HEADER([libconfig.h++],[break])
+AC_CHECK_HEADER([mysql++/mysql++.h],[break])
+AC_CHECK_HEADER([tidy.h],[break])
+AC_CHECK_HEADER([magic.h],[break])
+AC_CHECK_HEADER([pcrecpp.h],[break])
+AC_CHECK_HEADER([zlib.h],[break])
+AC_CHECK_HEADER([ldap.h],[break])
+AC_CHECK_HEADER([gssapi/gssapi.h],[break])
+AC_CHECK_HEADER([krb5.h],[break])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+AC_CONFIG_FILES([
+	Makefile
+	conf/Makefile
+	packaging/Makefile
+	scripts/Makefile
+	sql/Makefile
+	src/Makefile
+	src/cli/Makefile
+	src/cli/blimporter/Makefile
+	src/include/Makefile
+	src/main/Makefile
+	src/main/authenticator/Makefile
+	src/main/config/Makefile
+	src/main/filter/Makefile
+	src/main/logging/Makefile
+	src/main/io/Makefile
+	src/main/parser/Makefile
+	src/main/persistency/Makefile
+	src/main/protocols/Makefile
+	src/main/protocols/http/Makefile
+	src/main/protocols/http/auth_util/Makefile
+	src/main/service/Makefile
+	src/main/util/Makefile
+	src/test/Makefile
+])
+
+# Checks for library functions.
+AC_OUTPUT([
+	findik.spec
+])
