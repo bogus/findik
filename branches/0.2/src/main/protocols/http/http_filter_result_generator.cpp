@@ -47,7 +47,6 @@ namespace findik
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
 				request_size_ = request_->content_size();
-				mime_type_ = response_->magic_mime_type();
 				response_size_ = response_->content_size(); 	
 				filter_reason_ = filter_reason;
 				log_str_ = boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, filter_result_,filter_reason_, connection_, request_, response_ ))->to_string();
@@ -75,7 +74,6 @@ namespace findik
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
 				request_size_ = request_->content_size();
-				mime_type_ = "";
 				response_size_ = 0;
                                 filter_reason_ = filter_reason;
 				log_str_ = boost::shared_ptr<http_filter_logger>(new http_filter_logger(filter_code_, filter_result_, filter_reason_, connection_, request_ ))->to_string();
@@ -90,7 +88,6 @@ namespace findik
 			{
 				if ( return_resp_ == "" )
 				{
-					std::ostringstream stm;
 					std::string reply_html_(FI_SERVICES->reply_srv().reply_html());
 					time_t rawtime;
 					time(&rawtime);
@@ -104,7 +101,6 @@ namespace findik
 
 					FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_html_);
 					FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", reply_str_ , reply_html_);
-					stm << reply_html_.length();
 					return_resp_ = return_resp_ + "Content-Type: text/html; charset=UTF-8\r\n";
 					return_resp_ = return_resp_ + "Content-Length: " + 
 							boost::lexical_cast<std::string>(reply_html_.size()) + "\r\n";

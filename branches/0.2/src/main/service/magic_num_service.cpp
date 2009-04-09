@@ -44,7 +44,12 @@ namespace findik
 		{
 			if(data.size() > 0)
 			{
-				const char * result_magic_ = magic_buffer( magic_mime, &(data[0]), data.size() );
+				const char * result_magic_ = NULL;
+				{
+					boost::mutex::scoped_lock lock1(magic_mime_mutex_);
+					result_magic_ = magic_buffer( magic_mime, &(data[0]), data.size() );
+				}
+
 				if ( result_magic_ != NULL )
 				{
 					mime_type = result_magic_;

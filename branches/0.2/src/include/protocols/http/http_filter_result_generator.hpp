@@ -93,7 +93,6 @@ namespace findik
 				std::string local_endpoint_;
 				std::string domain_name_;
 				std::string url_;
-				std::string mime_type_;
 				unsigned int request_size_;
 				unsigned int response_size_;
 				std::string filter_reason_;
