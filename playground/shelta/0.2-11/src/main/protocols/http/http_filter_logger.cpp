@@ -33,7 +33,7 @@ namespace findik
 			std::string http_filter_logger::local_endpoint_identifier_ = "local_addr";
 			std::string http_filter_logger::domain_name_identifier_ = "domain";
 			std::string http_filter_logger::url_identifier_ = "url";
-			std::string http_filter_logger::mime_type_identifier_ = "type";
+//			std::string http_filter_logger::mime_type_identifier_ = "type";
 			std::string http_filter_logger::request_size_identifier_ = "req_size";
 			std::string http_filter_logger::response_size_identifier_ = "resp_size";
 			std::string http_filter_logger::response_code_identifier_ = "resp_code";
@@ -54,7 +54,7 @@ namespace findik
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
 				request_size_ = request_->content_size();
-				mime_type_ = response_->magic_mime_type();
+//				mime_type_ = response_->magic_mime_type();
 				response_size_ = response_->content_size(); 	
 				response_code_ = boost::lexical_cast<std::string>(response_->status_code); 	
 				filter_reason_ = filter_reason;
@@ -75,7 +75,7 @@ namespace findik
 				domain_name_  = request_->request_host();
 				url_ = request_->request_uri();
 				request_size_ = request_->content_size();
-				mime_type_ = "";
+//				mime_type_ = "";
 				response_size_ = 0;
 				response_code_ = "403";
                                 filter_reason_ = filter_reason;
@@ -99,7 +99,7 @@ namespace findik
 					log_str_ += local_endpoint_identifier_ + key_value_connector_ + local_endpoint_ + attr_separator_;
 					log_str_ += domain_name_identifier_ + key_value_connector_ + domain_name_ + attr_separator_;
 					log_str_ += url_identifier_ + key_value_connector_ + url_ + attr_separator_;
-					log_str_ += mime_type_identifier_ + key_value_connector_ + mime_type_ + attr_separator_;
+//					log_str_ += mime_type_identifier_ + key_value_connector_ + mime_type_ + attr_separator_;
 					log_str_ += request_size_identifier_ + key_value_connector_ + boost::lexical_cast<std::string>(request_size_) + attr_separator_;
 					log_str_ += response_size_identifier_ + key_value_connector_ + boost::lexical_cast<std::string>(response_size_) + attr_separator_;
 					log_str_ += response_code_identifier_ + key_value_connector_ + response_code_ + attr_separator_;

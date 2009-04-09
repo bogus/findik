@@ -25,6 +25,8 @@
 #include <vector>
 #include <magic.h>
 
+#include <boost/thread/mutex.hpp>
+
 namespace findik
 {
 	namespace service
@@ -66,6 +68,11 @@ namespace findik
 			Magic number structure from magic.h
 			*/
 			magic_t magic_mime;
+
+			/*!
+			Mutex for magic mime cookie.
+			*/
+			boost::mutex magic_mime_mutex_;
 
 		};
 	}

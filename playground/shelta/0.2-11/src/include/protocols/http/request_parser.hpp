@@ -32,8 +32,10 @@
 #include <map>
 #include <string>
 
-#define FI_TMPSTR_OF(conn) boost::mutex::scoped_lock parser_temp_str_map_lock(parser_temp_str_map_mutex_);parser_temp_str_map_[conn]
-#define FIR_TMPSTR_OF(conn) parser_temp_str_map_[conn]
+#define FC_TMPSTR 2005
+
+#define FIR_TMPSTR_OF(conn) conn->str_map[FC_TMPSTR]
+#define FI_TMPSTR_OF(conn) FIR_TMPSTR_OF(conn)
 
 namespace findik
 {
@@ -50,8 +52,7 @@ namespace findik
 			*/
 			class request_parser :
 				public boost::enable_shared_from_this<request_parser>,
-				public findik::parser::abstract_local_parser,
-				public findik::parser::abstract_stateful_parser
+				public findik::parser::abstract_local_parser
 			{
 			public:
 
@@ -101,12 +102,6 @@ namespace findik
 				*/
 				void update_port_of(findik::io::connection_ptr connection_, unsigned int & port_);
 
-				/*!
-				Remove connection object from registers.
-				\param connection_ connection to remove
-				*/
-				void cleanup(findik::io::connection_ptr connection_);
-
 			protected:
 				/*!
 				Debug logger for server class.
@@ -148,16 +143,6 @@ namespace findik
 				\return true if input is a proper HTTP request and parsed successfully, false if input is not a proper HTTP request, indeterminate if parser needs more data to decide whether input is proper.
 				*/
 				boost::tribool consume(findik::io::connection_ptr connection_, char input);
-
-				/*!
-				A map to store parser temporary strings per connection.
-				*/
-				std::map<findik::io::connection_ptr, std::string> parser_temp_str_map_;
-
-				/*!
-				Mutex for threadsafe access to parser_tmp_str_map_
-				*/
-				boost::mutex parser_temp_str_map_mutex_;
 
 			};
 			
