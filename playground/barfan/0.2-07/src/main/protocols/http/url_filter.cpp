@@ -36,9 +36,14 @@ namespace findik
 				
 				// get request object from current data
 				request_ptr req = boost::static_pointer_cast<request>(connection_->current_data());
-				std::string url = req->request_uri();	
+				std::string url = req->request_uri();
+				if(url.substr(0,5) == "https")
+					url = url.substr(8);
+				else if(url.substr(0,4) == "http")
+					url = url.substr(7);
+				std::cout << url << std::endl;	
 				// check whether hostname exists in domain blacklist
-				if(!FI_SERVICES->db_srv().urlQuery(req->request_uri(), param)){
+				if(!FI_SERVICES->db_srv().urlQuery(url, param)){
 					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "URL blocked : " + req->request_uri(), req->request_uri(), connection_, req));
                                         return boost::make_tuple(false, findik::filter::filter_reason::create_reason(reply_->reply_str(), reply_->log_str()));
 				} 
