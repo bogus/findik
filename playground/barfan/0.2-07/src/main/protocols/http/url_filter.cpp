@@ -41,7 +41,6 @@ namespace findik
 					url = url.substr(8);
 				else if(url.substr(0,4) == "http")
 					url = url.substr(7);
-				std::cout << url << std::endl;	
 				// check whether hostname exists in domain blacklist
 				if(!FI_SERVICES->db_srv().urlQuery(url, param)){
 					boost::shared_ptr<http_filter_result_generator> reply_(new http_filter_result_generator(filter_code_, false, response::forbidden, true, "URL blocked : " + req->request_uri(), req->request_uri(), connection_, req));
