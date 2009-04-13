@@ -27,7 +27,7 @@ LIBS = \
         -lboost_program_options \
 	-lcrypt \
 	-lcrypto \
-	-lgssapi \
+	-lgssapi_krb5 \
 	-lpthread \
 	-llog4cxx \
 	-lconfig++ \
