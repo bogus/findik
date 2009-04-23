@@ -32,10 +32,14 @@ LIBS = \
 	-llog4cxx \
 	-lconfig++ \
 	-lz \
-	-ltidy \
 	-lmagic \
 	-lpcrecpp \
 	-lmysqlpp
+
+if HAVE_TIDY 
+        LIBS += -ltidy
+endif
+
 
 INCLUDES 			= \
 	-I@top_srcdir@/src/include/authenticator \

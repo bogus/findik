@@ -1,6 +1,11 @@
 #ifndef __TIDYX_H__
 #define __TIDYX_H__
 
+#ifdef HAVE_CONFIG_H 
+#include <config.h> 
+#endif
+
+#ifdef HAVE_TIDY
 /* tidyx.h -- C++ Wrapper for HTML Tidy Lib
 
   Pure syntax sugar!
@@ -750,4 +755,4 @@ namespace Tidy
 #endif /* __cplusplus */
 #endif /* __TIDYX_H__ */
 
-
+#endif /* HAVE_TIDY */
