@@ -4,14 +4,19 @@ libfindik_service_la_SOURCES	= \
 	authentication_service.cpp \
 	filter_service.cpp \
 	parser_service.cpp \
-	pcre_service.cpp \
 	reply_service.cpp \
-	magic_num_service.cpp \
 	service_chain_element.cpp \
 	service_container.cpp \
 	session_service.cpp \
 	util_service.cpp \
 	tracker_service.cpp
+
+if HAVE_PCRE
+        libfindik_service_la_SOURCES += pcre_service.cpp
+endif
+if HAVE_MAGIC
+        libfindik_service_la_SOURCES += magic_num_service.cpp
+endif
 
 libfindik_service_la_LIBADD	=	@LTLIBOBJS@
 

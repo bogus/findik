@@ -15,6 +15,10 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#ifdef HAVE_LDAP
 
 #ifndef FINDIK_UTIL_PASSWD_HASH_HPP
 #define FINDIK_UTIL_PASSWD_HASH_HPP
@@ -48,4 +52,4 @@ namespace findik {
 }
 
 #endif
-
+#endif /* HAVE_LDAP */

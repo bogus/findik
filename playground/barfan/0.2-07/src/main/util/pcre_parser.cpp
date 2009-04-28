@@ -17,6 +17,7 @@
  */
 
 #include "pcre_parser.hpp"
+#ifdef HAVE_PCRE
 
 namespace findik
 {
@@ -63,3 +64,4 @@ namespace findik
 	}
 }
 
+#endif /* HAVE_PCRE */

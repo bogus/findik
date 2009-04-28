@@ -215,7 +215,6 @@ namespace findik
 
 		void mysqldbmanager::pcreQuery(std::list<boost::tuple<int,std::string> > & pcre_map) 
 		{
-
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 
 			try {

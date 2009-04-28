@@ -30,19 +30,25 @@ namespace findik
 
 		void util_service::start()
 		{
+#ifdef HAVE_PCRE
 			pcre_srv_.start();
+#endif
+#ifdef HAVE_MAGIC
 			magic_num_srv_.start();
+#endif
 		}
-
+#ifdef HAVE_PCRE
 		pcre_service & util_service::pcre()
 		{
 			return pcre_srv_;
 		}
-
+#endif
+#ifdef HAVE_MAGIC
 		magic_num_service & util_service::magic_num()
                 {
                         return magic_num_srv_;
                 }
+#endif
 		
 	}
 }

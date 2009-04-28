@@ -27,15 +27,21 @@ LIBS = \
         -lboost_program_options \
 	-lcrypt \
 	-lcrypto \
-	-lgssapi \
 	-lpthread \
 	-llog4cxx \
 	-lconfig++ \
 	-lz \
-	-lmagic \
-	-lpcrecpp \
 	-lmysqlpp
 
+if HAVE_MAGIC 
+        LIBS += -lmagic
+endif
+if HAVE_PCRE
+        LIBS += -lpcrecpp
+endif
+if HAVE_ADKERB
+        LIBS += -lgssapi
+endif
 if HAVE_TIDY 
         LIBS += -ltidy
 endif

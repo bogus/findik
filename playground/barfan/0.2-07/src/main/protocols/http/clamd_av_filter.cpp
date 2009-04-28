@@ -17,6 +17,7 @@
 */
 
 #include "clamd_av_filter.hpp"
+#ifdef HAVE_CLAMD
 #include <sstream>
 
 namespace findik
@@ -171,4 +172,4 @@ namespace findik
 		}
 	}
 }
-
+#endif

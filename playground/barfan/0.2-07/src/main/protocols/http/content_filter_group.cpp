@@ -19,11 +19,13 @@
 #include "content_filter_group.hpp"
 
 #include "domain_filter.hpp"
-#include "domain_re_filter.hpp"
 #include "url_filter.hpp"
+
+#ifdef HAVE_PCRE
+#include "domain_re_filter.hpp"
 #include "url_re_filter.hpp"
 #include "html_content_filter.hpp"
-
+#endif
 
 namespace findik
 {
@@ -46,16 +48,20 @@ namespace findik
 			content_filter_group::content_filter_group()
 			{
 				domain_filter_ptr p1(new domain_filter());
-				domain_re_filter_ptr p2(new domain_re_filter());
 				url_filter_ptr p3(new url_filter());
+#ifdef HAVE_PCRE
+				domain_re_filter_ptr p2(new domain_re_filter());
 				url_re_filter_ptr p4(new url_re_filter());
 				html_content_filter_ptr p5(new html_content_filter());
+#endif
 
 				filter_list_.push_back(p1);
-				filter_list_.push_back(p2);
 				filter_list_.push_back(p3);
+#ifdef HAVE_PCRE
+				filter_list_.push_back(p2);
 				filter_list_.push_back(p4);
 				filter_list_.push_back(p5);
+#endif
 			}
 
 			content_filter_group::~content_filter_group()

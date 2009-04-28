@@ -16,6 +16,11 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#ifdef HAVE_FILEEXT
+
 #ifndef FINDIK_PROTOCOLS_HTTP_FILE_EXT_FILTER_HPP
 #define FINDIK_PROTOCOLS_HTTP_FILE_EXT_FILTER_HPP
 
@@ -73,3 +78,4 @@ namespace findik
 }
 
 #endif
+#endif /* HAVE_FILEEXT */
