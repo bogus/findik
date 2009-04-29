@@ -15,6 +15,7 @@
 */
 
 #include "configuration_initializer.hpp"
+#ifdef HAVE_LIBCONFIG
 
 #include <boost/asio.hpp>
 #include <boost/lexical_cast.hpp>
@@ -129,3 +130,5 @@ namespace findik {
 
 	}
 }
+
+#endif /* HAVE_LIBCONFIG */

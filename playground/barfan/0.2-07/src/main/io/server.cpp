@@ -26,7 +26,9 @@
 #include "services.hpp"
 
 #include "plain_connection.hpp"
+#ifdef HAVE_SSL
 #include "ssl_connection.hpp"
+#endif
 
 namespace findik
 {
@@ -62,7 +64,9 @@ namespace findik
 			LOG4CXX_DEBUG(debug_logger, "Creating a new connection object and registering for next accept");
 			if (is_ssl_)
 			{
-				new_connection_.reset(new ssl_connection(protocol_)); 
+#ifdef HAVE_SSL
+				new_connection_.reset(new ssl_connection(protocol_));
+#endif 
 			}
 			else
 			{

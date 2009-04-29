@@ -33,11 +33,9 @@ AC_CHECK_LIB([pthread],[break])
 AC_CHECK_LIB([boost_thread],[break])
 AC_CHECK_LIB([boost_system],[break])
 AC_CHECK_LIB([crypt],[break])
-AC_CHECK_LIB([crypto],[break])
 AC_CHECK_LIB([log4cxx],[break])
 AC_CHECK_LIB([config++],[break])
 AC_CHECK_LIB([z],[break])
-AC_CHECK_LIB([mysqlpp],[break])
 
 # Checks for header files.
 AC_CHECK_HEADER([pthread.h],[break])
@@ -55,7 +53,6 @@ AC_CHECK_HEADER([boost/thread.hpp],[break])
 
 AC_CHECK_HEADER([buffio.h],[break])
 AC_CHECK_HEADER([libconfig.h++],[break])
-AC_CHECK_HEADER([mysql++/mysql++.h],[break])
 AC_CHECK_HEADER([zlib.h],[break])
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -242,7 +239,6 @@ fi
 ]
 )
 if test "x$tidy" = "xtrue"; then
-AC_CHECK_HEADER([tidy.h],[break])
 	AC_CHECK_HEADER([tidy.h],[break])
 	AC_CHECK_LIB([tidy],[break])
 	AC_DEFINE([HAVE_TIDY],[],[Define to enable TIDY support])
@@ -251,6 +247,109 @@ else
 	AC_CHECK_FUNCS([printf])
 fi
 AM_CONDITIONAL(HAVE_TIDY, test "x$tidy" = "xtrue")
+
+# asking user if they want SIMPLE DBMANAGER support
+AC_MSG_CHECKING(for SIMPLE DBMANAGER support enabled)
+AC_ARG_ENABLE(
+simpledb,
+[AC_HELP_STRING([--enable-simpledb@<:@=no@:>@], [Enable support for the SIMPLE DBMANAGER library])],
+[ if test "x$enableval" = "xno"; then
+        simpledb=false
+        AC_MSG_RESULT(no)
+else
+        simpledb=true
+        AC_MSG_RESULT(yes)
+fi
+],
+[ # disable by default
+        simpledb=false
+        AC_MSG_RESULT(no)
+]
+)
+if test "x$simpledb" = "xtrue"; then
+        AC_DEFINE([HAVE_SIMPLEDB],[],[Define to enable SIMPLE DBMANAGER support])
+else
+        AC_CHECK_FUNCS([printf])
+fi
+AM_CONDITIONAL(HAVE_SIMPLEDB, test "x$simpledb" = "xtrue")
+
+# asking user if they want MYSQL support
+AC_MSG_CHECKING(for MYSQL support enabled)
+AC_ARG_ENABLE(
+mysql,
+[AC_HELP_STRING([--enable-mysql@<:@=yes@:>@], [Enable support for the MYSQL library])],
+[ if test "x$enableval" = "xno"; then
+        mysql=false
+        AC_MSG_RESULT(no)
+else
+        mysql=true
+        AC_MSG_RESULT(yes)
+fi
+],
+[ # enable by default
+        mysql=true
+        AC_MSG_RESULT(yes)
+]
+)
+if test "x$mysql" = "xtrue"; then
+	AC_CHECK_HEADER([mysql++/mysql++.h],[break])
+	AC_CHECK_LIB([mysqlpp],[break])
+        AC_DEFINE([HAVE_MYSQL],[],[Define to enable MYSQL support])
+else
+        AC_CHECK_FUNCS([printf])
+fi
+AM_CONDITIONAL(HAVE_MYSQL, test "x$mysql" = "xtrue")
+
+# asking user if they want SSL support
+AC_MSG_CHECKING(for SSL support enabled)
+AC_ARG_ENABLE(
+ssl,
+[AC_HELP_STRING([--enable-ssl@<:@=yes@:>@], [Enable support for SSL])],
+[ if test "x$enableval" = "xno"; then
+        ssl=false
+        AC_MSG_RESULT(no)
+else
+        ssl=true
+        AC_MSG_RESULT(yes)
+fi
+],
+[ # enable by default
+        ssl=true
+        AC_MSG_RESULT(yes)
+]
+)
+if test "x$ssl" = "xtrue"; then
+	AC_CHECK_LIB([crypto],[break])
+        AC_DEFINE([HAVE_SSL],[],[Define to enable SSL support])
+else
+        AC_CHECK_FUNCS([printf])
+fi
+AM_CONDITIONAL(HAVE_SSL, test "x$ssl" = "xtrue")
+
+# asking user if they want LIBCONFIG support
+AC_MSG_CHECKING(for LIBCONFIG support enabled)
+AC_ARG_ENABLE(
+libconfig,
+[AC_HELP_STRING([--enable-libconfig@<:@=yes@:>@], [Enable support for LIBCONFIG])],
+[ if test "x$enableval" = "xno"; then
+        libconfig=false
+        AC_MSG_RESULT(no)
+else
+        libconfig=true
+        AC_MSG_RESULT(yes)
+fi
+],
+[ # enable by default
+        libconfig=true
+        AC_MSG_RESULT(yes)
+]
+)
+if test "x$libconfig" = "xtrue"; then
+        AC_DEFINE([HAVE_LIBCONFIG],[],[Define to enable LIBCONFIG support])
+else
+        AC_CHECK_FUNCS([printf])
+fi
+AM_CONDITIONAL(HAVE_LIBCONFIG, test "x$libconfig" = "xtrue")
 
 
 

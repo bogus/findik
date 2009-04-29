@@ -5,8 +5,11 @@ libfindik_io_la_SOURCES		= \
 	connection.cpp \
 	plain_connection.cpp \
 	server.cpp \
-	session.cpp \
-	ssl_connection.cpp
+	session.cpp
+
+if HAVE_SSL
+	libfindik_io_la_SOURCES += ssl_connection.cpp
+endif
 
 libfindik_io_la_LIBADD		=	@LTLIBOBJS@
 

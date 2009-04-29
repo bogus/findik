@@ -15,6 +15,9 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "server.hpp"
 #include "service_container.hpp"
@@ -198,7 +201,9 @@ int main(int argc, char* argv[])
 
 		// Initialise server.
 		findik::io::server s(findik::io::http, address, port);
+#ifdef HAVE_SSL
 		findik::io::server s2(findik::io::http, address, ssl_port, true);
+#endif
 
 		// LOG4CXX_INFO(findik::log_initializer::user_logger,"findik started to listen " + address + ":" + port);
 

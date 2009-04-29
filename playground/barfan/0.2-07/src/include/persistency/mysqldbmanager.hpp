@@ -16,6 +16,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#ifdef HAVE_MYSQL
 
 #ifndef FINDIK_PERSISTENCY_MYSQLDBMANAGER_HPP
 #define FINDIK_PERSISTENCY_MYSQLDBMANAGER_HPP
@@ -82,4 +83,5 @@ namespace findik {
 }
 
 #endif
+#endif /* HAVE_MYSQL */
 

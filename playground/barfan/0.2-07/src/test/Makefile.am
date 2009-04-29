@@ -11,12 +11,7 @@ LIBS = \
 	-lboost_thread \
 	-lboost_system \
 	-lpthread \
-	-llog4cxx \
-	-lconfig++ \
-	-lz \
-	-ltidy \
-	-lpcrecpp \
-	-lmysqlpp
+	-lz 
 
 INCLUDES = \
 	-I@top_srcdir@/src/main/filter \

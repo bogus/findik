@@ -17,6 +17,8 @@
 */
 
 #include "mysqldbmanager.hpp"
+#ifdef HAVE_MYSQL
+
 #include "service_container.hpp"
 
 #include <boost/lexical_cast.hpp>
@@ -348,3 +350,4 @@ namespace findik
 		}
 	}
 }
+#endif /* HAVE_MYSQL */
