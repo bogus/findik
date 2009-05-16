@@ -50,6 +50,7 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/protocols/http \
 	-I@top_srcdir@/src/include/protocols/http/auth_util \
 	-I@top_srcdir@/src/include/service \
-	-I@top_srcdir@/src/include/util \
-	-I/usr/include/mysql
-
+	-I@top_srcdir@/src/include/util 
+if HAVE_MYSQL
+        INCLUDES += -I/usr/include/mysql
+endif

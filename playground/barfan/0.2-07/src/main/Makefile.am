@@ -24,8 +24,6 @@ findik_LDADD		=	libfindik.la
 LIBS = \
 	-lboost_thread \
 	-lboost_system \
-        -lboost_program_options \
-	-lcrypt \
 	-lpthread \
 	-llog4cxx \
 	-lz 
@@ -39,6 +37,9 @@ endif
 if HAVE_ADKERB
         LIBS += -lgssapi
 endif
+if HAVE_LDAP
+        LIBS += -lcrypt
+endif
 if HAVE_TIDY 
         LIBS += -ltidy 
 endif
@@ -51,6 +52,9 @@ endif
 if HAVE_LIBCONFIG
         LIBS += -lconfig++
 endif
+if HAVE_BOOST_PO
+        LIBS += -lboost_program_options
+endif
 
 
 INCLUDES 			= \
@@ -62,6 +66,8 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/parser \
 	-I@top_srcdir@/src/include/persistency \
 	-I@top_srcdir@/src/include/service \
-	-I@top_srcdir@/src/include/util \
-	-I/usr/include/mysql
+	-I@top_srcdir@/src/include/util
+if HAVE_MYSQL
+        INCLUDES += -I/usr/include/mysql
+endif 
 

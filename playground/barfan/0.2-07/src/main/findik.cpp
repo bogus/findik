@@ -36,7 +36,9 @@
 #include <syslog.h>
 #include <pwd.h>
 
+#ifdef HAVE_BOOST_PO
 #include <boost/program_options.hpp>
+#endif
 
 #define DAEMON_NAME "findik"
 #define RUN_AS_USER "daemon"
@@ -141,6 +143,7 @@ int main(int argc, char* argv[])
 		std::string findik_conf(FINDIK_CONFIG_FILE);
 		std::string findik_log_conf(FINDIK_LOG_CONFIG_FILE);
 
+#ifdef HAVE_BOOST_PO
 		// Declare the supported options.
 		boost::program_options::options_description desc("FINDIK binary.");
 		desc.add_options()
@@ -171,6 +174,9 @@ int main(int argc, char* argv[])
 		if(vm.count("log"))
 			findik_log_conf = vm["log"].as<std::string>();
 		
+#else
+		_daemonize = true;
+#endif
 
 		if (_daemonize)
 			daemonize();

@@ -351,6 +351,30 @@ else
 fi
 AM_CONDITIONAL(HAVE_LIBCONFIG, test "x$libconfig" = "xtrue")
 
+# asking user if they want BOOST_PROGRAM_OPTIONS support
+AC_MSG_CHECKING(for Boost Program Options support enabled)
+AC_ARG_ENABLE(
+boost_po,
+[AC_HELP_STRING([--enable-boost-po@<:@=yes@:>@], [Enable support for Boost Program Options])],
+[ if test "x$enableval" = "xno"; then
+        boost_po=false
+        AC_MSG_RESULT(no)
+else
+        boost_po=true
+        AC_MSG_RESULT(yes)
+fi
+],
+[ # enable by default
+        boost_po=true
+        AC_MSG_RESULT(yes)
+]
+)
+if test "x$boost_po" = "xtrue"; then
+        AC_DEFINE([HAVE_BOOST_PO],[],[Define to enable BOOST_PO support])
+else
+        AC_CHECK_FUNCS([printf])
+fi
+AM_CONDITIONAL(HAVE_BOOST_PO, test "x$boost_po" = "xtrue")
 
 
 AC_CONFIG_FILES([

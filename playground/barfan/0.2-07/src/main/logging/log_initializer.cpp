@@ -27,14 +27,14 @@ namespace findik {
 		{
 			conf_file = file_name;
 			try
-		{
+			{
 				log4cxx::PropertyConfigurator::configure(file_name);
 				LOG4CXX_INFO(user_logger, "Findik logging started");
 			}
 			catch(log4cxx::helpers::Exception&)
-		{
+			{
 				return false;
-		}
+			}
 			return true;
 		}
 
