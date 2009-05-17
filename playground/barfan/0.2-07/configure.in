@@ -32,8 +32,6 @@ AM_INIT_AUTOMAKE
 AC_CHECK_LIB([pthread],[break])
 AC_CHECK_LIB([boost_thread],[break])
 AC_CHECK_LIB([boost_system],[break])
-AC_CHECK_LIB([crypt],[break])
-AC_CHECK_LIB([config++],[break])
 AC_CHECK_LIB([z],[break])
 
 # Checks for header files.
@@ -51,7 +49,6 @@ AC_CHECK_HEADER([boost/tuple/tuple.hpp],[break])
 AC_CHECK_HEADER([boost/thread.hpp],[break])
 
 AC_CHECK_HEADER([buffio.h],[break])
-AC_CHECK_HEADER([libconfig.h++],[break])
 AC_CHECK_HEADER([zlib.h],[break])
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -212,6 +209,7 @@ fi
 ]
 )
 if test "x$ldap" = "xtrue"; then
+	AC_CHECK_LIB([crypt],[break])
 	AC_CHECK_HEADER([ldap.h],[break])
         AC_DEFINE([HAVE_LDAP],[],[Define to enable LDAP support])
 else
@@ -344,6 +342,8 @@ fi
 ]
 )
 if test "x$libconfig" = "xtrue"; then
+	AC_CHECK_HEADER([libconfig.h++],[break])
+	AC_CHECK_LIB([config++],[break])
         AC_DEFINE([HAVE_LIBCONFIG],[],[Define to enable LIBCONFIG support])
 else
         AC_CHECK_FUNCS([printf])
