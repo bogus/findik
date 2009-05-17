@@ -33,7 +33,6 @@ AC_CHECK_LIB([pthread],[break])
 AC_CHECK_LIB([boost_thread],[break])
 AC_CHECK_LIB([boost_system],[break])
 AC_CHECK_LIB([crypt],[break])
-AC_CHECK_LIB([log4cxx],[break])
 AC_CHECK_LIB([config++],[break])
 AC_CHECK_LIB([z],[break])
 
@@ -375,6 +374,32 @@ else
         AC_CHECK_FUNCS([printf])
 fi
 AM_CONDITIONAL(HAVE_BOOST_PO, test "x$boost_po" = "xtrue")
+
+# asking user if they want LOG4CXX  support
+AC_MSG_CHECKING(for Log4cxx Advanced Logging support enabled)
+AC_ARG_ENABLE(
+log4cxx,
+[AC_HELP_STRING([--enable-log4cxx@<:@=yes@:>@], [Enable support for Log4cxx Advanced Logging])],
+[ if test "x$enableval" = "xno"; then
+        log4cxx=false
+        AC_MSG_RESULT(no)
+else
+        log4cxx=true
+        AC_MSG_RESULT(yes)
+fi
+],
+[ # enable by default
+        log4cxx=true
+        AC_MSG_RESULT(yes)
+]
+)
+if test "x$log4cxx" = "xtrue"; then
+	AC_CHECK_LIB([log4cxx],[break])
+        AC_DEFINE([HAVE_LOG4CXX],[],[Define to enable LOG4CXX support])
+else
+        AC_CHECK_FUNCS([printf])
+fi
+AM_CONDITIONAL(HAVE_LOG4CXX, test "x$log4cxx" = "xtrue")
 
 
 AC_CONFIG_FILES([

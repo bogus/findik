@@ -15,10 +15,10 @@
 */
 
 #include "log_initializer.hpp"
-
 namespace findik {
 	namespace logging {
 
+#ifdef HAVE_LOG4CXX
 		log_initializer::log_initializer(void)
 		{
 		}
@@ -63,6 +63,7 @@ namespace findik {
 		log_initializer::~log_initializer(void)
 		{
 		}
+#endif
 
 		//initialize static global application logger
 		log4cxx::LoggerPtr log_initializer::user_logger(log4cxx::Logger::getLogger("findik-log"));
@@ -74,4 +75,3 @@ namespace findik {
 		log4cxx::LoggerPtr log_initializer::debug_logger(log4cxx::Logger::getLogger("findik"));
 	}
 }
-

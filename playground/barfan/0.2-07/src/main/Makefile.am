@@ -25,7 +25,6 @@ LIBS = \
 	-lboost_thread \
 	-lboost_system \
 	-lpthread \
-	-llog4cxx \
 	-lz 
 
 if HAVE_MAGIC 
@@ -55,7 +54,9 @@ endif
 if HAVE_BOOST_PO
         LIBS += -lboost_program_options
 endif
-
+if HAVE_LOG4CXX
+        LIBS += -llog4cxx 
+endif
 
 INCLUDES 			= \
 	-I@top_srcdir@/src/include/authenticator \

@@ -13,8 +13,3 @@ LIBS = \
 	-lpthread \
 	-lz 
 
-INCLUDES = \
-	-I@top_srcdir@/src/main/filter \
-	-I@top_srcdir@/src/main/io \
-	-I@top_srcdir@/src/main/parser \
-	-I@top_srcdir@/src/main/service

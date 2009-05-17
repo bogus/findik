@@ -196,9 +196,10 @@ int main(int argc, char* argv[])
 		//findik::filter::generate_request_filter_factory_map();
 		//findik::filter::generate_response_filter_factory_map();
 
+#ifdef HAVE_LOG4CXX
 		findik::logging::log_initializer log_init;
 		log_init.load_conf("/etc/findik/findik_log.conf");
-		
+#endif
 		//First accesto FI_SERVICES must be under log init.
 		if (! FI_SERVICES->check_config())
 			exit(1);
