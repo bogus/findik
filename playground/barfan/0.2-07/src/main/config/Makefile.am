@@ -1,10 +1,10 @@
 noinst_LTLIBRARIES		=	libfindik_config.la
 
-libfindik_config_la_SOURCES	= configuration_object.cpp
+libfindik_config_la_SOURCES	= configuration_object.cpp configuration_initializer.cpp
 
-if HAVE_LIBCONFIG
-	libfindik_config_la_SOURCES += configuration_initializer.cpp
-endif
+#if HAVE_LIBCONFIG
+#	libfindik_config_la_SOURCES += configuration_initializer.cpp
+#endif
 
 libfindik_config_la_LIBADD	=	@LTLIBOBJS@
 
