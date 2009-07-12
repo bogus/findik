@@ -17,6 +17,7 @@
 */
 
 #include "pcre_service.hpp"
+#ifdef HAVE_PCRE
 #include "pcre_analyzer.hpp"
 #include "service_container.hpp"
 
@@ -116,3 +117,4 @@ namespace findik
 	}
 }
 
+#endif /* HAVE_PCRE */

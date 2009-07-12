@@ -15,6 +15,9 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "server.hpp"
 #include "service_container.hpp"
@@ -33,7 +36,11 @@
 #include <syslog.h>
 #include <pwd.h>
 
+#ifdef HAVE_BOOST_PO
 #include <boost/program_options.hpp>
+#endif
+
+#include <sys/stat.h>
 
 #define DAEMON_NAME "findik"
 #define RUN_AS_USER "daemon"
@@ -138,6 +145,7 @@ int main(int argc, char* argv[])
 		std::string findik_conf(FINDIK_CONFIG_FILE);
 		std::string findik_log_conf(FINDIK_LOG_CONFIG_FILE);
 
+#ifdef HAVE_BOOST_PO
 		// Declare the supported options.
 		boost::program_options::options_description desc("FINDIK binary.");
 		desc.add_options()
@@ -168,6 +176,9 @@ int main(int argc, char* argv[])
 		if(vm.count("log"))
 			findik_log_conf = vm["log"].as<std::string>();
 		
+#else
+		_daemonize = true;
+#endif
 
 		if (_daemonize)
 			daemonize();
@@ -187,9 +198,10 @@ int main(int argc, char* argv[])
 		//findik::filter::generate_request_filter_factory_map();
 		//findik::filter::generate_response_filter_factory_map();
 
+#ifdef HAVE_LOG4CXX
 		findik::logging::log_initializer log_init;
 		log_init.load_conf("/etc/findik/findik_log.conf");
-		
+#endif
 		//First accesto FI_SERVICES must be under log init.
 		if (! FI_SERVICES->check_config())
 			exit(1);
@@ -198,7 +210,9 @@ int main(int argc, char* argv[])
 
 		// Initialise server.
 		findik::io::server s(findik::io::http, address, port);
+#ifdef HAVE_SSL
 		findik::io::server s2(findik::io::http, address, ssl_port, true);
+#endif
 
 		// LOG4CXX_INFO(findik::log_initializer::user_logger,"findik started to listen " + address + ":" + port);
 

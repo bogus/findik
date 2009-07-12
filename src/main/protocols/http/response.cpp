@@ -15,6 +15,9 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "response.hpp"
 #include "service_container.hpp"
@@ -89,6 +92,7 @@ namespace findik
 
 			const std::string & response::magic_mime_type()
 			{
+#ifdef HAVE_MAGIC
 				if (magic_mime_type_.empty())
 				{
 					if (content_hr().size() > 0)
@@ -102,8 +106,9 @@ namespace findik
 				}
 				
 				return magic_mime_type_;
+#endif
+				return content_type();
 			}
-
 			response::content_encoding_type response::content_encoding()
 			{
 				if (content_encoding_ == indeterminate) {

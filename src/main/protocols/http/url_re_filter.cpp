@@ -17,6 +17,7 @@
 */
 
 #include "url_re_filter.hpp"
+#ifdef HAVE_PCRE
 
 namespace findik
 {
@@ -57,4 +58,4 @@ namespace findik
 		}
 	}
 }
-
+#endif /* HAVE_PCRE */

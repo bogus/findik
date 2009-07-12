@@ -117,8 +117,10 @@ namespace findik
 				else if (reason->return_code() == FC_SSL_TMPACCEPT)
 				{
 					std::string reply_str_(ssl_reply_html_);
+#ifdef HAVE_PCRE
 					FI_SERVICES->util_srv().pcre().global_replace("@@domain@@", reason->result_str() , reply_str_);	
 					FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", boost::lexical_cast<std::string>(reason->code()), reply_str_);
+#endif
                                         resp = resp + "200 OK\r\n";
                                         resp = resp + "Content-Type: text/html; charset=UTF-8\r\n";
                                         resp = resp + "Content-Length: " + boost::lexical_cast<std::string>(reply_str_.size()) + "\r\n";

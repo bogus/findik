@@ -17,6 +17,8 @@
 */
 
 #include "ad_kerb_negotiator.hpp"
+#ifdef HAVE_ADKERB
+
 #include "base64.hpp"
 #include "spnegokrb5.h"
 #include <krb5.h>
@@ -183,4 +185,4 @@ namespace findik
 		}
 	}
 }
-
+#endif /* HAVE_ADKERB */

@@ -22,6 +22,5 @@ LIBS = \
 	-lboost_filesystem
 
 INCLUDES = \
-	-I@top_srcdir@/ \ 
-	-I/usr/include/mysql
+	-I@top_srcdir@/ 
 

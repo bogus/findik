@@ -15,8 +15,8 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #include "magic_num_service.hpp"
+#ifdef HAVE_MAGIC
 
 namespace findik
 {
@@ -63,4 +63,4 @@ namespace findik
 
 	}
 }
-
+#endif /* HAVE_MAGIC */

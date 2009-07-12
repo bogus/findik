@@ -28,7 +28,11 @@ namespace findik
 			local_ssl_context_(io_srv_, boost::asio::ssl::context::sslv23_server),
 			remote_ssl_context_(io_srv_, boost::asio::ssl::context::sslv23_client),
 			resolver_srv_(io_srv_),
+#ifdef HAVE_LIBCONFIG
 			config_(config_srv_)
+#else
+			config_()
+#endif
 		{}
 
 		service_container_ptr service_container::instance_;
@@ -53,7 +57,9 @@ namespace findik
 
 		void service_container::start()
 		{
-			db_srv_.connect();
+#ifdef HAVE_MYSQL
+			mysql_db_srv_.connect();
+#endif
 			util_srv_.start();
 			initialize_ssl_context();
 			reply_srv_.start();
@@ -61,7 +67,9 @@ namespace findik
 
 		bool service_container::check_config()
 		{
+#ifdef HAVE_LIBCONFIG
 			return config_srv_.check();
+#endif
 		}
 
 		boost::asio::ssl::context & service_container::local_ssl_context()
@@ -119,9 +127,14 @@ namespace findik
 			return reply_srv_;
 		}
 
-		findik::persistency::mysqldbmanager & service_container::db_srv()
+		findik::persistency::dbmanager & service_container::db_srv()
 		{
-			return db_srv_;
+#ifdef HAVE_MYSQL
+			return mysql_db_srv_;
+#endif
+#ifdef HAVE_SIMPLEDB
+			return simple_db_srv_;
+#endif
 		}
 
 		tracker_service & service_container::tracker_srv()

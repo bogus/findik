@@ -65,7 +65,7 @@ namespace findik
 
 		};
 		
-		typedef boost::shared_ptr<group_filter> group_filter_ptr;
+		typedef boost::shared_ptr<filter_group> filter_group_ptr;
 	}
 }
 

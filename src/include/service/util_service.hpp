@@ -15,6 +15,9 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #ifndef FINDIK_SERVICE_UTIL_SERVICE_HPP
 #define FINDIK_SERVICE_UTIL_SERVICE_HPP
@@ -22,7 +25,9 @@
 #include <boost/noncopyable.hpp>
 
 #include "pcre_service.hpp"
+#ifdef HAVE_MAGIC
 #include "magic_num_service.hpp"
+#endif
 
 namespace findik
 {
@@ -45,18 +50,21 @@ namespace findik
 			Destructor.
 			*/
 			~util_service();
-
+#ifdef HAVE_PCRE
 			/*!
 			Method to access pcre service.
 			\returns pcre_service instance.
 			*/
 			pcre_service & pcre();
+#endif
 
+#ifdef HAVE_MAGIC
 			/*!
                         Method to access magic number service.
                         \returns magic_number_service instance.
                         */
                         magic_num_service & magic_num();
+#endif
 
 			/*!
 			Method to initialize utilities.
@@ -64,17 +72,18 @@ namespace findik
 			void start();
 
 		protected:
-
+#ifdef HAVE_PCRE
 			/*!
 			Pcre service instance.
 			*/
 			pcre_service pcre_srv_;
-
+#endif
+#ifdef HAVE_MAGIC
 			/*!
                         Magic number service instance.
                         */
                         magic_num_service magic_num_srv_;
-
+#endif
 		};
 	}
 }

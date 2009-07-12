@@ -24,18 +24,38 @@ findik_LDADD		=	libfindik.la
 LIBS = \
 	-lboost_thread \
 	-lboost_system \
-        -lboost_program_options \
-	-lcrypt \
-	-lcrypto \
-	-lgssapi_krb5 \
 	-lpthread \
-	-llog4cxx \
-	-lconfig++ \
-	-lz \
-	-ltidy \
-	-lmagic \
-	-lpcrecpp \
-	-lmysqlpp
+	-lz 
+
+if HAVE_MAGIC 
+        LIBS += -lmagic
+endif
+if HAVE_PCRE
+        LIBS += -lpcrecpp
+endif
+if HAVE_ADKERB
+        LIBS += -lgssapi
+endif
+if HAVE_LDAP
+        LIBS += -lcrypt
+        LIBS += -lldap
+endif
+if HAVE_MYSQL
+        LIBS += -lmysqlpp
+endif
+if HAVE_SSL
+        LIBS += -lcrypto
+        LIBS += -lssl
+endif
+if HAVE_LIBCONFIG
+        LIBS += -lconfig++
+endif
+if HAVE_BOOST_PO
+        LIBS += -lboost_program_options
+endif
+if HAVE_LOG4CXX
+        LIBS += -llog4cxx 
+endif
 
 INCLUDES 			= \
 	-I@top_srcdir@/src/include/authenticator \
@@ -46,6 +66,5 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/parser \
 	-I@top_srcdir@/src/include/persistency \
 	-I@top_srcdir@/src/include/service \
-	-I@top_srcdir@/src/include/util \
-	-I/usr/include/mysql
+	-I@top_srcdir@/src/include/util
 
