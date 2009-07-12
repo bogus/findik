@@ -34,7 +34,7 @@ if HAVE_PCRE
         LIBS += -lpcrecpp
 endif
 if HAVE_ADKERB
-        LIBS += -lgssapi
+        LIBS += -lgssapi_krb5
 endif
 if HAVE_LDAP
         LIBS += -lcrypt
