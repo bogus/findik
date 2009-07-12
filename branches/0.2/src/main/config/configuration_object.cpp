@@ -22,6 +22,36 @@ namespace findik
 {
 	namespace config 
 	{
+
+		configuration_object::configuration_object():
+			server_http_run_with_squid_(true),
+                        server_http_squid_host_("localhost"),
+                        server_http_squid_port_(3128),
+                        server_http_squid_keepalive_timeout_(60),
+                        server_http_max_object_size_(1048576),
+                        server_local_receive_timeout_(15),
+                        server_remote_receive_timeout_(60),
+                        connection_queue_size_(8),
+                        db_mysql_host_("localhost"),
+                        db_mysql_database_("findik"),
+                        db_mysql_username_("findik"),
+                        db_mysql_password_(""),
+                        db_pool_size_(32),
+                        io_number_of_threads_(50),
+                        reply_reply_file_("/etc/findik/index.html"),
+                        reply_ssl_reply_file_("/etc/findik/ssl.html"),
+                        ssl_local_private_key_("/etc/findik/ssl/private.pem"),
+                        ssl_local_certificate_("/etc/findik/ssl/public.pem"),
+                        ssl_local_dh_parameters_("/etc/findik/ssl/dh.pem"),
+                        ssl_remote_ca_("/etc/findik/ssl/ca.pem"),
+                        server_max_session_(32),
+                        server_max_connection_per_session_(4),
+                        server_max_concurrent_connections_(150),
+                        server_max_concurrent_connections_per_user_(150)
+		{
+		}
+
+#ifdef HAVE_LIBCONFIG
 		configuration_object::configuration_object(configuration_initializer & config_):
 			server_http_run_with_squid_(true),
 			server_http_squid_host_("localhost"),
@@ -89,6 +119,7 @@ namespace findik
 			
 		
 		}
+#endif
 
 		configuration_object::~configuration_object()
 		{

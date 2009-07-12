@@ -17,6 +17,7 @@
 */
 
 #include "html_content_filter.hpp"
+#ifdef HAVE_PCRE
 
 namespace findik
 {
@@ -35,7 +36,7 @@ namespace findik
 				response_ptr resp = boost::static_pointer_cast<response>(connection_->current_data());
 				request_ptr req = last_request_of(connection_);
 				std::string content_type;
-				if((resp->magic_mime_type() == "text/html") || (resp->content_type() == "text/html" && resp->magic_mime_type().compare(0,10,"text/plain") == 0)) 
+				if((resp->magic_mime_type() == "text/html") || (resp->content_type() == "text/html") || (resp->magic_mime_type().compare(0,10,"text/plain") == 0)) 
 				{
 					if (FI_SERVICES->util_srv().pcre().matches_predefined( &(resp->content_hr())[0] , param) )
 					{
@@ -58,4 +59,4 @@ namespace findik
 		}
 	}
 }
-
+#endif /* HAVE_PCRE */

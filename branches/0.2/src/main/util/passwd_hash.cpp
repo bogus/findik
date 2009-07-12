@@ -16,8 +16,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #include "passwd_hash.hpp"
+#ifdef HAVE_LDAP
 
 namespace findik {
 	namespace util {
@@ -97,3 +97,5 @@ namespace findik {
 		}
 	}
 }
+
+#endif /* HAVE_LDAP */

@@ -14,52 +14,20 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
+*/
 
-#include "pcre_analyzer.hpp"
-#ifdef HAVE_PCRE
+#include "logger_ptr.hpp"
+#include <string>
 
-namespace findik
-{
-	namespace util
+namespace log4cxx {
+	LoggerPtr::LoggerPtr(const std::string &name)
 	{
-		pcre_analyzer::pcre_analyzer()
-		{
-		}
-		pcre_analyzer::~pcre_analyzer()
-		{
-		}
+		this->name = name;
+	}
+	LoggerPtr::~LoggerPtr(){ }
 
-		void pcre_analyzer::set_word(const std::string & word)
-		{
-			this->word = word;
-                }
-
-		std::string pcre_analyzer::get_word()
-		{
-			return word;
-                }
-
-		void pcre_analyzer::set_count(int count)
-		{
-			this->count = count;
-                }
-
-		int pcre_analyzer::get_count()
-		{
-			return count;
-                }
-
-		void pcre_analyzer::set_catid(int catid)
-		{
-			this->catid = catid;
-                }
-
-		int pcre_analyzer::get_catid()
-		{
-			return catid;
-                }
+	std::string & LoggerPtr::getName() 
+	{
+		return name; 
 	}
 }
-
-#endif /* HAVE_PCRE */

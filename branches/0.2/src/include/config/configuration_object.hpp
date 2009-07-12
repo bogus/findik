@@ -15,11 +15,16 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #ifndef FINDIK_CONFIG_CONFIGURATION_OBJECT_HPP
 #define FINDIK_CONFIG_CONFIGURATION_OBJECT_HPP
 
+#ifdef HAVE_LIBCONFIG
 #include "configuration_initializer.hpp"
+#endif
 
 #include <string>
 
@@ -38,8 +43,13 @@ namespace findik
 			/*!
 			Default constructor.
 			*/
+			configuration_object();
+#ifdef HAVE_LIBCONFIG
+			/*!
+			Default constructor.
+			*/
 			configuration_object(configuration_initializer & config_);
-
+#endif
 			/*!
 			Default destructor.
 			*/

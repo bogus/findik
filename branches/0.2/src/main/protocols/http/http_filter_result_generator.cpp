@@ -98,9 +98,10 @@ namespace findik
 					} else {
 						return_resp_ = return_resp_ + "404 Not Found\r\n";
 					}
-
+#ifdef HAVE_PCRE
 					FI_SERVICES->util_srv().pcre().global_replace("@@date@@", ctime(&rawtime), reply_html_);
 					FI_SERVICES->util_srv().pcre().global_replace("@@reason@@", reply_str_ , reply_html_);
+#endif 
 					return_resp_ = return_resp_ + "Content-Type: text/html; charset=UTF-8\r\n";
 					return_resp_ = return_resp_ + "Content-Length: " + 
 							boost::lexical_cast<std::string>(reply_html_.size()) + "\r\n";

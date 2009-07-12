@@ -17,6 +17,7 @@
 */
 
 #include "file_ext_filter.hpp"
+#ifdef HAVE_FILEEXT
 
 namespace findik
 {
@@ -77,3 +78,4 @@ namespace findik
 	}
 }
 
+#endif /* HAVE_FILEEXT */

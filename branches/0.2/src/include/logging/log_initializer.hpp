@@ -13,10 +13,14 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef FINDIK_LOGGING_LOG_INITIALIZER_HPP
 #define FINDIK_LOGGING_LOG_INITIALIZER_HPP
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LOG4CXX
 // include log4cxx header files.
 #include <log4cxx/logger.h>
 #include <log4cxx/basicconfigurator.h>
@@ -63,5 +67,24 @@ namespace findik {
 
 	}
 }
+#else
+#include "logger.hpp"
+namespace findik {
+        namespace logging {
+                class log_initializer
+                {
+                public:
+			//global user logger
+                        static log4cxx::LoggerPtr user_logger;
+
+                        //global debug logger
+                        static log4cxx::LoggerPtr debug_logger;
+
+                        //global filter logger
+                        static log4cxx::LoggerPtr filter_logger;
+		};
+	}
+}
+#endif
 #endif //  LOG_INITIALIZER_HPP
 

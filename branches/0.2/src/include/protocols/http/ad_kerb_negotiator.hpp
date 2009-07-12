@@ -15,6 +15,10 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#ifdef HAVE_ADKERB
 
 #ifndef FINDIK_AUTHENTICATOR_AD_KERB_NEGOTIATOR_HPP
 #define FINDIK_AUTHENTICATOR_AD_KERB_NEGOTIATOR_HPP
@@ -96,4 +100,5 @@ namespace findik
 }
 
 #endif
+#endif /* HAVE_ADKERB */
 

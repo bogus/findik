@@ -17,6 +17,8 @@
 */
 
 #include "ldap_basic_authentication.hpp"
+#ifdef HAVE_LDAP
+
 #include "base64.hpp"
 #include <ldap.h>
 
@@ -215,3 +217,4 @@ namespace findik
 	}
 }
 
+#endif /* HAVE_LDAP */

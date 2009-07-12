@@ -15,9 +15,7 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #include "filetype_filter_group.hpp"
-
 #include "file_ext_filter.hpp"
 #include "content_mime_filter.hpp"
 
@@ -42,11 +40,14 @@ namespace findik
 
 			filetype_filter_group::filetype_filter_group()
 			{
+#ifdef HAVE_FILEEXT
 				file_ext_filter_ptr p1(new file_ext_filter());
-				content_mime_filter_ptr p2(new content_mime_filter());
-
 				filter_list_.push_back(p1);
+#endif
+#ifdef HAVE_MAGIC
+				content_mime_filter_ptr p2(new content_mime_filter());
 				filter_list_.push_back(p2);
+#endif
 			}
 
 			filetype_filter_group::~filetype_filter_group()

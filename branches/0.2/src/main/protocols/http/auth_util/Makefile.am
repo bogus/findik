@@ -1,6 +1,9 @@
 noinst_LTLIBRARIES		=	libfindik_http_auth_util.la
 
-libfindik_http_auth_util_la_SOURCES	= \
+libfindik_http_auth_util_la_SOURCES =
+
+if HAVE_ADKERB
+libfindik_http_auth_util_la_SOURCES	+= \
 	accept_sec_context.c \
 	asn1_NegTokenInit.c \
 	der_get.c \
@@ -18,7 +21,7 @@ libfindik_http_auth_util_la_SOURCES	= \
 	asn1_MechTypeList.c \
 	der_free.c \
 	external.c 
-	
+endif	
 
 libfindik_http_auth_util_la_LIBADD	=	@LTLIBOBJS@
 

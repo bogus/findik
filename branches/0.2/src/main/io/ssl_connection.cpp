@@ -17,6 +17,8 @@
 */
 
 #include "ssl_connection.hpp"
+#ifdef HAVE_SSL
+
 #include "services.hpp"
 
 #include <boost/bind.hpp>
@@ -268,4 +270,4 @@ namespace findik
 
 	}
 }
-
+#endif /* HAVE_SSL */

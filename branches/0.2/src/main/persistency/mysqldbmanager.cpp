@@ -17,6 +17,8 @@
 */
 
 #include "mysqldbmanager.hpp"
+#ifdef HAVE_MYSQL
+
 #include "service_container.hpp"
 
 #include <boost/lexical_cast.hpp>
@@ -215,7 +217,6 @@ namespace findik
 
 		void mysqldbmanager::pcreQuery(std::list<boost::tuple<int,std::string> > & pcre_map) 
 		{
-
 			mysql_dbconnection_ptr dbconnection_(get_dbconnection());
 
 			try {
@@ -349,3 +350,4 @@ namespace findik
 		}
 	}
 }
+#endif /* HAVE_MYSQL */

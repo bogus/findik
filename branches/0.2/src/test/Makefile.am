@@ -11,15 +11,14 @@ LIBS = \
 	-lboost_thread \
 	-lboost_system \
 	-lpthread \
-	-llog4cxx \
-	-lconfig++ \
-	-lz \
-	-ltidy \
-	-lpcrecpp \
-	-lmysqlpp
+	-lz 
 
-INCLUDES = \
-	-I@top_srcdir@/src/main/filter \
-	-I@top_srcdir@/src/main/io \
-	-I@top_srcdir@/src/main/parser \
-	-I@top_srcdir@/src/main/service
+if HAVE_LDAP
+        LIBS += -lcrypt
+        LIBS += -lldap
+endif
+if HAVE_SSL
+        LIBS += -lcrypto
+        LIBS += -lssl
+endif
+

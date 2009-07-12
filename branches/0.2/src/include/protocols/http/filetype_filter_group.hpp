@@ -16,12 +16,17 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifndef FINDIK_PROTOCOLS_HTTP_FILETYPE_FILTER_GROUP_HPP
 #define FINDIK_PROTOCOLS_HTTP_FILETYPE_FILTER_GROUP_HPP
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "service_container.hpp"
 #include "filter_group.hpp"
 
 namespace findik

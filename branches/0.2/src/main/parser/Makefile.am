@@ -14,6 +14,8 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/parser \
 	-I@top_srcdir@/src/include/persistency \
 	-I@top_srcdir@/src/include/service \
-	-I@top_srcdir@/src/include/util \
-	-I/usr/include/mysql
+	-I@top_srcdir@/src/include/util 
+if HAVE_MYSQL
+        INCLUDES += -I/usr/include/mysql
+endif
 

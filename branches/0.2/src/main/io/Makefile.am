@@ -8,6 +8,10 @@ libfindik_io_la_SOURCES		= \
 	session.cpp \
 	ssl_connection.cpp
 
+#if HAVE_SSL
+#	libfindik_io_la_SOURCES += ssl_connection.cpp
+#endif
+
 libfindik_io_la_LIBADD		=	@LTLIBOBJS@
 
 INCLUDES 			= \
@@ -19,6 +23,8 @@ INCLUDES 			= \
 	-I@top_srcdir@/src/include/parser \
 	-I@top_srcdir@/src/include/persistency \
 	-I@top_srcdir@/src/include/service \
-	-I@top_srcdir@/src/include/util \
-	-I/usr/include/mysql
+	-I@top_srcdir@/src/include/util 
+if HAVE_MYSQL
+        INCLUDES += -I/usr/include/mysql
+endif
 

@@ -15,6 +15,9 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #ifndef FINDIK_SERVICE_SERVICE_CONTAINER_HPP
 #define FINDIK_SERVICE_SERVICE_CONTAINER_HPP
@@ -38,7 +41,13 @@
 #include "tracker_service.hpp"
 #include "configuration_initializer.hpp"
 #include "configuration_object.hpp"
+#include "dbmanager.hpp"
+#ifdef HAVE_MYSQL
 #include "mysqldbmanager.hpp"
+#endif
+#ifdef HAVE_SIMPLEDB
+#include "simple_dbmanager.hpp"
+#endif
 
 namespace findik
 {
@@ -157,7 +166,7 @@ namespace findik
 			DB Manager to access database via findik specific interface.
 			\returns dbmanager instasnce.
 			*/
-			findik::persistency::mysqldbmanager & db_srv();
+			findik::persistency::dbmanager & db_srv();
 
 			/*!
 			Tracker service instance. To track connections.
@@ -217,10 +226,12 @@ namespace findik
 			*/
 			boost::asio::ssl::context remote_ssl_context_;
 
+#ifdef HAVE_LIBCONFIG
 			/*!
 			Configuration service instance. To populate configuration object .
 			*/
 			findik::config::configuration_initializer config_srv_;
+#endif
 
 			/*!
 			Configuration object instance. To read configuration.
@@ -236,11 +247,19 @@ namespace findik
 			Reply service instance. To generate replies for local.
 			*/
 			reply_service reply_srv_;
-
+#ifdef HAVE_MYSQL
 			/*!
 			DB Manager to access database via findik specific interface.
 			*/
-			findik::persistency::mysqldbmanager db_srv_;
+			findik::persistency::mysqldbmanager mysql_db_srv_;
+#endif
+#ifdef HAVE_SIMPLEDB
+                        /*!
+                        DB Manager to access database via findik specific interface.
+                        */
+                        findik::persistency::simple_dbmanager simple_db_srv_;
+#endif
+
 
 			/*!
 			Tracker service instance. To track connections.

@@ -15,7 +15,10 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#ifdef HAVE_MAGIC
 #include "content_mime_filter.hpp"
 
 namespace findik
@@ -64,3 +67,4 @@ namespace findik
 	}
 }
 
+#endif /* HAVE_MAGIC */
