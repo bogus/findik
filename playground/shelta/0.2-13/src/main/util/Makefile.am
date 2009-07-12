@@ -4,8 +4,7 @@ libfindik_util_la_SOURCES	= \
 	base64.cpp \
 	passwd_hash.cpp \
 	pcre_analyzer.cpp \
-	pcre_parser.cpp \
-	tidy_html_parser.cpp
+	pcre_parser.cpp
 
 libfindik_util_la_LIBADD	=	@LTLIBOBJS@
 

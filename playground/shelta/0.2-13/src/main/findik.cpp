@@ -33,6 +33,8 @@
 #include <syslog.h>
 #include <pwd.h>
 
+#include <sys/stat.h>
+
 #include <boost/program_options.hpp>
 
 #define DAEMON_NAME "findik"

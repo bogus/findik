@@ -77,8 +77,6 @@ noinst_HEADERS = \
 	service/tracker_service.hpp \
 	util/zlib_util.hpp \
 	util/base64.hpp \
-	util/tidy_html_parser.hpp \
 	util/pcre_analyzer.hpp \
 	util/pcre_parser.hpp \
-	util/passwd_hash.hpp \
-	util/tidyx.hpp
+	util/passwd_hash.hpp

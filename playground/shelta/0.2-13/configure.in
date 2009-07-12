@@ -12,16 +12,12 @@ AC_PROG_LIBTOOL
 AC_PROG_RANLIB
 AC_LANG(C++)
 
-
-DX_HTML_FEATURE(ON)
-DX_CHM_FEATURE(OFF)
-DX_CHI_FEATURE(OFF)
-DX_MAN_FEATURE(ON)
-DX_RTF_FEATURE(OFF)
-DX_XML_FEATURE(OFF)
-DX_PDF_FEATURE(ON)
-DX_PS_FEATURE(OFF)
-DX_INIT_DOXYGEN(findik, doxygen.cfg)
+if test x"$(uname -s)" = xFreeBSD ; then
+	CPPFLAGS="$CPPFLAGS -I/usr/local/include -I/usr/local/include/mysql"
+	LDFLAGS="$LDFLAGS -L/usr/local/lib"
+else
+	CPPFLAGS="$CPPFLAGS -I/usr/include/mysql"
+fi
 
 AM_INIT_AUTOMAKE
 

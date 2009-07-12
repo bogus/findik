@@ -14,6 +14,8 @@ LIBS = \
 	-llog4cxx \
 	-lconfig++ \
 	-lz \
+	-lldap \
+	-lssl \
 	-ltidy \
 	-lpcrecpp \
 	-lmysqlpp
@@ -23,3 +25,4 @@ INCLUDES = \
 	-I@top_srcdir@/src/main/io \
 	-I@top_srcdir@/src/main/parser \
 	-I@top_srcdir@/src/main/service
+
