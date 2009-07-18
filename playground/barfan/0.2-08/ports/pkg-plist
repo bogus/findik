@@ -1,0 +1,8 @@
+bin/findik
+bin/findik_import
+etc/findik/findik.cfg
+etc/findik/findik_log.conf
+etc/findik/forbidden_page.htm
+etc/findik/ssl_trust.htm
+etc/findik/ssl/ca.pem
+etc/rc.d/findik
