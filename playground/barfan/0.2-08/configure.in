@@ -17,9 +17,12 @@ AC_LANG(C++)
 if test x"$(uname -s)" = xFreeBSD ; then
 	CPPFLAGS="$CPPFLAGS -I/usr/local/include -I/usr/local/include/mysql"
 	LDFLAGS="$LDFLAGS -L/usr/local/lib"
+	AC_DEFINE([FINDIK_CONFDIR],["/usr/local/etc/findik/"],[Configuration dir])
 else
 	CPPFLAGS="$CPPFLAGS -I/usr/include/mysql"
+	AC_DEFINE([FINDIK_CONFDIR],["/etc/findik/"],[Configuration dir])
 fi
+AC_DEFINE([FINDIK_LOGDIR],["/var/log/findik/"],[Log dir])
 
 AM_INIT_AUTOMAKE
 

@@ -15,6 +15,7 @@
 */
 
 #include "log_initializer.hpp"
+#include <string> 
 namespace findik {
 	namespace logging {
 

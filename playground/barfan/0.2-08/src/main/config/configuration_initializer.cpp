@@ -35,7 +35,10 @@ namespace findik {
 #if defined(_WIN32)
 				config_.readFile("c:/findik.cfg");
 #else
-				config_.readFile("/usr/local/etc/findik/findik.cfg");
+
+				std::string conffile = FINDIK_CONFDIR;
+				conffile += "findik.cfg";
+				config_.readFile(conffile.c_str());
 #endif
 			} 
 			catch(libconfig::FileIOException & e) 
