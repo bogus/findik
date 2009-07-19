@@ -17,9 +17,8 @@ COMMENT?= 	Content Filtering
 
 LIB_DEPENDS= 	boost_thread.4:${PORTSDIR}/devel/boost \
 	 	boost_system.4:${PORTSDIR}/devel/boost 
-BUILD_DEPENDS=  tar:${PORTSDIR}/archivers/untar \
-          	ungzip:${PORTSDIR}/archivers/gzip
-
+RUN_DEPENDS=	bash:${PORTSDIR}/shells/bash \
+		logrotate:${PORTSDIR}/sysutils/logrotate
 
 OPTIONS=       	MYSQL_SUPPORT "Mysql Support for Blacklists" On \
                	CLAMD_SUPPORT "ClamAV Support" On \
@@ -40,6 +39,7 @@ CONFIGURE_ARGS+=    --enable-mysql=no --enable-simpledb=yes
 .else
 LIB_DEPENDS +=	mysqlpp.3:${PORTSDIR}/databases/mysql++3 
 RUN_DEPENDS +=  ${LOCALBASE}/etc/rc.d/mysql-server:${PORTSDIR}/databases/mysql50-server
+RUN_DEPENDS +=  mysql:${PORTSDIR}/databases/mysql50-client
 .endif
 .if defined(WITHOUT_CLAMD_SUPPORT)
 CONFIGURE_ARGS+=    --enable-clamdav=no
@@ -84,7 +84,82 @@ LIB_DEPENDS +=	log4cxx.9:${PORTSDIR}/devel/log4cxx
 
 WRKSRC=      ${WRKDIR}/${PORTNAME}-${PORTVERSION}
 IS_INTERACTIVE=        yes
-USE_GMAKE=     yes
+#USE_GMAKE=     yes
 GNU_CONFIGURE= yes
+
+LOGSDIR?=       /var/log/findik
+LOGROTATEDIR?=     /usr/local/etc/logrotate.d 
+
+post-install:
+${MKDIR} ${LOGSDIR}/
+${MKDIR} ${LOGROTATEDIR}/
+@cp ${WRKSRC}/packaging/redhat/findik.logrotate ${LOGROTATEDIR}/findik
+
+/usr/local/bin/bash
+
+(/usr/local/etc/rc.d/mysql-server status) || (/usr/local/etc/rc.d/mysql-server start) 
+
+# Import MySQL schema
+if (echo|mysql); then
+        if [ -z "$(echo 'show databases'|mysql|grep -e '^findik$')" ]; then
+                ( mysqladmin create findik && \
+                mysql findik < /usr/local/share/findik/sql/schema.sql ) || ( \
+                echo "==========================================================="; \
+                echo "|   A problem occured while importing schema.   		|"; \
+                echo "|   Please create a database and import         		|"; \
+                echo "|   /usr/local/share/findik/sql/schema.sql manually.  	|"; \
+                echo "==========================================================="; \
+                echo; )
+        else
+                echo "==========================================================="
+                echo "|   A database named 'findik' exists on MySQL.  		|"
+                echo "|   Please create a database and import         		|"
+                echo "|   /usr/local/share/findik/sql/schema.sql manually.  	|"
+                echo "==========================================================="
+                echo
+        fi
+else
+        echo "==========================================================="
+        echo "|   Can not access MySQL.                       		|"
+        echo "|   Please create a database and import         		|"
+        echo "|   /usr/local/share/findik/sql/schema.sql manually.  	|"
+        echo "|   Also, edit MySQL credentials in             		|"
+        echo "|   /usr/local/etc/findik/findik.cfg .                    |"
+        echo "==========================================================="
+        echo
+fi
+
+if [ ! -f /usr/local/etc/findik/ssl/public.pem -a ! -f /usr/local/etc/findik/ssl/private.pem -a ! -f /usr/local/etc/findik/ssl/dh.pem ]; then
+        if (echo -e "ME\nRohan\nCalenardhon\nRohirrim\n\n*\nrohirrim@example.com\n"| \
+                /usr/local/share/findik/scripts/generate-ssl-keys /etc/findik/ssl 512); then
+                echo "==========================================================="
+                echo "|   Created initial SSL keys and 512-byte DH    		|"
+                echo "|   parameters. If you want to recreate them,   		|"
+                echo "|   you can call                                		|"
+                echo "|   /usr/local/share/findik/scripts/generate-ssl-keys 	|"
+                echo "==========================================================="
+                echo
+        else
+                echo "==========================================================="
+                echo "|   A problem occured during key generation.    		|"
+                echo "|   Please recall and inspect output of         		|"
+                echo "|   /usr/local/share/findik/scripts/generate-ssl-keys 	|"
+                echo "|   command.                                    		|"
+                echo "==========================================================="
+                echo
+        fi
+else
+        echo "==========================================================="
+        echo "|   Found SSL keys at /usr/local/etc/findik/ssl/ and      |"
+        echo "|   kept unchanged. If you want to recreate     		|"
+        echo "|   them, you can call                          		|"
+        echo "|   /usr/local/share/findik/scripts/generate-ssl-keys 	|"
+        echo "==========================================================="
+        echo
+fi
+
+echo "findik_enable=\"YES\"" >> /etc/rc.conf 
+
+sed 's@"/etc/findik@"/usr/local/etc/findik@' </usr/local/etc/findik/findik.cfg >/usr/local/etc/findik/findik.cfg.bsd ; mv /usr/local/etc/findik/findik.cfg.bsd /usr/local/etc/findik/findik.cfg 
 
 .include <bsd.port.mk>

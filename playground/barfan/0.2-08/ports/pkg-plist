@@ -6,3 +6,6 @@ etc/findik/forbidden_page.htm
 etc/findik/ssl_trust.htm
 etc/findik/ssl/ca.pem
 etc/rc.d/findik
+lib/libfindik.so.0
+share/findik/scripts/generate-ssl-keys
+share/findik/sql/schema.sql
