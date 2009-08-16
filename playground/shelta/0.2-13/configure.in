@@ -15,6 +15,7 @@ AC_LANG(C++)
 if test x"$(uname -s)" = xFreeBSD ; then
 	CPPFLAGS="$CPPFLAGS -I/usr/local/include -I/usr/local/include/mysql"
 	LDFLAGS="$LDFLAGS -L/usr/local/lib"
+	AC_DEFINE([_FREEBSD],[],[Define to use FreeBSD defaults.])	
 else
 	CPPFLAGS="$CPPFLAGS -I/usr/include/mysql"
 fi

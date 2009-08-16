@@ -31,11 +31,7 @@ namespace findik {
 		{
 			try 
 			{
-#if defined(_WIN32)
-				config_.readFile("c:/findik.cfg");
-#else
-				config_.readFile("/etc/findik/findik.cfg");
-#endif
+				config_.readFile(FINDIK_CONFIG_FILE);
 			} 
 			catch(libconfig::FileIOException & e) 
 			{

@@ -26,6 +26,19 @@
 
 #include "log.hpp"
 
+#include "config.h"
+
+#if defined(_WIN32)
+	#define FINDIK_LOG_CONFIG_FILE "c:/findik_log.conf"
+	#define FINDIK_CONFIG_FILE "c:/findik.cfg"
+#elif defined(_FREEBSD)
+	#define FINDIK_LOG_CONFIG_FILE "/usr/local/etc/findik/findik_log.conf"
+	#define FINDIK_CONFIG_FILE "/usr/local/etc/findik/findik.cfg"
+#else
+	#define FINDIK_LOG_CONFIG_FILE "/etc/findik/findik_log.conf"
+	#define FINDIK_CONFIG_FILE "/etc/findik/findik.cfg"
+#endif
+
 namespace findik {
 	namespace config {
 

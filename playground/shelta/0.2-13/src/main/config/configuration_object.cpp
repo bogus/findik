@@ -17,6 +17,7 @@
 */
 
 #include "configuration_object.hpp"
+#include "config.h"
 
 namespace findik 
 {
@@ -37,12 +38,21 @@ namespace findik
 			db_mysql_password_(""),
 			db_pool_size_(32),
 			io_number_of_threads_(50),
+#if defined(_FREEBSD)
+			reply_reply_file_("/usr/local/etc/findik/index.html"),
+			reply_ssl_reply_file_("/usr/local/etc/findik/ssl.html"),
+			ssl_local_private_key_("/usr/local/etc/findik/ssl/private.pem"),
+			ssl_local_certificate_("/usr/local/etc/findik/ssl/public.pem"),
+			ssl_local_dh_parameters_("/usr/local/etc/findik/ssl/dh.pem"),
+			ssl_remote_ca_("/usr/local/etc/findik/ssl/ca.pem"),
+#else
 			reply_reply_file_("/etc/findik/index.html"),
 			reply_ssl_reply_file_("/etc/findik/ssl.html"),
 			ssl_local_private_key_("/etc/findik/ssl/private.pem"),
 			ssl_local_certificate_("/etc/findik/ssl/public.pem"),
 			ssl_local_dh_parameters_("/etc/findik/ssl/dh.pem"),
 			ssl_remote_ca_("/etc/findik/ssl/ca.pem"),
+#endif
 			server_max_session_(32),
 			server_max_connection_per_session_(4),
 			server_max_concurrent_connections_(150),

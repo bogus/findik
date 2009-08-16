@@ -40,8 +40,7 @@
 #define DAEMON_NAME "findik"
 #define RUN_AS_USER "daemon"
 
-#define FINDIK_CONFIG_FILE "/etc/findik/findik.cfg"
-#define FINDIK_LOG_CONFIG_FILE "/etc/findik/findik_log.conf"
+#include "configuration_initializer.hpp"
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
@@ -190,7 +189,7 @@ int main(int argc, char* argv[])
 		//findik::filter::generate_response_filter_factory_map();
 
 		findik::logging::log_initializer log_init;
-		log_init.load_conf("/etc/findik/findik_log.conf");
+		log_init.load_conf(FINDIK_LOG_CONFIG_FILE);
 		
 		//First accesto FI_SERVICES must be under log init.
 		if (! FI_SERVICES->check_config())

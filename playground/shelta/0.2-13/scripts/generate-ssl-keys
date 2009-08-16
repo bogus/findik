@@ -15,7 +15,11 @@ if [ "$#" -lt "0" -o "$#" -gt "2" ]; then
 fi
 	
 if [ -z "$1" ]; then
-	DESTDIR=/etc/findik/ssl
+	if [ "$(uname -s)" = "FreeBSD" ]; then
+		DESTDIR=/usr/local/etc/findik/ssl
+	else
+		DESTDIR=/etc/findik/ssl
+	fi
 else
 	DESTDIR=$1
 fi
